@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Privacy Policy for Aqim - Aqimissolah Prayer Times Application">
+    <meta name="keywords" content="privacy policy, aqim, prayer times, solat, islamic app">
+    <title>Privacy Policy - Aqim - Aqimissolah</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1A5F4F;
+            --secondary-color: #2A8F7F;
+            --light-bg: #F5F5F5;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-color: #EEEEEE;
+            --accent-color: #177E89;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-light);
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .language-toggle {
+            text-align: center;
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .language-toggle button {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .language-toggle button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .language-toggle button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .language-section {
+            display: none;
+            margin-bottom: 60px;
+        }
+
+        .language-section.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--text-dark);
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+
+        strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .table-of-contents {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .table-of-contents h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .table-of-contents ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .table-of-contents li {
+            margin-bottom: 10px;
+        }
+
+        .table-of-contents a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .table-of-contents a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .highlight-box {
+            background: #FFF3CD;
+            border-left: 4px solid #FFC107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight-box strong {
+            color: #856404;
+        }
+
+        .success-box {
+            background: #D4EDDA;
+            border-left: 4px solid #28A745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box strong {
+            color: #155724;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        table thead {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table tbody tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        table tbody tr:hover {
+            background: #E8F4F0;
+        }
+
+        .contact-section {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .contact-section h3 {
+            margin-top: 0;
+        }
+
+        .contact-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .contact-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 100px;
+        }
+
+        footer {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 50px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .version-info {
+            background: var(--light-bg);
+            padding: 15px 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .language-toggle {
+                flex-direction: column;
+            }
+
+            .language-toggle button {
+                width: 100%;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            table th, table td {
+                padding: 8px 10px;
+            }
+        }
+
+        .section-nav {
+            background: var(--light-bg);
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .section-nav a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .section-nav a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .print-button {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .print-button button {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .print-button button:hover {
+            background: var(--secondary-color);
+        }
+
+        @media print {
+            .language-toggle, .print-button, .section-nav {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Privacy Policy</h1>
+            <p>Aqim - Aqimissolah Prayer Times Application</p>
+            <p style="font-size: 0.9em; color: var(--text-light); margin-top: 10px;">
+                Last Updated: January 2025 | Effective: January 2025
+            </p>
+        </header>
+
+        <div class="language-toggle">
+            <button class="lang-btn active" onclick="switchLanguage('en')">🇬🇧 English</button>
+            <button class="lang-btn" onclick="switchLanguage('ms')">🇲🇾 Bahasa Melayu</button>
+            <button class="lang-btn" onclick="switchLanguage('ar')">🇸🇦 العربية</button>
+        </div>
+
+        <!-- ENGLISH VERSION -->
+        <div id="en" class="language-section active">
+            <div class="table-of-contents">
+                <h3>📑 Table of Contents</h3>
+                <ul>
+                    <li><a href="#en-intro">1. Introduction</a></li>
+                    <li><a href="#en-definitions">2. Definitions</a></li>
+                    <li><a href="#en-collect">3. Information We Collect</a></li>
+                    <li><a href="#en-purpose">4. Purpose of Data Collection</a></li>
+                    <li><a href="#en-legal">5. Legal Basis for Processing</a></li>
+                    <li><a href="#en-sharing">6. Data Sharing and Disclosure</a></li>
+                    <li><a href="#en-retention">7. Data Retention</a></li>
+                    <li><a href="#en-security">8. Data Security</a></li>
+                    <li><a href="#en-rights">9. Your Privacy Rights</a></li>
+                    <li><a href="#en-contact">10. Contact Information</a></li>
+                </ul>
+            </div>
+
+            <h2 id="en-intro">1. INTRODUCTION</h2>
+            <p>Welcome to <strong>Aqim - Aqimissolah</strong>. We are committed to protecting your privacy and ensuring you have a positive experience on our Application. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Application.</p>
+
+            <h2 id="en-definitions">2. DEFINITIONS</h2>
+            <ul>
+                <li><strong>"Application"</strong> means the Aqim - Aqimissolah mobile application available on iOS and Android platforms</li>
+                <li><strong>"User"</strong> or <strong>"You"</strong> means any individual who uses the Application</li>
+                <li><strong>"Personal Data"</strong> means any information relating to an identified or identifiable natural person</li>
+                <li><strong>"Processing"</strong> means any operation performed on Personal Data</li>
+                <li><strong>"Controller"</strong> means the entity determining the purposes and means of Processing</li>
+                <li><strong>"Processor"</strong> means the entity processing Personal Data on behalf of the Controller</li>
+            </ul>
+
+            <h2 id="en-collect">3. INFORMATION WE COLLECT</h2>
+            
+            <h3>3.1 Information You Provide Directly</h3>
+            <h4>Location Information</h4>
+            <ul>
+                <li>Your precise GPS coordinates to determine accurate prayer times for your location</li>
+                <li>Your general location information (city, state, country)</li>
+                <li>This information is collected with your explicit permission through device permission prompts</li>
+            </ul>
+
+            <h4>Preference Information</h4>
+            <ul>
+                <li>Your selected language preference (Malay, English, or Arabic)</li>
+                <li>Your chosen theme preference (Light, Dark, or Auto)</li>
+                <li>These preferences are stored locally on your device</li>
+            </ul>
+
+            <h4>Device Information</h4>
+            <ul>
+                <li>Device model and operating system</li>
+                <li>Application version</li>
+                <li>Device identifier (for crash reporting purposes)</li>
+                <li>This information is automatically collected to improve application stability</li>
+            </ul>
+
+            <h3>3.2 Information Collected Automatically</h3>
+            <h4>Usage Analytics</h4>
+            <ul>
+                <li>Frequency of app usage</li>
+                <li>Screens accessed within the application</li>
+                <li>Features used and duration of use</li>
+                <li>Errors and crashes encountered</li>
+            </ul>
+
+            <h2 id="en-purpose">4. PURPOSE OF DATA COLLECTION</h2>
+            <p>We collect and process your Personal Data for the following purposes:</p>
+            <ol>
+                <li><strong>Providing Prayer Times:</strong> To calculate and display accurate prayer times based on your location</li>
+                <li><strong>Location Services:</strong> To determine your current location and zone for prayer time accuracy</li>
+                <li><strong>Application Improvement:</strong> To analyze app performance and user engagement</li>
+                <li><strong>Error Tracking:</strong> To identify and fix application bugs and crashes</li>
+                <li><strong>Localization:</strong> To provide content in your preferred language</li>
+                <li><strong>Theme Customization:</strong> To remember your UI preferences (light/dark mode)</li>
+                <li><strong>Notification Delivery:</strong> To send prayer time reminders with your permission</li>
+                <li><strong>Analytics:</strong> To understand how users interact with the application (anonymized data)</li>
+            </ol>
+
+            <h2 id="en-legal">5. LEGAL BASIS FOR PROCESSING</h2>
+            <p>Our processing of your Personal Data is based on:</p>
+            <ul>
+                <li><strong>Consent:</strong> You explicitly consent to location access and notification permissions</li>
+                <li><strong>Legitimate Interest:</strong> Improving application functionality and user experience</li>
+                <li><strong>Performance of Contract:</strong> Providing the services you requested</li>
+                <li><strong>Legal Obligation:</strong> Compliance with applicable data protection laws</li>
+                <li><strong>Islamic Principles:</strong> Serving the Muslim community by providing accurate prayer times</li>
+            </ul>
+
+            <h2 id="en-sharing">6. DATA SHARING AND DISCLOSURE</h2>
+            
+            <h3>6.1 We DO NOT Share Your Data With:</h3>
+            <ul>
+                <li>Third-party marketers or advertisers</li>
+                <li>Social media platforms</li>
+                <li>Data brokers or aggregators</li>
+                <li>Unaffiliated companies for their marketing purposes</li>
+            </ul>
+
+            <h3>6.2 We MAY Share Your Data With:</h3>
+            <h4>Service Providers</h4>
+            <ul>
+                <li>Prayer Times API Service (e-Solat JAKIM) - only zone/location identifier</li>
+                <li>Crash reporting services - anonymous error data only</li>
+                <li>Analytics providers - aggregated, anonymized data</li>
+            </ul>
+
+            <h3>6.3 Legal Requirements</h3>
+            <ul>
+                <li>Law enforcement (with valid legal warrant or court order)</li>
+                <li>Government authorities (as required by law)</li>
+                <li>Protection of rights, safety, or property</li>
+            </ul>
+
+            <h2 id="en-retention">7. DATA RETENTION</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data Type</th>
+                        <th>Retention Period</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Location Data</td>
+                        <td>Stored only in memory during app session; not persisted</td>
+                    </tr>
+                    <tr>
+                        <td>Preference Data</td>
+                        <td>Stored locally on your device indefinitely (until app deletion)</td>
+                    </tr>
+                    <tr>
+                        <td>Analytics Data</td>
+                        <td>Aggregated and anonymized; retained for 90 days</td>
+                    </tr>
+                    <tr>
+                        <td>Crash Logs</td>
+                        <td>Retained for 30 days for troubleshooting purposes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="en-security">8. DATA SECURITY</h2>
+            
+            <h3>8.1 Security Measures</h3>
+            <p>We implement industry-standard security measures to protect your Personal Data:</p>
+            <ul>
+                <li><strong>Encryption in Transit:</strong> All API communications use HTTPS/TLS encryption</li>
+                <li><strong>Local Storage Security:</strong> Sensitive data is encrypted using device-level encryption</li>
+                <li><strong>Access Control:</strong> Data access is restricted to authorized personnel only</li>
+                <li><strong>Regular Security Audits:</strong> Periodic security reviews and assessments</li>
+                <li><strong>Secure Coding Practices:</strong> Implementation of security-aware coding standards</li>
+            </ul>
+
+            <h3>8.2 Data Breach Notification</h3>
+            <p>In the event of a data breach affecting your Personal Data:</p>
+            <ul>
+                <li>You will be notified without undue delay</li>
+                <li>We will provide details of the breach and mitigation measures</li>
+                <li>We will notify relevant authorities as required by law</li>
+            </ul>
+
+            <div class="highlight-box">
+                <strong>⚠️ Limitation:</strong> While we strive to protect your Personal Data, no security system is completely impenetrable. We cannot guarantee absolute security.
+            </div>
+
+            <h2 id="en-rights">9. YOUR PRIVACY RIGHTS</h2>
+            
+            <h3>9.1 Right of Access</h3>
+            <p>You have the right to request a copy of the Personal Data we hold about you.</p>
+            <p><strong>How to Exercise:</strong> Contact us at <code>privacy@aqimapp.com</code></p>
+
+            <h3>9.2 Right to Rectification</h3>
+            <p>You can correct inaccurate or incomplete Personal Data.</p>
+            <p><strong>How to Exercise:</strong> Submit corrections through the application settings or contact us</p>
+
+            <h3>9.3 Right to Erasure ("Right to be Forgotten")</h3>
+            <p>You can request deletion of your Personal Data.</p>
+            <p><strong>How to Exercise:</strong> Use the "Delete Account" feature in settings or contact us</p>
+            <div class="highlight-box">
+                <strong>Note:</strong> We may retain data for legal compliance or legitimate business purposes
+            </div>
+
+            <h3>9.4 Right to Data Portability</h3>
+            <p>You can request your Personal Data in a structured, commonly used format.</p>
+            <p><strong>How to Exercise:</strong> Contact <code>privacy@aqimapp.com</code> with your request</p>
+
+            <h3>9.5 Right to Withdraw Consent</h3>
+            <p>You can withdraw consent for location, notification, and analytics at any time.</p>
+            <p><strong>How to Exercise:</strong></p>
+            <ul>
+                <li><strong>Location:</strong> Revoke permission in device settings</li>
+                <li><strong>Notifications:</strong> Disable in app settings</li>
+                <li><strong>Analytics:</strong> Disable in privacy settings</li>
+            </ul>
+
+            <h2 id="en-contact">10. CONTACT INFORMATION</h2>
+            <p>For privacy-related inquiries, complaints, or to exercise your rights:</p>
+            
+            <div class="contact-section">
+                <div class="contact-item">
+                    <span class="contact-label">Email:</span>
+                    <span>privacy@aqimapp.com</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">Address:</span>
+                    <span>[Your Company Address]</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">Phone:</span>
+                    <span>[Your Contact Number]</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">Response Time:</span>
+                    <span>We will respond to your inquiries within 30 days</span>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <strong>✅ Islamic Principles:</strong> This Application is developed with the Islamic principles of Transparency (Shaffafiyyah), Trust (Amanah), Accountability (Mas'uliyyah), and Justice (Adl).
+            </div>
+        </div>
+
+        <!-- BAHASA MELAYU VERSION -->
+        <div id="ms" class="language-section">
+            <div class="table-of-contents">
+                <h3>📑 Senarai Kandungan</h3>
+                <ul>
+                    <li><a href="#ms-intro">1. Pengenalan</a></li>
+                    <li><a href="#ms-definitions">2. Takrifan</a></li>
+                    <li><a href="#ms-collect">3. Maklumat yang Kami Kumpul</a></li>
+                    <li><a href="#ms-purpose">4. Tujuan Pengumpulan Data</a></li>
+                    <li><a href="#ms-legal">5. Asas Hukum untuk Pemprosesan</a></li>
+                    <li><a href="#ms-sharing">6. Perkongsian dan Pendedahan Data</a></li>
+                    <li><a href="#ms-retention">7. Pengekalan Data</a></li>
+                    <li><a href="#ms-security">8. Keamanan Data</a></li>
+                    <li><a href="#ms-rights">9. Hak Privasi Anda</a></li>
+                    <li><a href="#ms-contact">10. Maklumat Hubungan</a></li>
+                </ul>
+            </div>
+
+            <h2 id="ms-intro">1. PENGENALAN</h2>
+            <p>Selamat datang ke <strong>Aqim - Aqimissolah</strong>. Kami berkomitmen untuk melindungi privasi anda dan memastikan anda mempunyai pengalaman positif dengan Aplikasi kami. Dasar Privasi ini menjelaskan bagaimana kami mengumpul, menggunakan, mendedahkan, dan melindungi maklumat anda apabila anda menggunakan Aplikasi kami.</p>
+
+            <h2 id="ms-definitions">2. TAKRIFAN</h2>
+            <ul>
+                <li><strong>"Aplikasi"</strong> bermaksud aplikasi mudah alih Aqim - Aqimissolah yang tersedia di platform iOS dan Android</li>
+                <li><strong>"Pengguna"</strong> atau <strong>"Anda"</strong> bermaksud mana-mana individu yang menggunakan Aplikasi</li>
+                <li><strong>"Data Peribadi"</strong> bermaksud sebarang maklumat yang berkaitan dengan individu yang dikenali atau boleh dikenal pasti</li>
+                <li><strong>"Pemprosesan"</strong> bermaksud sebarang operasi yang dilakukan ke atas Data Peribadi</li>
+                <li><strong>"Pengawal"</strong> bermaksud entiti yang menentukan tujuan dan cara Pemprosesan</li>
+                <li><strong>"Pemproses"</strong> bermaksud entiti yang memproses Data Peribadi bagi pihak Pengawal</li>
+            </ul>
+
+            <h2 id="ms-collect">3. MAKLUMAT YANG KAMI KUMPUL</h2>
+            
+            <h3>3.1 Maklumat yang Anda Berikan Secara Langsung</h3>
+            <h4>Maklumat Lokasi</h4>
+            <ul>
+                <li>Koordinat GPS yang tepat anda untuk menentukan waktu solat yang tepat di lokasi anda</li>
+                <li>Maklumat lokasi umum anda (bandar, negeri, negara)</li>
+                <li>Maklumat ini dikumpul dengan kebenaran eksplisit anda melalui permintaan kebenaran peranti</li>
+            </ul>
+
+            <h4>Maklumat Keutamaan</h4>
+            <ul>
+                <li>Pilihan bahasa anda (Melayu, Inggeris, atau Arab)</li>
+                <li>Pilihan tema anda (Cerah, Gelap, atau Automatik)</li>
+                <li>Keutamaan ini disimpan secara setempat di peranti anda</li>
+            </ul>
+
+            <h3>3.2 Maklumat yang Dikumpul Secara Automatik</h3>
+            <ul>
+                <li>Kekerapan penggunaan aplikasi</li>
+                <li>Skrin yang diakses dalam aplikasi</li>
+                <li>Ciri yang digunakan dan tempoh penggunaan</li>
+                <li>Ralat dan ranap yang dialami</li>
+            </ul>
+
+            <h2 id="ms-purpose">4. TUJUAN PENGUMPULAN DATA</h2>
+            <p>Kami mengumpul dan memproses Data Peribadi anda untuk tujuan berikut:</p>
+            <ol>
+                <li>Menyediakan Waktu Solat - Untuk mengira dan memaparkan waktu solat yang tepat</li>
+                <li>Perkhidmatan Lokasi - Untuk menentukan lokasi semasa dan zon anda</li>
+                <li>Peningkatan Aplikasi - Untuk menganalisis prestasi aplikasi</li>
+                <li>Penjejakan Ralat - Untuk mengenal pasti dan membetulkan pepijat</li>
+                <li>Pelokalan - Untuk menyediakan kandungan dalam bahasa pilihan anda</li>
+                <li>Penyesuaian Tema - Untuk mengingati keutamaan UI anda</li>
+                <li>Penghantaran Notifikasi - Untuk menghantar peringatan waktu solat</li>
+                <li>Analitik - Untuk memahami bagaimana pengguna berinteraksi dengan aplikasi</li>
+            </ol>
+
+            <h2 id="ms-legal">5. ASAS HUKUM UNTUK PEMPROSESAN</h2>
+            <p>Pemprosesan Data Peribadi kami didasarkan pada:</p>
+            <ul>
+                <li><strong>Persetujuan:</strong> Anda secara eksplisit bersetuju dengan akses lokasi dan kebenaran notifikasi</li>
+                <li><strong>Kepentingan Sah:</strong> Meningkatkan fungsi aplikasi dan pengalaman pengguna</li>
+                <li><strong>Pelaksanaan Kontrak:</strong> Menyediakan perkhidmatan yang anda minta</li>
+                <li><strong>Kewajipan Undang-undang:</strong> Kepatuhan dengan undang-undang perlindungan data</li>
+                <li><strong>Prinsip Islam:</strong> Melayani komuniti Muslim dengan menyediakan waktu solat yang tepat</li>
+            </ul>
+
+            <h2 id="ms-sharing">6. PERKONGSIAN DAN PENDEDAHAN DATA</h2>
+            
+            <h3>6.1 Kami TIDAK Berkongsi Data Anda Dengan:</h3>
+            <ul>
+                <li>Pemasar pihak ketiga atau pengiklan</li>
+                <li>Platform media sosial</li>
+                <li>Broker data atau pengagregat</li>
+                <li>Syarikat yang tidak berkaitan untuk tujuan pemasaran mereka</li>
+            </ul>
+
+            <h3>6.2 Kami MUNGKIN Berkongsi Data Anda Dengan:</h3>
+            <ul>
+                <li>Perkhidmatan API Waktu Solat (e-Solat JAKIM)</li>
+                <li>Perkhidmatan pelaporan ranap</li>
+                <li>Penyedia analitik</li>
+                <li>Pihak berkuasa kerajaan (seperti yang diperlukan oleh undang-undang)</li>
+            </ul>
+
+            <h2 id="ms-retention">7. PENGEKALAN DATA</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jenis Data</th>
+                        <th>Tempoh Pengekalan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data Lokasi</td>
+                        <td>Disimpan hanya dalam memori semasa sesi aplikasi</td>
+                    </tr>
+                    <tr>
+                        <td>Data Keutamaan</td>
+                        <td>Disimpan secara setempat di peranti anda tanpa had</td>
+                    </tr>
+                    <tr>
+                        <td>Data Analitik</td>
+                        <td>Disimpan selama 90 hari</td>
+                    </tr>
+                    <tr>
+                        <td>Log Ranap</td>
+                        <td>Disimpan selama 30 hari</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="ms-security">8. KEAMANAN DATA</h2>
+            
+            <h3>8.1 Langkah-langkah Keamanan</h3>
+            <p>Kami melaksanakan langkah-langkah keamanan yang memenuhi standard industri:</p>
+            <ul>
+                <li><strong>Enkripsi Semasa Pemindahan:</strong> Semua komunikasi API menggunakan enkripsi HTTPS/TLS</li>
+                <li><strong>Keamanan Storan Setempat:</strong> Data sensitif dienkripsi menggunakan enkripsi peringkat peranti</li>
+                <li><strong>Kawalan Akses:</strong> Akses data dihadkan kepada kakitangan yang diberi kuasa sahaja</li>
+                <li><strong>Audit Keamanan Berkala:</strong> Semakan dan penilaian keamanan berkala</li>
+            </ul>
+
+            <h2 id="ms-rights">9. HAK PRIVASI ANDA</h2>
+            
+            <h3>9.1 Hak untuk Mengakses</h3>
+            <p>Anda mempunyai hak untuk meminta salinan Data Peribadi yang kami pegang tentang anda.</p>
+            <p><strong>Cara Melaksanakan:</strong> Hubungi kami di <code>privacy@aqimapp.com</code></p>
+
+            <h3>9.2 Hak untuk Pembetulkan</h3>
+            <p>Anda boleh membetulkan Data Peribadi yang tidak tepat atau tidak lengkap.</p>
+
+            <h3>9.3 Hak untuk Penghapusan</h3>
+            <p>Anda boleh meminta penghapusan Data Peribadi anda.</p>
+
+            <h3>9.4 Hak untuk Portabiliti Data</h3>
+            <p>Anda boleh meminta Data Peribadi anda dalam format yang berstruktur dan biasa digunakan.</p>
+
+            <h3>9.5 Hak untuk Menarik Balik Persetujuan</h3>
+            <p>Anda boleh menarik balik persetujuan untuk lokasi, notifikasi, dan analitik pada bila-bila masa.</p>
+
+            <h2 id="ms-contact">10. MAKLUMAT HUBUNGAN</h2>
+            <p>Untuk pertanyaan berkaitan privasi atau mengadukan keluhan:</p>
+            
+            <div class="contact-section">
+                <div class="contact-item">
+                    <span class="contact-label">E-mel:</span>
+                    <span>privacy@aqimapp.com</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">Alamat:</span>
+                    <span>[Alamat Syarikat Anda]</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">Telefon:</span>
+                    <span>[Nombor Hubungan Anda]</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">Masa Respons:</span>
+                    <span>Kami akan merespons pertanyaan anda dalam masa 30 hari</span>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <strong>✅ Prinsip Islam:</strong> Aplikasi ini dibangunkan dengan prinsip Islam Ketelusan (Shaffafiyyah), Kepercayaan (Amanah), Akauntabiliti (Mas'uliyyah), dan Keadilan (Adl).
+            </div>
+        </div>
+
+        <!-- ARABIC VERSION -->
+        <div id="ar" class="language-section" dir="rtl">
+            <div class="table-of-contents">
+                <h3>📑 جدول المحتويات</h3>
+                <ul>
+                    <li><a href="#ar-intro">1. المقدمة</a></li>
+                    <li><a href="#ar-definitions">2. التعاريف</a></li>
+                    <li><a href="#ar-collect">3. المعلومات التي نجمعها</a></li>
+                    <li><a href="#ar-purpose">4. الغرض من جمع البيانات</a></li>
+                    <li><a href="#ar-legal">5. الأساس القانوني للمعالجة</a></li>
+                    <li><a href="#ar-sharing">6. مشاركة والإفصاح عن البيانات</a></li>
+                    <li><a href="#ar-retention">7. الاحتفاظ بالبيانات</a></li>
+                    <li><a href="#ar-security">8. أمان البيانات</a></li>
+                    <li><a href="#ar-rights">9. حقوقك في الخصوصية</a></li>
+                    <li><a href="#ar-contact">10. معلومات الاتصال</a></li>
+                </ul>
+            </div>
+
+            <h2 id="ar-intro">1. المقدمة</h2>
+            <p>أهلا وسهلا بك في <strong>Aqim - Aqimissolah</strong>. نحن ملتزمون بحماية خصوصيتك وضمان حصولك على تجربة إيجابية مع تطبيقنا. تشرح سياسة الخصوصية هذه كيفية جمع ومعالجة والكشف عن وحماية معلوماتك عند استخدام تطبيقنا.</p>
+
+            <h2 id="ar-definitions">2. التعاريف</h2>
+            <ul>
+                <li><strong>"التطبيق"</strong> يعني تطبيق الهاتف المحمول Aqim - Aqimissolah</li>
+                <li><strong>"المستخدم"</strong> أو <strong>"أنت"</strong> يعني أي فرد يستخدم التطبيق</li>
+                <li><strong>"البيانات الشخصية"</strong> تعني أي معلومات تتعلق بشخص طبيعي معروف أو قابل للتعريف</li>
+                <li><strong>"المعالجة"</strong> تعني أي عملية يتم إجراؤها على البيانات الشخصية</li>
+                <li><strong>"المراقب"</strong> يعني الجهة التي تحدد أغراض وسائل المعالجة</li>
+                <li><strong>"المعالج"</strong> يعني الجهة التي تعالج البيانات الشخصية نيابة عن المراقب</li>
+            </ul>
+
+            <h2 id="ar-collect">3. المعلومات التي نجمعها</h2>
+            
+            <h3>3.1 المعلومات التي تقدمها مباشرة</h3>
+            <h4>معلومات الموقع</h4>
+            <ul>
+                <li>إحداثيات GPS الدقيقة للحصول على أوقات صلاة دقيقة</li>
+                <li>معلومات موقعك العامة (المدينة والدولة والبلد)</li>
+                <li>يتم جمع هذه المعلومات بموافقتك الصريحة</li>
+            </ul>
+
+            <h4>معلومات التفضيل</h4>
+            <ul>
+                <li>تفضيل اللغة المختارة (الملايو أو الإنجليزية أو العربية)</li>
+                <li>تفضيل الموضوع المختار (فاتح أو داكن أو تلقائي)</li>
+                <li>يتم تخزين هذه التفضيلات محليًا على جهازك</li>
+            </ul>
+
+            <h3>3.2 المعلومات المجمعة تلقائيًا</h3>
+            <ul>
+                <li>تكرار استخدام التطبيق</li>
+                <li>الشاشات التي يتم الوصول إليها</li>
+                <li>الميزات المستخدمة ومدة الاستخدام</li>
+                <li>الأخطاء والأعطال التي حدثت</li>
+            </ul>
+
+            <h2 id="ar-purpose">4. الغرض من جمع البيانات</h2>
+            <p>نجمع ومعالجة بيانات شخصيتك للأغراض التالية:</p>
+            <ol>
+                <li>توفير أوقات الصلاة - لحساب وعرض أوقات الصلاة الدقيقة</li>
+                <li>خدمات الموقع - لتحديد موقعك الحالي والمنطقة</li>
+                <li>تحسين التطبيق - لتحليل أداء التطبيق</li>
+                <li>تتبع الأخطاء - لتحديد وإصلاح الأعطال</li>
+                <li>التوطين - لتقديم محتوى باللغة المفضلة</li>
+                <li>تخصيص الموضوع - لتذكر تفضيلات واجهة المستخدم</li>
+                <li>تسليم الإشعارات - لإرسال تنبيهات أوقات الصلاة</li>
+                <li>التحليلات - لفهم كيفية تفاعل المستخدمين مع التطبيق</li>
+            </ol>
+
+            <h2 id="ar-legal">5. الأساس القانوني للمعالجة</h2>
+            <p>تستند معالجتنا لبيانات شخصيتك إلى:</p>
+            <ul>
+                <li><strong>الموافقة:</strong> توافق صراحة على الوصول والإشعارات</li>
+                <li><strong>الفائدة المشروعة:</strong> تحسين وظائف التطبيق</li>
+                <li><strong>تنفيذ العقد:</strong> توفير الخدمات التي طلبتها</li>
+                <li><strong>الالتزام القانوني:</strong> الامتثال لقوانين حماية البيانات</li>
+                <li><strong>المبادئ الإسلامية:</strong> خدمة المجتمع الإسلامي</li>
+            </ul>
+
+            <h2 id="ar-sharing">6. مشاركة والإفصاح عن البيانات</h2>
+            
+            <h3>6.1 نحن لا نشارك بيانات مع:</h3>
+            <ul>
+                <li>المسوقين الجهات الخارجية أو المعلنين</li>
+                <li>منصات وسائل التواصل الاجتماعي</li>
+                <li>وسطاء البيانات أو الموحدين</li>
+                <li>الشركات التي لا علاقة لها</li>
+            </ul>
+
+            <h3>6.2 قد نشارك بيانات مع:</h3>
+            <ul>
+                <li>خدمة API لأوقات الصلاة (e-Solat JAKIM)</li>
+                <li>خدمات الإبلاغ عن الأعطال</li>
+                <li>موفري التحليلات</li>
+                <li>السلطات الحكومية (حسب ما يتطلبه القانون)</li>
+            </ul>
+
+            <h2 id="ar-retention">7. الاحتفاظ بالبيانات</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>نوع البيانات</th>
+                        <th>فترة الاحتفاظ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>بيانات الموقع</td>
+                        <td>يتم تخزينها فقط في الذاكرة أثناء الجلسة</td>
+                    </tr>
+                    <tr>
+                        <td>بيانات التفضيل</td>
+                        <td>يتم تخزينها محليًا على جهازك</td>
+                    </tr>
+                    <tr>
+                        <td>بيانات التحليلات</td>
+                        <td>الاحتفاظ بها لمدة 90 يوما</td>
+                    </tr>
+                    <tr>
+                        <td>سجلات الأعطال</td>
+                        <td>الاحتفاظ بها لمدة 30 يوما</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="ar-security">8. أمان البيانات</h2>
+            
+            <h3>8.1 تدابير الأمان</h3>
+            <p>نطبق تدابير أمان تتوافق مع معايير الصناعة:</p>
+            <ul>
+                <li><strong>التشفير أثناء النقل:</strong> تستخدم جميع اتصالات API تشفير HTTPS/TLS</li>
+                <li><strong>أمان التخزين المحلي:</strong> يتم تشفير البيانات الحساسة</li>
+                <li><strong>التحكم في الوصول:</strong> يقتصر الوصول على الموظفين المصرح لهم</li>
+                <li><strong>عمليات تدقيق الأمان الدورية:</strong> مراجعات أمان منتظمة</li>
+            </ul>
+
+            <h2 id="ar-rights">9. حقوقك في الخصوصية</h2>
+            
+            <h3>9.1 حق الوصول</h3>
+            <p>لديك الحق في طلب نسخة من البيانات الشخصية التي نحتفظ بها عنك.</p>
+            <p><strong>كيفية ممارسة الحق:</strong> اتصل بنا على <code>privacy@aqimapp.com</code></p>
+
+            <h3>9.2 حق التصحيح</h3>
+            <p>يمكنك تصحيح البيانات الشخصية غير الدقيقة أو غير المكتملة.</p>
+
+            <h3>9.3 حق الحذف</h3>
+            <p>يمكنك طلب حذف بيانات شخصيتك.</p>
+
+            <h3>9.4 حق نقل البيانات</h3>
+            <p>يمكنك طلب بيانات شخصيتك بتنسيق منظم وشائع الاستخدام.</p>
+
+            <h3>9.5 حق الانسحاب من الموافقة</h3>
+            <p>يمكنك سحب موافقتك على الموقع والإشعارات والتحليلات في أي وقت.</p>
+
+            <h2 id="ar-contact">10. معلومات الاتصال</h2>
+            <p>للاستفسارات المتعلقة بالخصوصية أو تقديم شكوى:</p>
+            
+            <div class="contact-section">
+                <div class="contact-item">
+                    <span class="contact-label">البريد الإلكتروني:</span>
+                    <span>privacy@aqimapp.com</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">العنوان:</span>
+                    <span>[عنوان الشركة]</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">الهاتف:</span>
+                    <span>[رقم الاتصال]</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">وقت الرد:</span>
+                    <span>سنرد على استفسارات في غضون 30 يوما</span>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <strong>✅ المبادئ الإسلامية:</strong> تم تطوير هذا التطبيق بالمبادئ الإسلامية للشفافية والأمانة والمسؤولية والعدل.
+            </div>
+        </div>
+
+        <div class="print-button">
+            <button onclick="window.print()">🖨️ اطبع هذه الصفحة</button>
+        </div>
+
+        <footer>
+            <div class="version-info">
+                <p><strong>Document Version:</strong> 1.0</p>
+                <p><strong>Last Updated:</strong> January 2025</p>
+                <p><strong>Next Review:</strong> January 2026</p>
+                <p style="margin-top: 15px; font-style: italic;">© 2025 Aqim - Aqimissolah. جميع الحقوق محفوظة. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function switchLanguage(lang) {
+            // Hide all sections
+            document.querySelectorAll('.language-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(lang).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Add keyboard support for language switching
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === '1') switchLanguage('en');
+                if (e.key === '2') switchLanguage('ms');
+                if (e.key === '3') switchLanguage('ar');
+            }
+        });
+    </script>
+</body>
+</html>
