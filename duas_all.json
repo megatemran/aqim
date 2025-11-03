@@ -242,35 +242,35 @@
     "id": 13,
     "category": "Home",
     "title": {
-      "en": "Supplication Entering the House #1",
-      "ms": "Doa Masuk Rumah #1",
-      "id": "Doa Masuk Rumah #1"
+      "en": "Supplication Entering the House",
+      "ms": "Doa Masuk Rumah",
+      "id": "Doa Masuk Rumah"
     },
-    "arabic": "السلام عليكم",
-    "transliteration": "Assalaamu 'alaykum",
+    "arabic": "اَللّٰهُمَّ اِنِّىْ اَسْأَلُكَ خَيْرَالْمَوْلِجِ وَخَيْرَالْمَخْرَجِ بِسْمِ اللهِ وَلَجْنَا وَبِسْمِ اللهِ خَرَجْنَا وَعَلَى اللهِ رَبِّنَا تَوَكَّلْنَا",
+    "transliteration": "Allahumma innii as-aluka khoirol mauliji wa khoirol makhroji bismillaahi wa lajnaa wa bismillaahi khorojnaa wa'alallohi robbina tawakkalnaa",
     "translation": {
-      "en": "Peace be upon you.",
-      "ms": "Semoga keselamatan terlimpah ke atas kamu.",
-      "id": "Semoga keselamatan terlimpah atasmu."
+      "en": "Ya Allah, sesungguhnya aku mohon kepada-Mu baiknya tempat masuk dan baiknya tempat keluar dengan menyebut nama Allah kami masuk, dan dengan menyebut nama Allah kami keluar dan kepada Allah Tuhan kami, kami bertawakkal",
+      "ms": "Ya Allah, sesungguhnya aku mohon kepada-Mu baiknya tempat masuk dan baiknya tempat keluar dengan menyebut nama Allah kami masuk, dan dengan menyebut nama Allah kami keluar dan kepada Allah Tuhan kami, kami bertawakkal",
+      "id": "Ya Allah, sesungguhnya aku mohon kepada-Mu baiknya tempat masuk dan baiknya tempat keluar dengan menyebut nama Allah kami masuk, dan dengan menyebut nama Allah kami keluar dan kepada Allah Tuhan kami, kami bertawakkal"
     },
-    "source": "HR. at-Tirmidzi"
+    "source": ""
   },
   {
     "id": 14,
     "category": "Home",
     "title": {
-      "en": "Supplication Entering the House #2",
-      "ms": "Doa Masuk Rumah #2",
-      "id": "Doa Masuk Rumah #2"
+      "en": "Supplication Entering the Empty House",
+      "ms": "Doa Masuk Rumah Kosong",
+      "id": "Doa Masuk Rumah Kosong"
     },
-    "arabic": "السلام عليكم ورحمة الله وبركاته",
-    "transliteration": "Assalaamu 'alaykum wa rahmatullahi wa barakaatuh",
+    "arabic": "اَلسَّلاَمُ عَلَيْنَا وَعَلَى عِبَادِاللهِ الصَّالِحِيْنَ",
+    "transliteration": "Assalaamu 'alainaa wa 'alaa 'ibaadillaahish shoolihiin",
     "translation": {
-      "en": "Peace, mercy and blessings of Allah be upon you.",
-      "ms": "Semoga keselamatan, rahmat dan keberkatan Allah ke atas kamu.",
-      "id": "Semoga keselamatan, rahmat, dan berkah Allah untukmu."
+      "en": "Semoga keselamatan atas kita, hamba-hamba Allah yang shalih.",
+      "ms": "Semoga keselamatan atas kita, hamba-hamba Allah yang shalih.",
+      "id": "Semoga keselamatan atas kita, hamba-hamba Allah yang shalih."
     },
-    "source": "HR. at-Tirmidzi"
+    "source": ""
   },
   {
     "id": 15,
@@ -280,12 +280,12 @@
       "ms": "Doa Keluar Rumah",
       "id": "Doa Keluar Rumah"
     },
-    "arabic": "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+    "arabic": "بِسْمِ اللهِ تَوَكَّلْتُ عَلَى اللهِ لاَحَوْلَ وَلاَقُوَّةَ اِلاَّ بِاللهِ",
     "transliteration": "Bismillah tawakkaltu 'alallaah laa hawla wa laa quwwata illaa billaah",
     "translation": {
       "en": "In the name of Allah, I place my trust in Allah. There is no might nor power except with Allah.",
-      "ms": "Dengan nama Allah, aku bertawakal kepada Allah. Tiada daya dan kekuatan melainkan milik Allah.",
-      "id": "Dengan nama Allah, aku bertawakal kepada Allah. Tiada daya dan kekuatan kecuali dengan Allah."
+      "ms": "Dengan menyebut nama Allah aku bertawakal kepada Allah, tiada daya kekuatan melainkan dengan Allah.",
+      "id": "Dengan menyebut nama Allah aku bertawakal kepada Allah, tiada daya kekuatan melainkan dengan Allah."
     },
     "source": "HR. Abu Dawud and at-Tirmidzi"
   },
