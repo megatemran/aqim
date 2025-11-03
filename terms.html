@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Terms of Use for Aqim - Aqimissolah Prayer Times Application">
+    <meta name="keywords" content="terms of use, aqim, prayer times, solat, islamic app, terms and conditions">
+    <title>Terms of Use - Aqim - Aqimissolah</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1A5F4F;
+            --secondary-color: #2A8F7F;
+            --light-bg: #F5F5F5;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-color: #EEEEEE;
+            --accent-color: #177E89;
+            --warning-color: #DC3545;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-light);
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .language-toggle {
+            text-align: center;
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .language-toggle button {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .language-toggle button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .language-toggle button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .language-section {
+            display: none;
+            margin-bottom: 60px;
+        }
+
+        .language-section.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--text-dark);
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+
+        strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .warning-box {
+            background: #F8D7DA;
+            border-left: 4px solid var(--warning-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box strong {
+            color: #721C24;
+        }
+
+        .highlight-box {
+            background: #D1ECF1;
+            border-left: 4px solid #0C5460;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight-box strong {
+            color: #0C5460;
+        }
+
+        .table-of-contents {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .table-of-contents h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .table-of-contents ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .table-of-contents li {
+            margin-bottom: 10px;
+        }
+
+        .table-of-contents a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .table-of-contents a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 50px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .version-info {
+            background: var(--light-bg);
+            padding: 15px 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .print-button {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .print-button button {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .print-button button:hover {
+            background: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .language-toggle {
+                flex-direction: column;
+            }
+
+            .language-toggle button {
+                width: 100%;
+            }
+        }
+
+        @media print {
+            .language-toggle, .print-button {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚖️ Terms of Use</h1>
+            <p>Aqim - Aqimissolah Prayer Times Application</p>
+            <p style="font-size: 0.9em; color: var(--text-light); margin-top: 10px;">
+                Last Updated: January 2025 | Effective: January 2025
+            </p>
+        </header>
+
+        <div class="language-toggle">
+            <button class="lang-btn active" onclick="switchLanguage('en')">🇬🇧 English</button>
+            <button class="lang-btn" onclick="switchLanguage('ms')">🇲🇾 Bahasa Melayu</button>
+            <button class="lang-btn" onclick="switchLanguage('ar')">🇸🇦 العربية</button>
+        </div>
+
+        <!-- ENGLISH VERSION -->
+        <div id="en" class="language-section active">
+            <div class="table-of-contents">
+                <h3>📑 Table of Contents</h3>
+                <ul>
+                    <li><a href="#en-agreement">1. Agreement</a></li>
+                    <li><a href="#en-license">2. Use License</a></li>
+                    <li><a href="#en-conduct">3. User Responsibilities and Conduct</a></li>
+                    <li><a href="#en-features">4. Application Features and Services</a></li>
+                    <li><a href="#en-warranty">5. Warranty Disclaimer</a></li>
+                    <li><a href="#en-liability">6. Limitation of Liability</a></li>
+                    <li><a href="#en-thirdparty">7. Third-Party Services and Links</a></li>
+                    <li><a href="#en-security">8. Security and Virus Disclaimer</a></li>
+                    <li><a href="#en-dispute">9. Dispute Resolution</a></li>
+                </ul>
+            </div>
+
+            <h2 id="en-agreement">1. AGREEMENT</h2>
+            <p>These Terms of Use constitute a legal agreement between you ("User" or "You") and the developer/publisher of the <strong>Aqim - Aqimissolah</strong> application. By accessing, downloading, installing, or using the Application, you acknowledge that you have read, understood, and agree to be bound by these Terms in their entirety.</p>
+
+            <h2 id="en-license">2. USE LICENSE</h2>
+            
+            <h3>2.1 Grant of License</h3>
+            <p>We grant you a limited, non-exclusive, non-transferable, and revocable license to use the Application solely for your personal, non-commercial purposes. This license does not permit you to:</p>
+            <ul>
+                <li>Modify or create derivative works based on the Application</li>
+                <li>Decompile, disassemble, or reverse engineer the Application</li>
+                <li>Rent, lease, loan, or lend the Application</li>
+                <li>Use the Application for commercial purposes</li>
+                <li>Remove or obscure proprietary notices</li>
+                <li>Use the Application in any manner that could damage or impair our servers</li>
+            </ul>
+
+            <h3>2.2 Intellectual Property Rights</h3>
+            <p>All content, features, and functionality of the Application are owned by the Company or its licensors. These are protected by international copyright, trademark, and other intellectual property laws.</p>
+            <ul>
+                <li><strong>Copyright Notice:</strong> © 2025 Aqim - Aqimissolah. All rights reserved.</li>
+                <li><strong>Trademark Notice:</strong> Aqim™ and Aqimissolah™ are registered trademarks</li>
+                <li><strong>Prayer Data:</strong> Prayer times data sourced from e-Solat JAKIM is subject to their terms of use</li>
+            </ul>
+
+            <h2 id="en-conduct">3. USER RESPONSIBILITIES AND CONDUCT</h2>
+            
+            <h3>3.1 User Eligibility</h3>
+            <p>You represent and warrant that:</p>
+            <ul>
+                <li>You are at least 13 years of age (or the legal age of majority in your jurisdiction)</li>
+                <li>If under 18, you have obtained parental/guardian consent</li>
+                <li>You have the authority to enter into this Agreement</li>
+                <li>You are not prohibited from using the Application under applicable laws</li>
+                <li>You comply with all applicable laws and regulations</li>
+            </ul>
+
+            <h3>3.2 Prohibited Conduct</h3>
+            <p>You agree not to:</p>
+            <ul>
+                <li>Attempt to gain unauthorized access to the Application</li>
+                <li>Introduce malware, viruses, or harmful code</li>
+                <li>Harass, threaten, or defame other users</li>
+                <li>Engage in illegal activities</li>
+                <li>Infringe upon intellectual property rights</li>
+                <li>Provide false or misleading information</li>
+                <li>Misrepresent your identity</li>
+            </ul>
+
+            <div class="warning-box">
+                <strong>⚠️ Reporting Violations:</strong> If you become aware of any violation of these Terms, please report it immediately to: <strong>abuse@aqimapp.com</strong>
+            </div>
+
+            <h2 id="en-features">4. APPLICATION FEATURES AND SERVICES</h2>
+            
+            <h3>4.1 Prayer Times Information</h3>
+            <div class="highlight-box">
+                <strong>Accuracy Disclaimer:</strong> Prayer times are calculated based on astronomical data and your location. While we strive for accuracy, external factors may affect precision. <strong>Always verify prayer times with local Islamic authorities when available.</strong> Users should confirm prayer times before performing Salah (prayer).
+            </div>
+
+            <h3>4.2 Daily Content (Duas and Hadith)</h3>
+            <p>Content is sourced from authentic Islamic texts. While all translations are provided in good faith, users should consult Islamic scholars for detailed interpretations.</p>
+
+            <h3>4.3 Notification Services</h3>
+            <ul>
+                <li>Push notifications require your explicit permission</li>
+                <li>Notifications may be subject to device settings and carrier limitations</li>
+                <li>We are not responsible for delayed or failed notifications</li>
+                <li>You can disable notifications at any time</li>
+            </ul>
+
+            <h3>4.4 Location Services</h3>
+            <ul>
+                <li>Location data is used solely to determine prayer times</li>
+                <li>Location is not stored permanently</li>
+                <li>Users can manually select their zone if needed</li>
+                <li>Location services accuracy depends on device and network conditions</li>
+            </ul>
+
+            <h2 id="en-warranty">5. WARRANTY DISCLAIMER</h2>
+            
+            <h3>5.1 AS-IS Provision</h3>
+            <p>The Application is provided on an "AS-IS" and "AS-AVAILABLE" basis. To the maximum extent permitted by law, we disclaim all warranties, whether express or implied, including:</p>
+            <ul>
+                <li>Merchantability</li>
+                <li>Fitness for a particular purpose</li>
+                <li>Non-infringement</li>
+                <li>Uninterrupted operation or freedom from errors</li>
+            </ul>
+
+            <h3>5.2 Islamic Content Disclaimer</h3>
+            <p>While all Islamic content has been reviewed for authenticity:</p>
+            <ul>
+                <li>We are not an Islamic authority</li>
+                <li>Users should consult qualified Islamic scholars for religious guidance</li>
+                <li>Prayer times should be verified with local Islamic institutions</li>
+                <li>The Application is a tool for convenience, not a substitute for Islamic education</li>
+            </ul>
+
+            <h2 id="en-liability">6. LIMITATION OF LIABILITY</h2>
+            
+            <h3>6.1 Maximum Liability</h3>
+            <p>To the maximum extent permitted by law, we are not liable for:</p>
+            <ul>
+                <li>Any indirect, incidental, or consequential damages</li>
+                <li>Loss of data, files, or information</li>
+                <li>Loss of profit or business opportunity</li>
+                <li>Any claim arising from your use or inability to use the Application</li>
+            </ul>
+
+            <h3>6.2 Liability Cap</h3>
+            <p>Except where prohibited by law, our total liability shall not exceed the amount you paid for the Application.</p>
+
+            <h2 id="en-thirdparty">7. THIRD-PARTY SERVICES AND LINKS</h2>
+            
+            <h3>7.1 External Links</h3>
+            <p>The Application may contain links to third-party websites:</p>
+            <ul>
+                <li>We do not endorse or control these third-party services</li>
+                <li>We are not responsible for their content or accuracy</li>
+                <li>Your use of third-party services is governed by their terms</li>
+                <li>We are not liable for damages resulting from third-party services</li>
+            </ul>
+
+            <h3>7.2 Prayer Times API (e-Solat JAKIM)</h3>
+            <ul>
+                <li>Prayer data is sourced from Malaysia's official e-Solat API</li>
+                <li>Subject to e-Solat JAKIM's terms of service and availability</li>
+                <li>We are not responsible for API outages or data inaccuracies</li>
+            </ul>
+
+            <h2 id="en-security">8. SECURITY AND VIRUS DISCLAIMER</h2>
+            
+            <h3>8.1 Security Measures</h3>
+            <p>We implement security measures to protect the Application. However:</p>
+            <ul>
+                <li>No security system is completely impenetrable</li>
+                <li>We do not warrant absolute security</li>
+                <li>You use the Application at your own risk</li>
+            </ul>
+
+            <h3>8.2 Malware and Virus Disclaimer</h3>
+            <ul>
+                <li>We scan the Application for viruses before release</li>
+                <li>We are not responsible for damage caused by malware</li>
+                <li>Users should maintain current security software</li>
+                <li>Report security vulnerabilities to <strong>security@aqimapp.com</strong></li>
+            </ul>
+
+            <h2 id="en-dispute">9. DISPUTE RESOLUTION</h2>
+            
+            <h3>9.1 Governing Law</h3>
+            <p>These Terms are governed by the laws of Malaysia. If you are located in another jurisdiction, the laws of that jurisdiction may also apply.</p>
+
+            <h3>9.2 Arbitration</h3>
+            <p>Any disputes shall be resolved through:</p>
+            <ol>
+                <li>Good Faith Discussion (30 days)</li>
+                <li>Informal Mediation (30 days)</li>
+                <li>Binding Arbitration or court proceedings</li>
+            </ol>
+
+            <h3>9.3 Class Action Waiver</h3>
+            <p>You and we agree that any dispute shall be brought in individual capacity and not as a class or representative action. Class action lawsuits are prohibited.</p>
+
+            <div class="highlight-box">
+                <strong>✅ By using this Application, you accept these Terms of Use in their entirety.</strong> Your continued use constitutes acceptance of any modifications to these Terms.
+            </div>
+        </div>
+
+        <!-- BAHASA MELAYU VERSION -->
+        <div id="ms" class="language-section">
+            <div class="table-of-contents">
+                <h3>📑 Senarai Kandungan</h3>
+                <ul>
+                    <li><a href="#ms-agreement">1. Perjanjian</a></li>
+                    <li><a href="#ms-license">2. Lesen Penggunaan</a></li>
+                    <li><a href="#ms-conduct">3. Tanggung Jawab Pengguna</a></li>
+                    <li><a href="#ms-features">4. Ciri dan Perkhidmatan Aplikasi</a></li>
+                    <li><a href="#ms-warranty">5. Penafian Jaminan</a></li>
+                    <li><a href="#ms-liability">6. Batasan Liabiliti</a></li>
+                    <li><a href="#ms-thirdparty">7. Perkhidmatan Pihak Ketiga</a></li>
+                    <li><a href="#ms-security">8. Keamanan dan Penafian Virus</a></li>
+                    <li><a href="#ms-dispute">9. Penyelesaian Pertikaian</a></li>
+                </ul>
+            </div>
+
+            <h2 id="ms-agreement">1. PERJANJIAN</h2>
+            <p>Terma Penggunaan ini merupakan perjanjian undang-undang antara anda dan pembangun/penerbit aplikasi <strong>Aqim - Aqimissolah</strong>. Dengan mengakses, memuat turun, memasang, atau menggunakan Aplikasi, anda mengakui bahawa anda telah membaca, memahami, dan bersetuju untuk terikat oleh Terma ini.</p>
+
+            <h2 id="ms-license">2. LESEN PENGGUNAAN</h2>
+            
+            <h3>2.1 Pemberian Lesen</h3>
+            <p>Kami memberikan anda lesen terbatas, eksklusif bukan, tidak boleh dipindahkan, dan boleh dibatalkan untuk menggunakan Aplikasi semata-mata untuk tujuan peribadi anda. Lesen ini tidak membenarkan anda untuk:</p>
+            <ul>
+                <li>Mengubah atau membuat karya turunan berdasarkan Aplikasi</li>
+                <li>Menguraikan atau merekayasa balik Aplikasi</li>
+                <li>Menyewa atau memajak Aplikasi</li>
+                <li>Menggunakan Aplikasi untuk tujuan komersial</li>
+                <li>Mengeluarkan atau mengaburkan notis harta intelek</li>
+                <li>Menggunakan Aplikasi dalam cara yang merugikan</li>
+            </ul>
+
+            <h3>2.2 Hak Harta Intelek</h3>
+            <p>Semua kandungan, ciri, dan fungsi Aplikasi adalah milik Syarikat atau pemegang lesen. Ini dilindungi oleh undang-undang hak cipta dan harta intelek antarabangsa.</p>
+            <ul>
+                <li><strong>Notis Hak Cipta:</strong> © 2025 Aqim - Aqimissolah. Semua hak terpelihara.</li>
+                <li><strong>Tanda Dagangan:</strong> Aqim™ dan Aqimissolah™ adalah tanda dagangan berdaftar</li>
+                <li><strong>Data Waktu Solat:</strong> Tertakluk pada terma e-Solat JAKIM</li>
+            </ul>
+
+            <h2 id="ms-conduct">3. TANGGUNG JAWAB DAN KELAKUAN PENGGUNA</h2>
+            
+            <h3>3.1 Kelayakan Pengguna</h3>
+            <p>Anda mewakili dan menjamin bahawa:</p>
+            <ul>
+                <li>Anda berumur sekurang-kurangnya 13 tahun</li>
+                <li>Jika di bawah 18 tahun, anda telah memperoleh persetujuan ibu bapa/penjaga</li>
+                <li>Anda mempunyai kuasa untuk memasuki Perjanjian ini</li>
+                <li>Anda mematuhi semua undang-undang yang berlaku</li>
+            </ul>
+
+            <h3>3.2 Kelakuan Terlarang</h3>
+            <p>Anda bersetuju untuk tidak:</p>
+            <ul>
+                <li>Cuba memperoleh akses tanpa kebenaran</li>
+                <li>Perkenalkan perisian hasad atau virus</li>
+                <li>Ganggu atau fitnah pengguna lain</li>
+                <li>Libatkan diri dalam aktiviti ilegal</li>
+                <li>Langgar hak harta intelek</li>
+                <li>Berikan maklumat palsu atau mengelirukan</li>
+                <li>Salah wakil identiti anda</li>
+            </ul>
+
+            <div class="warning-box">
+                <strong>⚠️ Melaporkan Pelanggaran:</strong> Sila laporkan sebarang pelanggaran kepada: <strong>abuse@aqimapp.com</strong>
+            </div>
+
+            <h2 id="ms-features">4. CIRI DAN PERKHIDMATAN APLIKASI</h2>
+            
+            <h3>4.1 Maklumat Waktu Solat</h3>
+            <div class="highlight-box">
+                <strong>Penafian Ketepatan:</strong> Waktu solat dikira berdasarkan data astronomi. Semoga kami berusaha untuk ketepatan, faktor luaran boleh mempengaruhi. <strong>Sentiasa sahkan waktu solat dengan pihak berkuasa Islam tempatan.</strong>
+            </div>
+
+            <h3>4.2 Kandungan Harian</h3>
+            <p>Kandungan bersumber daripada teks Islam yang autentik. Pengguna harus berunding dengan ulama Islam untuk tafsiran terperinci.</p>
+
+            <h3>4.3 Perkhidmatan Notifikasi</h3>
+            <ul>
+                <li>Pemberitahuan tolak memerlukan kebenaran eksplisit anda</li>
+                <li>Notifikasi mungkin tertakluk kepada tetapan peranti</li>
+                <li>Kami bukan bertanggungjawab atas notifikasi yang tertangguh atau gagal</li>
+                <li>Anda boleh melumpuhkan notifikasi pada bila-bila masa</li>
+            </ul>
+
+            <h3>4.4 Perkhidmatan Lokasi</h3>
+            <ul>
+                <li>Data lokasi digunakan semata-mata untuk menentukan waktu solat</li>
+                <li>Lokasi tidak disimpan kekal</li>
+                <li>Pengguna boleh memilih zon mereka secara manual</li>
+                <li>Ketepatan bergantung kepada keadaan peranti dan rangkaian</li>
+            </ul>
+
+            <h2 id="ms-warranty">5. PENAFIAN JAMINAN</h2>
+            
+            <h3>5.1 Peruntukan Seperti Sedia Ada</h3>
+            <p>Aplikasi disediakan atas asas "SEPERTI SEDIA ADA". Sejauh mana yang dibenarkan oleh undang-undang, kami menafikan semua jaminan, termasuk:</p>
+            <ul>
+                <li>Kebolehan komersial</li>
+                <li>Kesesuaian untuk tujuan tertentu</li>
+                <li>Operasi yang tidak terganggu</li>
+            </ul>
+
+            <h3>5.2 Penafian Kandungan Islam</h3>
+            <ul>
+                <li>Kami bukan pihak berkuasa Islam</li>
+                <li>Pengguna harus berunding dengan ulama Islam yang berkelayakan</li>
+                <li>Waktu solat harus disahkan dengan institusi Islam tempatan</li>
+                <li>Aplikasi adalah alat untuk kemudahan, bukan pengganti pendidikan Islam</li>
+            </ul>
+
+            <h2 id="ms-liability">6. BATASAN LIABILITI</h2>
+            
+            <h3>6.1 Liabiliti Maksimum</h3>
+            <p>Kami tidak bertanggungjawab atas:</p>
+            <ul>
+                <li>Sebarang kerosakan tidak langsung atau sampingan</li>
+                <li>Kehilangan data atau fail</li>
+                <li>Kehilangan keuntungan atau peluang perniagaan</li>
+                <li>Sebarang tuntutan yang timbul daripada penggunaan anda</li>
+            </ul>
+
+            <h3>6.2 Topi Liabiliti</h3>
+            <p>Liabiliti kami tidak boleh melebihi jumlah yang anda bayar untuk Aplikasi.</p>
+
+            <h2 id="ms-thirdparty">7. PERKHIDMATAN PIHAK KETIGA DAN PAUTAN</h2>
+            
+            <h3>7.1 Pautan Luaran</h3>
+            <p>Aplikasi mungkin mengandungi pautan ke laman web pihak ketiga:</p>
+            <ul>
+                <li>Kami tidak mengesahkan atau mengawal perkhidmatan pihak ketiga ini</li>
+                <li>Kami bukan bertanggungjawab atas kandungan atau ketepatan mereka</li>
+                <li>Penggunaan anda terhadap perkhidmatan pihak ketiga diatur oleh terma mereka</li>
+                <li>Kami bukan bertanggungjawab atas kerosakan yang terhasil daripada perkhidmatan pihak ketiga</li>
+            </ul>
+
+            <h3>7.2 API Waktu Solat (e-Solat JAKIM)</h3>
+            <ul>
+                <li>Data solat bersumber daripada API e-Solat Malaysia yang rasmi</li>
+                <li>Tertakluk kepada terma perkhidmatan dan ketersediaan e-Solat JAKIM</li>
+                <li>Kami bukan bertanggungjawab atas gangguan API</li>
+            </ul>
+
+            <h2 id="ms-security">8. KEAMANAN DAN PENAFIAN VIRUS</h2>
+            
+            <h3>8.1 Langkah-langkah Keamanan</h3>
+            <p>Kami melaksanakan langkah-langkah keamanan. Namun:</p>
+            <ul>
+                <li>Tiada sistem keamanan yang sepenuhnya tidak dapat ditembusi</li>
+                <li>Kami tidak menjamin keamanan mutlak</li>
+                <li>Anda menggunakan Aplikasi atas risiko anda sendiri</li>
+            </ul>
+
+            <h3>8.2 Penafian Perisian Hasad dan Virus</h3>
+            <ul>
+                <li>Kami mengimbas Aplikasi untuk virus sebelum keluaran</li>
+                <li>Kami bukan bertanggungjawab atas kerosakan yang disebabkan oleh perisian hasad</li>
+                <li>Pengguna harus mengekalkan perisian keamanan semasa</li>
+                <li>Laporkan kerentanan keamanan kepada <strong>security@aqimapp.com</strong></li>
+            </ul>
+
+            <h2 id="ms-dispute">9. PENYELESAIAN PERTIKAIAN</h2>
+            
+            <h3>9.1 Undang-undang yang Mengawal</h3>
+            <p>Terma ini diatur oleh undang-undang Malaysia. Jika anda berada di bidang kuasa lain, undang-undang itu juga boleh terpakai.</p>
+
+            <h3>9.2 Arbitrasi</h3>
+            <p>Sebarang pertikaian harus diselesaikan melalui:</p>
+            <ol>
+                <li>Perbincangan Niat Baik (30 hari)</li>
+                <li>Mediasi Tidak Rasmi (30 hari)</li>
+                <li>Arbitrasi Mengikat atau prosiding mahkamah</li>
+            </ol>
+
+            <h3>9.3 Penafian Tindakan Kelas</h3>
+            <p>Anda dan kami bersetuju bahawa sebarang pertikaian harus dibawa dalam kapasiti individu. Tindakan kelas dilarang.</p>
+
+            <div class="highlight-box">
+                <strong>✅ Dengan menggunakan Aplikasi ini, anda menerima Terma Penggunaan ini sepenuhnya.</strong>
+            </div>
+        </div>
+
+        <!-- ARABIC VERSION -->
+        <div id="ar" class="language-section" dir="rtl">
+            <div class="table-of-contents">
+                <h3>📑 جدول المحتويات</h3>
+                <ul>
+                    <li><a href="#ar-agreement">1. الاتفاق</a></li>
+                    <li><a href="#ar-license">2. رخصة الاستخدام</a></li>
+                    <li><a href="#ar-conduct">3. مسؤوليات المستخدم</a></li>
+                    <li><a href="#ar-features">4. ميزات وخدمات التطبيق</a></li>
+                    <li><a href="#ar-warranty">5. إخلاء الضمانات</a></li>
+                    <li><a href="#ar-liability">6. تحديد المسؤولية</a></li>
+                    <li><a href="#ar-thirdparty">7. خدمات الطرف الثالث</a></li>
+                    <li><a href="#ar-security">8. أمان البيانات</a></li>
+                    <li><a href="#ar-dispute">9. حل النزاعات</a></li>
+                </ul>
+            </div>
+
+            <h2 id="ar-agreement">1. الاتفاق</h2>
+            <p>تشكل شروط الاستخدام هذه اتفاقية قانونية بينك وبين مطور/ناشر تطبيق <strong>Aqim - Aqimissolah</strong>. بالوصول أو التحميل أو التثبيت أو استخدام التطبيق، فإنك تقر بأنك قرأت وفهمت هذه الشروط وتوافق عليها.</p>
+
+            <h2 id="ar-license">2. رخصة الاستخدام</h2>
+            
+            <h3>2.1 منح الرخصة</h3>
+            <p>نمنحك رخصة محدودة وغير حصرية وغير قابلة للنقل لاستخدام التطبيق حصريًا لأغراضك الشخصية. لا تسمح هذه الرخصة لك بـ:</p>
+            <ul>
+                <li>تعديل أو إنشاء أعمال مشتقة</li>
+                <li>فك تجميع أو هندسة عكسية للتطبيق</li>
+                <li>استئجار أو تأجير التطبيق</li>
+                <li>استخدام التطبيق لأغراض تجارية</li>
+                <li>إزالة إشعارات الملكية</li>
+                <li>استخدام التطبيق بطريقة ضارة</li>
+            </ul>
+
+            <h3>2.2 حقوق الملكية الفكرية</h3>
+            <p>تمتلك الشركة أو مانحو الترخيص جميع محتوى وميزات التطبيق. يتم حماية هذه بموجب قانون حقوق الطبع والنشر والعلامات التجارية الدولية.</p>
+            <ul>
+                <li><strong>إشعار حقوق الطبع:</strong> © 2025 Aqim - Aqimissolah. جميع الحقوق محفوظة.</li>
+                <li><strong>العلامة التجارية:</strong> Aqim™ و Aqimissolah™ علامات تجارية مسجلة</li>
+                <li><strong>بيانات أوقات الصلاة:</strong> خاضعة لشروط e-Solat JAKIM</li>
+            </ul>
+
+            <h2 id="ar-conduct">3. مسؤوليات وسلوك المستخدم</h2>
+            
+            <h3>3.1 أهلية المستخدم</h3>
+            <p>أنت تمثل وتضمن بأن:</p>
+            <ul>
+                <li>أنت بعمر 13 سنة على الأقل</li>
+                <li>إذا كان عمرك أقل من 18 سنة، لديك موافقة الوالدين</li>
+                <li>لديك السلطة للدخول في هذه الاتفاقية</li>
+                <li>أنت تمتثل لجميع القوانين المعمول بها</li>
+            </ul>
+
+            <h3>3.2 السلوك المحظور</h3>
+            <p>أنت توافق على عدم:</p>
+            <ul>
+                <li>محاولة الوصول غير المصرح</li>
+                <li>إدخال برامج ضارة أو فيروسات</li>
+                <li>مضايقة أو تشويه سمعة المستخدمين</li>
+                <li>الانخراط في أنشطة غير قانونية</li>
+                <li>انتهاك حقوق الملكية الفكرية</li>
+                <li>تقديم معلومات كاذبة</li>
+                <li>انتحال شخصية كاذبة</li>
+            </ul>
+
+            <div class="warning-box">
+                <strong>⚠️ الإبلاغ عن الانتهاكات:</strong> يرجى الإبلاغ عن أي انتهاك إلى: <strong>abuse@aqimapp.com</strong>
+            </div>
+
+            <h2 id="ar-features">4. ميزات وخدمات التطبيق</h2>
+            
+            <h3>4.1 معلومات أوقات الصلاة</h3>
+            <div class="highlight-box">
+                <strong>إخلاء مسؤولية الدقة:</strong> يتم حساب أوقات الصلاة بناءً على البيانات الفلكية. بينما نسعى جاهدين للدقة، قد تؤثر العوامل الخارجية. <strong>تحقق دائمًا من أوقات الصلاة مع السلطات الإسلامية المحلية.</strong>
+            </div>
+
+            <h3>4.2 المحتوى اليومي</h3>
+            <p>المحتوى مأخوذ من النصوص الإسلامية الأصيلة. يجب على المستخدمين استشارة علماء الإسلام للتفسيرات التفصيلية.</p>
+
+            <h3>4.3 خدمات الإشعارات</h3>
+            <ul>
+                <li>تتطلب الإشعارات موافقتك الصريحة</li>
+                <li>قد تخضع الإشعارات لإعدادات الجهاز</li>
+                <li>لا نتحمل مسؤولية الإشعارات المتأخرة أو الفاشلة</li>
+                <li>يمكنك تعطيل الإشعارات في أي وقت</li>
+            </ul>
+
+            <h3>4.4 خدمات الموقع</h3>
+            <ul>
+                <li>يتم استخدام بيانات الموقع حصريًا لتحديد أوقات الصلاة</li>
+                <li>لا يتم تخزين الموقع بشكل دائم</li>
+                <li>يمكن للمستخدمين تحديد منطقتهم يدويًا</li>
+                <li>تعتمد الدقة على ظروف الجهاز والشبكة</li>
+            </ul>
+
+            <h2 id="ar-warranty">5. إخلاء الضمانات</h2>
+            
+            <h3>5.1 الحكم كما هو</h3>
+            <p>يتم توفير التطبيق "كما هو". نخلي جميع الضمانات، بما فيها:</p>
+            <ul>
+                <li>القابلية للتسويق</li>
+                <li>الملاءمة لغرض معين</li>
+                <li>التشغيل المنقطع</li>
+            </ul>
+
+            <h3>5.2 إخلاء المسؤولية عن المحتوى الإسلامي</h3>
+            <ul>
+                <li>نحن لسنا سلطة إسلامية</li>
+                <li>استشر علماء إسلاميين مؤهلين</li>
+                <li>تحقق من أوقات الصلاة مع المؤسسات الإسلامية</li>
+                <li>التطبيق أداة للراحة وليس بديلاً للتعليم الإسلامي</li>
+            </ul>
+
+            <h2 id="ar-liability">6. تحديد المسؤولية</h2>
+            
+            <h3>6.1 المسؤولية القصوى</h3>
+            <p>لا نتحمل مسؤولية:</p>
+            <ul>
+                <li>أي أضرار غير مباشرة أو عرضية</li>
+                <li>فقدان البيانات أو الملفات</li>
+                <li>فقدان الربح أو الفرصة</li>
+                <li>أي مطالبة ناشئة من استخدامك</li>
+            </ul>
+
+            <h3>6.2 حد المسؤولية</h3>
+            <p>لا تتجاوز مسؤوليتنا المبلغ الذي دفعته للتطبيق.</p>
+
+            <h2 id="ar-thirdparty">7. خدمات الطرف الثالث والروابط</h2>
+            
+            <h3>7.1 الروابط الخارجية</h3>
+            <p>قد يحتوي التطبيق على روابط لمواقع جهات خارجية:</p>
+            <ul>
+                <li>لا نصادق على أو نتحكم في خدمات الطرف الثالث</li>
+                <li>لا نتحمل مسؤولية محتواها</li>
+                <li>الاستخدام محكوم بشروط الطرف الثالث</li>
+                <li>لا نتحمل مسؤولية الأضرار الناشئة</li>
+            </ul>
+
+            <h3>7.2 API لأوقات الصلاة (e-Solat JAKIM)</h3>
+            <ul>
+                <li>بيانات الصلاة من API e-Solat الماليزي الرسمي</li>
+                <li>خاضعة لشروط e-Solat JAKIM</li>
+                <li>لا نتحمل مسؤولية انقطاعات API</li>
+            </ul>
+
+            <h2 id="ar-security">8. الأمان وإخلاء مسؤولية الفيروسات</h2>
+            
+            <h3>8.1 تدابير الأمان</h3>
+            <p>نطبق تدابير أمان. لكن:</p>
+            <ul>
+                <li>لا يوجد نظام أمان آمن تماماً</li>
+                <li>لا نضمن الأمان المطلق</li>
+                <li>أنت تستخدم التطبيق على مسؤوليتك الخاصة</li>
+            </ul>
+
+            <h3>8.2 إخلاء مسؤولية البرامج الضارة</h3>
+            <ul>
+                <li>نفحص التطبيق للفيروسات قبل الإطلاق</li>
+                <li>لا نتحمل مسؤولية الأضرار من البرامج الضارة</li>
+                <li>احتفظ ببرامج أمان حديثة</li>
+                <li>أبلغ عن الثغرات الأمنية إلى <strong>security@aqimapp.com</strong></li>
+            </ul>
+
+            <h2 id="ar-dispute">9. حل النزاعات</h2>
+            
+            <h3>9.1 القانون الحاكم</h3>
+            <p>تحكم هذه الشروط قوانين ماليزيا. إذا كنت في ولاية قضائية أخرى، قد تنطبق قوانينها أيضًا.</p>
+
+            <h3>9.2 التحكيم</h3>
+            <p>أي نزاعات يتم حلها من خلال:</p>
+            <ol>
+                <li>نقاش حسن النية (30 يوماً)</li>
+                <li>وساطة غير رسمية (30 يوماً)</li>
+                <li>تحكيم ملزم أو إجراءات قضائية</li>
+            </ol>
+
+            <h3>9.3 تنازل عن الدعاوى الجماعية</h3>
+            <p>أنت ونحن نوافق على أن أي نزاع يتم رفعه بشكل فردي. دعاوى الفئة محظورة.</p>
+
+            <div class="highlight-box">
+                <strong>✅ باستخدام هذا التطبيق، فإنك تقبل شروط الاستخدام هذه بالكامل.</strong>
+            </div>
+        </div>
+
+        <div class="print-button">
+            <button onclick="window.print()">🖨️ اطبع هذه الصفحة</button>
+        </div>
+
+        <footer>
+            <div class="version-info">
+                <p><strong>Document Version:</strong> 1.0</p>
+                <p><strong>Last Updated:</strong> January 2025</p>
+                <p><strong>Next Review:</strong> January 2026</p>
+                <p style="margin-top: 15px; font-style: italic;">© 2025 Aqim - Aqimissolah. جميع الحقوق محفوظة. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function switchLanguage(lang) {
+            document.querySelectorAll('.language-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(lang).classList.add('active');
+            event.target.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === '1') switchLanguage('en');
+                if (e.key === '2') switchLanguage('ms');
+                if (e.key === '3') switchLanguage('ar');
+            }
+        });
+    </script>
+</body>
+</html>
