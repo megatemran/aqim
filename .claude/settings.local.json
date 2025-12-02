@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(adb shell monkey:*)",
+      "Bash(adb shell:*)",
+      "Bash(adb logcat:*)",
+      "Bash(adb shell am broadcast:*)",
+      "Bash(flutter build:*)",
+      "Bash(adb install:*)",
+      "Bash(flutter run:*)",
+      "Bash(adb emu geo fix:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

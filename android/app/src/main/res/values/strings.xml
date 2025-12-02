@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aqim</string>
+
+    <!-- Prayer Times Widget -->
+    <string name="prayer_widget_description">Waktu Solat Harian</string>
+
+    <!-- Bismillah White Widget -->
+    <string name="bismillah_white_description">BismillahirRahmanirRahim (Putih)</string>
+
+    <!-- Bismillah Black Widget -->
+    <string name="bismillah_black_description">BismillahirRahmanirRahim (Hitam)</string>
+
+
+    <!-- Bismillah White Widget -->
+    <string name="bismillah_color_description">BismillahirRahmanirRahim (Warna)</string>
+
+    <!-- Doa White Widget -->
+    <string name="doa_widget_description">Doa Harian</string>
+
+</resources>

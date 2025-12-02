@@ -1,0 +1,137 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- BASIC PERMISSIONS -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    
+    <application
+        android:label="Aqim"
+        android:name="${applicationName}"
+        android:icon="@mipmap/launcher_icon">
+        
+        <!-- MAIN ACTIVITY -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:showWhenLocked="true">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- ✅ PRAYER ALARM RECEIVER - Handles prayer alarms and daily safety checks -->
+        <receiver
+            android:name=".PrayerAlarmReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="net.brings2you.aqim.PRAYER_ALARM" />
+                <action android:name="net.brings2you.aqim.DAILY_RESCHEDULE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- GOOGLE ADS -->
+        <meta-data 
+            android:name="com.google.android.gms.ads.APPLICATION_ID" 
+            android:value="ca-app-pub-7677814397287910~6615544657" />
+                     
+
+        <!-- WIDGETS -->
+        <receiver android:name=".WaktuSolatWidgetReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/waktu_solat_widget_info" />
+        </receiver>
+
+        <receiver android:name=".BismillahWhiteWidgetReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/bismillah_white_widget_info" />
+        </receiver>
+
+        <receiver android:name=".BismillahBlackWidgetReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/bismillah_black_widget_info" />
+        </receiver>
+
+        <receiver android:name=".BismillahColorWidgetReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/bismillah_color_widget_info" />
+        </receiver>
+
+        <receiver android:name=".WaktuSolatWidgetUpdater" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- DOA WIDGET - Click-based updates only -->
+        <receiver android:name=".DoaWidgetReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/doa_widget_info" />
+        </receiver>
+
+        <!-- DOA WIDGET UPDATER - Triggered on widget click -->
+        <receiver android:name=".DoaWidgetUpdater" android:exported="true">
+            <intent-filter>
+                <action android:name="net.brings2you.aqim.UPDATE_DOA_WIDGET" />
+            </intent-filter>
+        </receiver>
+
+        <!-- BOOT RECEIVER - Reschedules alarms on boot, time change, timezone change, app update, etc. -->
+        <receiver android:name=".BootReceiver" android:exported="true">
+            <intent-filter>
+                <!-- Device boot -->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <!-- Time/Date changes -->
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIME_CHANGED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <!-- Locale changes -->
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+                <!-- App update -->
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+    
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>
