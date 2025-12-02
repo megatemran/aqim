@@ -33,7 +33,7 @@ class _RakaatScreenState extends State<RakaatScreen>
   // ⚙️ RAKAAT TIMING CONFIGURATION
   static const int _minTimeBeforeFirstRakaat = 5; // seconds
   static const int _minTimeBetweenRakaat2 = 75; // ~1 rakaat cycle
-  static const int _minTimeBetweenRakaat3 = 95; // includes tahiyat awal
+  static const int _minTimeBetweenRakaat3 = 85; // includes tahiyat awal
   static const int _minTimeBetweenRakaat4 = 40; // shorter cycle
 
   // 🎨 ANIMATION CONFIGURATION

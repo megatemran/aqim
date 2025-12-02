@@ -8,7 +8,9 @@
       "Bash(flutter build:*)",
       "Bash(adb install:*)",
       "Bash(flutter run:*)",
-      "Bash(adb emu geo fix:*)"
+      "Bash(adb emu geo fix:*)",
+      "Bash(cp:*)",
+      "Bash(flutter analyze:*)"
     ],
     "deny": [],
     "ask": []

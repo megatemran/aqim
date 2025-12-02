@@ -65,8 +65,15 @@ class PrayerTimesService {
       PrayerTimeData prayerTimeData;
 
       if (countryCode == 'MY') {
-        String zoneCode = _findZoneByLocationMY(locationData);
-        prayerTimeData = await _getJakimData(zoneCode, locationData);
+        try {
+          // Try JAKIM API first for Malaysia
+          String zoneCode = _findZoneByLocationMY(locationData);
+          prayerTimeData = await _getJakimData(zoneCode, locationData);
+        } catch (jakimError) {
+          debugPrint('⚠️ JAKIM API failed, falling back to AlAdhan: $jakimError');
+          // Fallback to AlAdhan API if JAKIM fails
+          prayerTimeData = await _getWorldPrayerTimesData(locationData);
+        }
       } else {
         prayerTimeData = await _getWorldPrayerTimesData(locationData);
       }
@@ -78,14 +85,16 @@ class PrayerTimesService {
     } catch (e) {
       debugPrint('❌ Error getPrayerTimesData: $e');
 
-      // Try to fall back to cached data even if date/location doesn't match
+      // Tier 2: Try to fall back to cached data even if date/location doesn't match
       final cachedData = await _loadPrayerTimeFromCache();
       if (cachedData != null) {
         debugPrint('⚠️ Falling back to cached data from ${cachedData.date}');
         return cachedData;
       }
 
-      throw Exception('No prayer time data available and no cache found');
+      // Tier 3: Last resort - return default prayer times
+      debugPrint('⚠️ All APIs failed and no cache, using default prayer times');
+      return _getDefaultPrayerTimes(locationData);
     }
   }
 
@@ -834,5 +843,33 @@ class PrayerTimesService {
 
     final monthNum = months[monthStr] ?? '00';
     return '$day-$monthNum-$year';
+  }
+
+  /// Fallback prayer times (Kuala Lumpur approximate times)
+  /// Used when both API and cache fail
+  PrayerTimeData _getDefaultPrayerTimes(Map<String, dynamic> locationData) {
+    final todayDate = _getTodayDate();
+
+    // Approximate prayer times for Kuala Lumpur (suitable for Malaysia region)
+    final prayers = [
+      PrayerTime(name: 'Imsak', time: '05:45', isPassed: false, isNext: false),
+      PrayerTime(name: 'Subuh', time: '05:55', isPassed: false, isNext: false),
+      PrayerTime(name: 'Syuruk', time: '07:10', isPassed: false, isNext: false),
+      PrayerTime(name: 'Zohor', time: '13:15', isPassed: false, isNext: false),
+      PrayerTime(name: 'Asar', time: '16:30', isPassed: false, isNext: false),
+      PrayerTime(name: 'Maghrib', time: '19:15', isPassed: false, isNext: false),
+      PrayerTime(name: 'Isyak', time: '20:30', isPassed: false, isNext: false),
+    ];
+
+    return PrayerTimeData(
+      hijri: '--',
+      date: todayDate,
+      prayers: _updatePrayerStatus(prayers),
+      zone: 'DEFAULT',
+      location: locationData['lokasi'] ?? 'Kuala Lumpur',
+      userLocationData: locationData,
+      sumber: 'Default (Offline Mode)',
+      sumberWebsite: '',
+    );
   }
 }
