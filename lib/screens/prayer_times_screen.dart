@@ -124,6 +124,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
+
+        // Reload banner ad after refresh completes to ensure it's in a valid state
+        _loadBannerSolat();
       }
     }
   }
@@ -343,8 +346,8 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             ),
           ),
           SizedBox(height: 10.h),
-          // 📱 Banner Ad (centered)
-          if (_isBannerSolatLoaded && _bannerSolat != null && isShowAds)
+          // 📱 Banner Ad (centered) - hide during loading to prevent errors
+          if (!_isLoading && _isBannerSolatLoaded && _bannerSolat != null && isShowAds)
             Container(
               margin: EdgeInsets.symmetric(vertical: 16.h),
               child: Center(

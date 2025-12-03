@@ -47,16 +47,16 @@ class PrayerTimesService {
 
       // Cache is stale or different location - fetch new data
       if (cachedData != null && cachedData.date != todayDate) {
-        // print(
-        //   '⚠️ Cache is outdated (${cachedData.date} vs $todayDate), fetching new data...',
-        // );
+        debugPrint(
+          '⚠️ Cache is outdated (${cachedData.date} vs $todayDate), fetching new data...',
+        );
       } else if (cachedData != null &&
           cachedData.location != locationData['lokasi']) {
-        // print(
-        //   '⚠️ Location changed (${cachedData.location} vs ${locationData['lokasi']}), fetching new data...',
-        // );
+        debugPrint(
+          '⚠️ Location changed (${cachedData.location} vs ${locationData['lokasi']}), fetching new data...',
+        );
       } else {
-        // print('📥 No cache available, fetching new data...');
+        debugPrint('📥 No cache available, fetching new data...');
       }
 
       // Fetch new data
@@ -70,7 +70,9 @@ class PrayerTimesService {
           String zoneCode = _findZoneByLocationMY(locationData);
           prayerTimeData = await _getJakimData(zoneCode, locationData);
         } catch (jakimError) {
-          debugPrint('⚠️ JAKIM API failed, falling back to AlAdhan: $jakimError');
+          debugPrint(
+            '⚠️ JAKIM API failed, falling back to AlAdhan: $jakimError',
+          );
           // Fallback to AlAdhan API if JAKIM fails
           prayerTimeData = await _getWorldPrayerTimesData(locationData);
         }
@@ -184,9 +186,29 @@ class PrayerTimesService {
 
       if (response != null &&
           response.statusCode == 200 &&
-          response.data['data'] != null) {
+          response.data != null &&
+          response.data is Map &&
+          response.data['data'] != null &&
+          response.data['data'] is Map &&
+          response.data['data']['timings'] != null) {
         final data = response.data['data'];
-        final timings = data['timings'] as Map<String, dynamic>;
+        final timings = data['timings'];
+
+        // Validate timings is a Map and contains required fields
+        if (timings == null || timings is! Map) {
+          throw Exception('Invalid timings data format from AlAdhan API');
+        }
+
+        // Check for the 5 main prayers
+        final hasFajr = timings['Fajr'] != null && timings['Fajr'].toString().isNotEmpty;
+        final hasDhuhr = timings['Dhuhr'] != null && timings['Dhuhr'].toString().isNotEmpty;
+        final hasAsr = timings['Asr'] != null && timings['Asr'].toString().isNotEmpty;
+        final hasMaghrib = timings['Maghrib'] != null && timings['Maghrib'].toString().isNotEmpty;
+        final hasIsha = timings['Isha'] != null && timings['Isha'].toString().isNotEmpty;
+
+        if (!hasFajr || !hasDhuhr || !hasAsr || !hasMaghrib || !hasIsha) {
+          throw Exception('Missing required prayer times from AlAdhan API');
+        }
 
         // 🕌 Match JAKIM format & naming (Imsak → Isyak)
         final prayers = [
@@ -295,10 +317,33 @@ class PrayerTimesService {
         }
       }
 
+      debugPrint('🔍 JAKIM Response status: ${response?.statusCode}');
+      debugPrint('🔍 Response data is Map: ${response?.data is Map}');
+      debugPrint('🔍 Has prayerTime: ${response?.data?['prayerTime'] != null}');
+
       if (response != null &&
+          response.data != null &&
+          response.data is Map &&
           response.data['prayerTime'] != null &&
+          response.data['prayerTime'] is List &&
           response.data['prayerTime'].isNotEmpty) {
         final data = response.data['prayerTime'][0];
+
+        // Validate that data is a Map and contains at least the 5 main prayer times
+        if (data == null || data is! Map) {
+          throw Exception('Invalid prayer time data format from JAKIM API');
+        }
+
+        // Check for the 5 main prayers (Fajr, Dhuhr, Asr, Maghrib, Isha)
+        final hasFajr = data['fajr'] != null && data['fajr'].toString().isNotEmpty;
+        final hasDhuhr = data['dhuhr'] != null && data['dhuhr'].toString().isNotEmpty;
+        final hasAsr = data['asr'] != null && data['asr'].toString().isNotEmpty;
+        final hasMaghrib = data['maghrib'] != null && data['maghrib'].toString().isNotEmpty;
+        final hasIsha = data['isha'] != null && data['isha'].toString().isNotEmpty;
+
+        if (!hasFajr || !hasDhuhr || !hasAsr || !hasMaghrib || !hasIsha) {
+          throw Exception('Missing required prayer times from JAKIM API');
+        }
 
         final prayers = [
           PrayerTime(
@@ -857,7 +902,12 @@ class PrayerTimesService {
       PrayerTime(name: 'Syuruk', time: '07:10', isPassed: false, isNext: false),
       PrayerTime(name: 'Zohor', time: '13:15', isPassed: false, isNext: false),
       PrayerTime(name: 'Asar', time: '16:30', isPassed: false, isNext: false),
-      PrayerTime(name: 'Maghrib', time: '19:15', isPassed: false, isNext: false),
+      PrayerTime(
+        name: 'Maghrib',
+        time: '19:15',
+        isPassed: false,
+        isNext: false,
+      ),
       PrayerTime(name: 'Isyak', time: '20:30', isPassed: false, isNext: false),
     ];
 

@@ -731,7 +731,7 @@ class _RakaatScreenState extends State<RakaatScreen>
 
     debugPrint("✅ Rakaat $rakaatNumber detected");
 
-    // TODO: Add audio feedback here if needed (e.g., play sound)
+    // Add audio feedback here if needed (e.g., play sound)
   }
 
   void _detectAndCountPrayerPosition() {
