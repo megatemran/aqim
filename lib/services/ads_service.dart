@@ -91,6 +91,14 @@ class AdsService {
       'ca-app-pub-7677814397287910/2380909888';
   final String solatInterstitial1Ios = '';
 
+  final String rakaatInterstitial1Android =
+      'ca-app-pub-7677814397287910/2124738480';
+  final String rakaatInterstitial1Ios = '';
+
+  final String kiblatInterstitial1Android =
+      'ca-app-pub-7677814397287910/8873979667';
+  final String kiblatInterstitial1Ios = '';
+
   // Ad instances
   AppOpenAd? appOpenAd;
   BannerAd? bannerAd;
@@ -170,6 +178,16 @@ class AdsService {
     return Platform.isAndroid ? solatInterstitial1Android : solatInterstitial1Ios;
   }
 
+  String get rakaatInterstitial1AdString {
+    if (kDebugMode) return Platform.isAndroid ? testInterstitialAndroid : testInterstitialIos;
+    return Platform.isAndroid ? rakaatInterstitial1Android : rakaatInterstitial1Ios;
+  }
+
+  String get kiblatInterstitial1AdString {
+    if (kDebugMode) return Platform.isAndroid ? testInterstitialAndroid : testInterstitialIos;
+    return Platform.isAndroid ? kiblatInterstitial1Android : kiblatInterstitial1Ios;
+  }
+
   // ==================== INITIALIZATION ====================
 
   /// ✅ Initialize Google Mobile Ads
@@ -183,19 +201,25 @@ class AdsService {
     );
 
     if (anyNotReady) {
-      isShowAds = false;
-      print('❌ AdMob adapters not ready - ads disabled');
+      print('❌ AdMob adapters not ready - ads will be disabled');
+      // Note: Not forcing isShowAds here - respecting user's plugin.dart setting
     } else {
-      isShowAds = true;
       print('✅ AdMob initialized successfully');
-      if (kDebugMode) {
-        print('🧪 DEBUG MODE: Using Google test ad unit IDs');
-        print('   • Test ads will always load successfully');
+      if (isShowAds) {
+        print('✅ Ads ENABLED - will show ads');
+        if (kDebugMode) {
+          print('🧪 DEBUG MODE: Using Google test ad unit IDs');
+          print('   • Test ads will always load successfully');
+        } else {
+          print('📱 RELEASE MODE: Using production ad unit IDs');
+        }
+        print('   • Islamic keywords enabled on all ads');
+        print('   • All ads filtered for Islamic content');
       } else {
-        print('📱 RELEASE MODE: Using production ad unit IDs');
+        print('❌ Ads DISABLED (isShowAds = false in plugin.dart)');
+        print('   • No ads will load or display');
+        print('   • To enable ads, set isShowAds = true in lib/utils/plugin.dart');
       }
-      print('   • Islamic keywords enabled on all ads');
-      print('   • All ads filtered for Islamic content');
     }
 
     return status;
@@ -534,6 +558,29 @@ class AdsService {
           },
           onAdFailedToLoad: (error) {
             print('❌ Solat Interstitial 1 failed to load: $error');
+            onAdFailedToLoad(error);
+          },
+        ),
+      );
+    }
+  }
+
+  /// Load Rakaat Interstitial 1 with Islamic filtering
+  void loadRakaatInterstitial1({
+    required void Function() onAdDismissed,
+    required void Function(LoadAdError) onAdFailedToLoad,
+  }) {
+    if (isShowAds) {
+      InterstitialAd.load(
+        adUnitId: rakaatInterstitial1AdString,
+        request: _buildIslamicAdRequest(), // ✅ Uses Islamic keywords
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            interstitialAd = ad;
+            _showInterstitialAd(onAdDismissed);
+          },
+          onAdFailedToLoad: (error) {
+            print('❌ Rakaat Interstitial 1 failed to load: $error');
             onAdFailedToLoad(error);
           },
         ),

@@ -80,6 +80,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   static const int _maxBannerLoadAttempts = 3;
 
   void _loadBannerHome() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping home banner');
+      return;
+    }
     AdsService().loadBannerHome1(
       onAdLoaded: (ad) {
         if (mounted) {
@@ -148,6 +152,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       // ✅ Update widget in background WITHOUT blocking UI
       _updateWidgetInBackground();
+
+      // ✅ Check battery optimization (non-blocking)
+      _checkBatteryOptimization();
+
       debugPrint('✅ All initialization complete!');
     } catch (e) {
       if (!mounted) return;
@@ -179,6 +187,56 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         .catchError((e) {
           debugPrint('❌ Widget update error: $e');
         });
+  }
+
+  /// Check battery optimization and prompt user if needed
+  Future<void> _checkBatteryOptimization() async {
+    try {
+      // Wait a bit to not overwhelm user on first launch
+      await Future.delayed(const Duration(seconds: 2));
+
+      final isDisabled =
+          await PrayerAlarmService.isBatteryOptimizationDisabled();
+
+      if (!isDisabled && mounted) {
+        // Show dialog to explain and request exemption
+        _showBatteryOptimizationDialog();
+      } else {
+        debugPrint('✅ Battery optimization already disabled');
+      }
+    } catch (e) {
+      debugPrint('❌ Error checking battery optimization: $e');
+    }
+  }
+
+  void _showBatteryOptimizationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Izinkan Penggera Waktu Solat'),
+          content: const Text(
+            'Untuk memastikan penggera waktu solat berfungsi dengan baik walaupun dalam keadaan bateri rendah atau aplikasi tidak digunakan, sila benarkan aplikasi ini untuk mengabaikan pengoptimuman bateri.\n\n'
+            'Ini penting untuk memastikan anda tidak terlepas waktu solat.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Nanti'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await PrayerAlarmService.requestDisableBatteryOptimization();
+              },
+              child: const Text('Benarkan'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

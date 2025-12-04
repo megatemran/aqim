@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:aqim/services/ads_service.dart';
 import 'package:aqim/utils/loading_screen.dart';
 import 'package:aqim/utils/plugin.dart';
 import 'package:camera/camera.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RakaatScreen extends StatefulWidget {
@@ -26,6 +28,9 @@ class _RakaatScreenState extends State<RakaatScreen>
   bool _isShowCamera = false;
   final int _cameraIndex = 1;
   List<Pose> _poses = [];
+  final AdsService _adsService = AdsService();
+  InterstitialAd? _interstitialAd;
+  bool _isDisposed = false;
 
   // For displaying debug info
   String debugText = '';
@@ -48,6 +53,7 @@ class _RakaatScreenState extends State<RakaatScreen>
     _initializeCamera();
     _initializePoseDetector();
     _initializeAnimation();
+    _loadInterstitialAd();
   }
 
   void _initializeAnimation() {
@@ -329,6 +335,7 @@ class _RakaatScreenState extends State<RakaatScreen>
 
   @override
   void dispose() {
+    _isDisposed = true;
     _timer?.cancel();
     _timer = null;
     _rakaatAnimationController.dispose();
@@ -337,6 +344,7 @@ class _RakaatScreenState extends State<RakaatScreen>
     _camera?.stopImageStream();
     _camera?.dispose();
     _poseDetector.close();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -810,6 +818,66 @@ class _RakaatScreenState extends State<RakaatScreen>
         });
       });
     }
+  }
+
+  /// Load Interstitial Ad on screen opening
+  void _loadInterstitialAd() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping rakaat interstitial');
+      return;
+    }
+
+    // Prevent multiple loads - dispose old ad properly
+    _interstitialAd?.dispose();
+    _interstitialAd = null;
+
+    InterstitialAd.load(
+      adUnitId: _adsService.rakaatInterstitial1AdString,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          debugPrint('✅ Rakaat interstitial ad loaded');
+
+          // Check if screen is still mounted before setting
+          if (_isDisposed || !mounted) {
+            ad.dispose();
+            return;
+          }
+
+          _interstitialAd = ad;
+          _setFullScreenContentCallback(ad);
+
+          // Show the ad immediately after setup
+          ad.show().catchError((error) {
+            debugPrint('❌ Failed to show rakaat ad: $error');
+            ad.dispose();
+            _interstitialAd = null;
+          });
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          debugPrint('❌ Failed to load rakaat interstitial ad: $error');
+          _interstitialAd = null;
+        },
+      ),
+    );
+  }
+
+  void _setFullScreenContentCallback(InterstitialAd ad) {
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (ad) {
+        debugPrint('✅ Rakaat ad showed full screen content.');
+      },
+      onAdFailedToShowFullScreenContent: (ad, err) {
+        debugPrint('❌ Rakaat ad failed to show: $err');
+        ad.dispose();
+        _interstitialAd = null;
+      },
+      onAdDismissedFullScreenContent: (ad) {
+        debugPrint('✅ Rakaat ad was dismissed.');
+        ad.dispose();
+        _interstitialAd = null;
+      },
+    );
   }
 
   /// Reset rakaat count without stopping

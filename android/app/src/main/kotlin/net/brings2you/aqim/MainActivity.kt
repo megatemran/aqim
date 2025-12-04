@@ -107,6 +107,30 @@ class MainActivity : FlutterActivity() {
                         result.error("ERROR", e.message, null)
                     }
                 }
+                "isBatteryOptimizationDisabled" -> {
+                    try {
+                        val isDisabled = BatteryOptimizationHelper.isBatteryOptimizationDisabled(this)
+                        result.success(isDisabled)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "requestDisableBatteryOptimization" -> {
+                    try {
+                        BatteryOptimizationHelper.requestDisableBatteryOptimization(this)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "openBatteryOptimizationSettings" -> {
+                    try {
+                        BatteryOptimizationHelper.openBatteryOptimizationSettings(this)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
                 else -> {
                     result.notImplemented()
                 }

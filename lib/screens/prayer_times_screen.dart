@@ -151,6 +151,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   BannerAd? _bannerSolat;
   bool _isBannerSolatLoaded = false;
   void _loadBannerSolat() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping solat banner');
+      return;
+    }
     if (_bannerSolat != null) {
       _bannerSolat!.dispose();
       _bannerSolat = null;
@@ -185,6 +189,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   InterstitialAd? _interstitialAd;
 
   void _loadInterstitialAd() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping solat interstitial');
+      return;
+    }
     // Prevent multiple loads - dispose old ad properly
     _interstitialAd?.dispose();
     _interstitialAd = null;

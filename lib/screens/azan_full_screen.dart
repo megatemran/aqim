@@ -87,6 +87,10 @@ class _AzanFullScreenState extends State<AzanFullScreen>
   }
 
   Future<void> _loadBannerAzan() async {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping azan banner');
+      return;
+    }
     try {
       await adsService.initGoogleMobileAds();
 

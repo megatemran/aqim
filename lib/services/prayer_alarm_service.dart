@@ -78,4 +78,43 @@ class PrayerAlarmService {
       return false;
     }
   }
+
+  /// Check if battery optimization is disabled for this app
+  static Future<bool> isBatteryOptimizationDisabled() async {
+    try {
+      final result = await _channel.invokeMethod('isBatteryOptimizationDisabled');
+      debugPrint('🔋 Battery optimization disabled: $result');
+      return result as bool;
+    } catch (e) {
+      debugPrint('❌ Error checking battery optimization: $e');
+      return false;
+    }
+  }
+
+  /// Request to disable battery optimization for this app
+  /// Shows a system dialog asking user permission
+  static Future<bool> requestDisableBatteryOptimization() async {
+    try {
+      debugPrint('🔋 Requesting battery optimization exemption...');
+      final result = await _channel.invokeMethod('requestDisableBatteryOptimization');
+      debugPrint('✅ Battery optimization request sent: $result');
+      return result as bool;
+    } catch (e) {
+      debugPrint('❌ Error requesting battery optimization: $e');
+      return false;
+    }
+  }
+
+  /// Open battery optimization settings page
+  static Future<bool> openBatteryOptimizationSettings() async {
+    try {
+      debugPrint('🔋 Opening battery optimization settings...');
+      final result = await _channel.invokeMethod('openBatteryOptimizationSettings');
+      debugPrint('✅ Battery optimization settings opened: $result');
+      return result as bool;
+    } catch (e) {
+      debugPrint('❌ Error opening battery settings: $e');
+      return false;
+    }
+  }
 }

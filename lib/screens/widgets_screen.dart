@@ -35,6 +35,10 @@ class _WidgetsScreenState extends State<WidgetsScreen> {
   }
 
   void _loadBannerWidget() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping widget banner');
+      return;
+    }
     debugPrint('🔄 Loading widget banner ad...');
     AdsService().loadBannerWidget1(
       onAdLoaded: (ad) {

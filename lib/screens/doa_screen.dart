@@ -52,6 +52,10 @@ class _DoaScreenState extends State<DoaScreen>
   bool _isBannerDoa2Loaded = false;
 
   void _loadBannerDoa() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping doa banner 1');
+      return;
+    }
     AdsService().loadBannerDoa1(
       onAdLoaded: (ad) {
         if (mounted) {
@@ -75,6 +79,10 @@ class _DoaScreenState extends State<DoaScreen>
   }
 
   void _loadBannerDoa2() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping doa banner 2');
+      return;
+    }
     AdsService().loadBannerDoa2(
       onAdLoaded: (ad) {
         if (mounted) {

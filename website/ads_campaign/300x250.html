@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqim - 300x250</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+
+        .ad-container {
+            width: 300px;
+            height: 250px;
+            background: linear-gradient(135deg, #1A5F4F 0%, #0d3d32 100%);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* Animated background pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(50px) translateY(50px); }
+        }
+
+        /* Mosque silhouette */
+        .mosque-icon {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            font-size: 120px;
+            opacity: 0.15;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #F4743B;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(244, 116, 59, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .headline {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .subheadline {
+            color: rgba(255,255,255,0.9);
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .feature-tag {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #F4743B 0%, #e05a24 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(244, 116, 59, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 6px 20px rgba(244, 116, 59, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(244, 116, 59, 0.6); }
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #FFD700;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ad-container" onclick="window.open('https://play.google.com/store/apps/details?id=net.brings2you.aqim', '_blank')">
+        <div class="bg-pattern"></div>
+        <div class="mosque-icon">🕌</div>
+
+        <div class="content">
+            <div>
+                <div class="logo">
+                    <div class="logo-icon">🕌</div>
+                    <div class="logo-text">AQIM</div>
+                </div>
+
+                <div class="headline">
+                    Waktu Solat<br>Tepat & Mudah
+                </div>
+
+                <div class="subheadline">
+                    Aplikasi waktu solat rasmi Malaysia dengan azan automatik & kiblat kompas
+                </div>
+
+                <div class="features">
+                    <div class="feature-tag">📍 GPS Tepat</div>
+                    <div class="feature-tag">🔔 Azan Auto</div>
+                    <div class="feature-tag">🧭 Kompas Kiblat</div>
+                    <div class="feature-tag">📿 Doa Harian</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="cta-button">
+                    ⬇️ MUAT TURUN PERCUMA
+                </div>
+                <div class="rating">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <span style="color: rgba(255,255,255,0.8);">4.8 • 10K+ muat turun</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

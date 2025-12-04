@@ -182,15 +182,28 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
                 Log.d(TAG, "🚫 Cancelled any existing alarm")
                 
                 val alarmTimeMillis = alarmTime.toInstant().toEpochMilli()
-                
+
+                // Create show intent for setAlarmClock (shows in alarm clock apps)
+                val showIntent = Intent(context, MainActivity::class.java).apply {
+                    putExtra("prayer_alarm", true)
+                    putExtra("prayer_name", prayerName)
+                    putExtra("prayer_time", prayerTime)
+                }
+                val showPendingIntent = PendingIntent.getActivity(
+                    context,
+                    requestCode + 5000,
+                    showIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                // ✅ BEST METHOD: Use setAlarmClock for highest priority
+                // This bypasses ALL battery optimizations and Doze mode restrictions
+                val alarmClockInfo = AlarmManager.AlarmClockInfo(alarmTimeMillis, showPendingIntent)
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     if (alarmManager.canScheduleExactAlarms()) {
-                        Log.d(TAG, "✅ Using setExactAndAllowWhileIdle (Android 12+)")
-                        alarmManager.setExactAndAllowWhileIdle(
-                            AlarmManager.RTC_WAKEUP,
-                            alarmTimeMillis,
-                            pendingIntent
-                        )
+                        Log.d(TAG, "✅ Using setAlarmClock (HIGHEST PRIORITY - bypasses all restrictions)")
+                        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
                     } else {
                         Log.w(TAG, "⚠️ Cannot schedule exact alarms, using setAndAllowWhileIdle")
                         Log.w(TAG, "   Please grant 'Alarms & reminders' permission in Settings")
@@ -201,12 +214,9 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
                         )
                     }
                 } else {
-                    Log.d(TAG, "✅ Using setExactAndAllowWhileIdle (Android < 12)")
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        alarmTimeMillis,
-                        pendingIntent
-                    )
+                    // For Android < 12, setAlarmClock always works
+                    Log.d(TAG, "✅ Using setAlarmClock (HIGHEST PRIORITY - bypasses all restrictions)")
+                    alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
                 }
                 
                 Log.d(TAG, "✅ $prayerName alarm scheduled successfully!")

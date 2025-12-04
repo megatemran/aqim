@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:aqim/services/ads_service.dart';
 import 'package:aqim/utils/aqim_icons.dart';
 import 'package:aqim/utils/loading_screen.dart';
+import 'package:aqim/utils/plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/location_service.dart';
 
 class KiblatScreen extends StatefulWidget {
@@ -22,16 +25,22 @@ class _KiblatScreenState extends State<KiblatScreen> {
   bool isLoading = true;
   String? errorMessage;
   StreamSubscription<CompassEvent>? _compassSubscription;
+  final AdsService _adsService = AdsService();
+  InterstitialAd? _interstitialAd;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     _initialize();
+    _loadInterstitialAd();
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     _compassSubscription?.cancel(); // ✅ Clean up compass subscription
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -244,6 +253,66 @@ class _KiblatScreenState extends State<KiblatScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Load Interstitial Ad on screen opening
+  void _loadInterstitialAd() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping kiblat interstitial');
+      return;
+    }
+
+    // Prevent multiple loads - dispose old ad properly
+    _interstitialAd?.dispose();
+    _interstitialAd = null;
+
+    InterstitialAd.load(
+      adUnitId: _adsService.kiblatInterstitial1AdString,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          debugPrint('✅ Kiblat interstitial ad loaded');
+
+          // Check if screen is still mounted before setting
+          if (_isDisposed || !mounted) {
+            ad.dispose();
+            return;
+          }
+
+          _interstitialAd = ad;
+          _setFullScreenContentCallback(ad);
+
+          // Show the ad immediately after setup
+          ad.show().catchError((error) {
+            debugPrint('❌ Failed to show kiblat ad: $error');
+            ad.dispose();
+            _interstitialAd = null;
+          });
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          debugPrint('❌ Failed to load kiblat interstitial ad: $error');
+          _interstitialAd = null;
+        },
+      ),
+    );
+  }
+
+  void _setFullScreenContentCallback(InterstitialAd ad) {
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (ad) {
+        debugPrint('✅ Kiblat ad showed full screen content.');
+      },
+      onAdFailedToShowFullScreenContent: (ad, err) {
+        debugPrint('❌ Kiblat ad failed to show: $err');
+        ad.dispose();
+        _interstitialAd = null;
+      },
+      onAdDismissedFullScreenContent: (ad) {
+        debugPrint('✅ Kiblat ad was dismissed.');
+        ad.dispose();
+        _interstitialAd = null;
+      },
     );
   }
 }

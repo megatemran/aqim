@@ -124,7 +124,7 @@ Aqim ialah aplikasi waktu solat terlengkap untuk umat Islam di Malaysia. Dapatka
 📞 SOKONGAN & MAKLUM BALAS
 Kami sentiasa mendengar maklum balas anda! Jika ada sebarang pertanyaan, cadangan atau masalah, sila hubungi kami di:
 Email: support@aqim.my
-Website: https://www.aqim.my
+Website: https://megatemran.github.io/aqim/website/
 Privacy Policy: https://megatemran.github.io/aqim/privacy-policy.html
 Terms of Service: https://megatemran.github.io/aqim/terms.html
 

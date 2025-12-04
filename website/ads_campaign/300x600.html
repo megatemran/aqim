@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqim - 300x600</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+
+        .ad-container {
+            width: 300px;
+            height: 600px;
+            background: linear-gradient(180deg, #1A5F4F 0%, #0d3d32 100%);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            background-image:
+                radial-gradient(circle at 50% 20%, rgba(244, 116, 59, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(20, 70, 160, 0.3) 0%, transparent 50%);
+            animation: shimmer 8s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.08; }
+            50% { opacity: 0.15; }
+        }
+
+        /* Decorative mosque */
+        .mosque-bg {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 200px;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-15px); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            padding: 30px 25px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #F4743B 0%, #e05a24 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            box-shadow: 0 8px 24px rgba(244, 116, 59, 0.4);
+            animation: float-logo 4s ease-in-out infinite;
+        }
+
+        @keyframes float-logo {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .headline {
+            color: white;
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .subheadline {
+            color: rgba(255,255,255,0.9);
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .features-section {
+            margin: 30px 0;
+        }
+
+        .section-title {
+            color: #F4743B;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(244, 116, 59, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-title {
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .stats-section {
+            display: flex;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-value {
+            color: #F4743B;
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .rating-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            color: #FFD700;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .rating-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .rating-subtext {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .cta-section {
+            text-align: center;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #F4743B 0%, #e05a24 100%);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 800;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(244, 116, 59, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+            border: 2px solid rgba(255,255,255,0.4);
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 8px 24px rgba(244, 116, 59, 0.5);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 10px 32px rgba(244, 116, 59, 0.7);
+            }
+        }
+
+        .cta-subtext {
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(244, 116, 59, 0.3);
+            color: #F4743B;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(244, 116, 59, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="ad-container" onclick="window.open('https://play.google.com/store/apps/details?id=net.brings2you.aqim', '_blank')">
+        <div class="bg-pattern"></div>
+        <div class="mosque-bg">🕌</div>
+
+        <div class="content">
+            <div class="header">
+                <div class="badge">🇲🇾 Aplikasi #1 Malaysia</div>
+
+                <div class="logo">
+                    <div class="logo-icon">🕌</div>
+                    <div class="logo-text">AQIM</div>
+                </div>
+
+                <div class="headline">
+                    Waktu Solat<br>Tepat & Mudah
+                </div>
+
+                <div class="subheadline">
+                    Aplikasi waktu solat rasmi Malaysia dengan GPS tepat dan azan automatik
+                </div>
+            </div>
+
+            <div class="features-section">
+                <div class="section-title">✨ Ciri-Ciri Utama</div>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">📍</div>
+                        <div class="feature-text">
+                            <div class="feature-title">GPS Lokasi Tepat</div>
+                            <div class="feature-desc">Waktu solat mengikut zon semasa</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">🔔</div>
+                        <div class="feature-text">
+                            <div class="feature-title">Azan Automatik</div>
+                            <div class="feature-desc">Notifikasi azan setiap waktu</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">🧭</div>
+                        <div class="feature-text">
+                            <div class="feature-title">Kompas Kiblat</div>
+                            <div class="feature-desc">Cari arah kiblat dengan mudah</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">📿</div>
+                        <div class="feature-text">
+                            <div class="feature-title">Doa & Rakaat</div>
+                            <div class="feature-desc">Koleksi doa harian lengkap</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <div class="stat-box">
+                    <div class="stat-value">10K+</div>
+                    <div class="stat-label">Muat Turun</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">4.8</div>
+                    <div class="stat-label">Rating</div>
+                </div>
+            </div>
+
+            <div class="rating-section">
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <div class="rating-text">Rating Terbaik</div>
+                <div class="rating-subtext">Dipercayai ribuan pengguna</div>
+            </div>
+
+            <div class="cta-section">
+                <div class="cta-button">
+                    ⬇️ MUAT TURUN SEKARANG
+                </div>
+                <div class="cta-subtext">100% Percuma • Tiada Iklan Mengganggu</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

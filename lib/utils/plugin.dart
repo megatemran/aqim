@@ -131,7 +131,7 @@ final String channelDescriptionSimple = 'Ala Simple je Notifications ni';
 //   showInCompactView: true,
 //   actionType: ActionType.KeepOnTop,
 // );
-bool isShowAds = true;
+bool isShowAds = false;
 PrayerTimeData? prayerTimeData;
 final double radius = 12.r;
 
