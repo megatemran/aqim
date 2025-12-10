@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:aqim/services/prayer_alarm_service.dart';
 
 class PermissionIntroScreen extends StatefulWidget {
   final VoidCallback onContinue;
@@ -117,7 +116,7 @@ class _PermissionIntroScreenState extends State<PermissionIntroScreen>
           ),
           trailing: Icon(
             isApproved ? Icons.check_circle_rounded : Icons.block_outlined,
-            color: isApproved ? Colors.green : cs.onSurface.withAlpha(100),
+            color: isApproved ? Colors.green : cs.onSurface.withValues(alpha: 100/255),
           ),
         ),
       ),
@@ -127,15 +126,12 @@ class _PermissionIntroScreenState extends State<PermissionIntroScreen>
   Future<void> _checkInitialPermissions() async {
     final loc = await Permission.location.status;
     final noti = await Permission.notification.status;
-
-    // ✅ Use native method channel for exact alarm permission check
-    // permission_handler does NOT properly support scheduleExactAlarm on Android 12+
-    // final alarm = await PrayerAlarmService.canScheduleExactAlarms();
+    final alarm = await Permission.scheduleExactAlarm.status;
 
     setState(() {
       _locationStatus = loc.isGranted ? 'granted' : 'denied';
       _notificationStatus = noti.isGranted ? 'granted' : 'denied';
-      _alarmStatus = alarm ? 'granted' : 'denied';
+      _alarmStatus = alarm.isGranted ? 'granted' : 'denied';
     });
   }
 
@@ -264,19 +260,10 @@ class _PermissionIntroScreenState extends State<PermissionIntroScreen>
                         cs: cs,
                         status: _alarmStatus,
                         onTap: () async {
-                          // ✅ Open exact alarm settings using native method
-                          // permission_handler does NOT work for scheduleExactAlarm
-                          await PrayerAlarmService.openExactAlarmSettings();
-
-                          // Wait a bit for user to grant permission
-                          await Future.delayed(const Duration(seconds: 1));
-
-                          // Re-check permission status
-                          final isGranted =
-                              await PrayerAlarmService.canScheduleExactAlarms();
-                          setState(() {
-                            _alarmStatus = isGranted ? 'granted' : 'denied';
-                          });
+                          final result = await _requestPermission(
+                            permission: Permission.scheduleExactAlarm,
+                          );
+                          setState(() => _alarmStatus = result);
                         },
                       ),
                     ],
