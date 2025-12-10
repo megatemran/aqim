@@ -205,6 +205,11 @@ class _MyAppState extends State<MyApp> {
   bool _isLoading = true;
   bool _isPermission = false;
 
+  // ✅ Track pending prayer alarm to show as initial screen
+  bool _hasPendingAlarm = false;
+  String _pendingPrayerName = '';
+  String _pendingPrayerTime = '';
+
   @override
   void initState() {
     super.initState();
@@ -232,10 +237,12 @@ class _MyAppState extends State<MyApp> {
           // Clear the pending alarm flag
           await prefs.setBool('has_pending_alarm', false);
 
-          // Schedule showing the azan screen after first frame
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _showAzanScreen(prayerName, prayerTime);
-          });
+          // ✅ NEW APPROACH: Store alarm data to show as initial screen
+          // This avoids navigator race condition issues
+          _hasPendingAlarm = true;
+          _pendingPrayerName = prayerName;
+          _pendingPrayerTime = prayerTime;
+          debugPrint('✅ Will show AzanFullScreen as initial screen');
         } else {
           debugPrint('⏰ Pending alarm too old or invalid, ignoring');
           await prefs.setBool('has_pending_alarm', false);
@@ -256,9 +263,20 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void _showAzanScreen(String prayerName, String prayerTime) {
+  void _showAzanScreen(String prayerName, String prayerTime, {int retryCount = 0}) {
     if (navigatorKey.currentState == null) {
-      debugPrint('❌ Navigator not ready for azan screen');
+      debugPrint('❌ Navigator not ready for azan screen (attempt ${retryCount + 1}/5)');
+
+      // Retry up to 5 times with increasing delays
+      if (retryCount < 5) {
+        final delay = Duration(milliseconds: 100 * (retryCount + 1)); // 100ms, 200ms, 300ms, 400ms, 500ms
+        debugPrint('⏳ Retrying in ${delay.inMilliseconds}ms...');
+        Future.delayed(delay, () {
+          _showAzanScreen(prayerName, prayerTime, retryCount: retryCount + 1);
+        });
+      } else {
+        debugPrint('❌ Navigator still not ready after 5 attempts, giving up');
+      }
       return;
     }
 
@@ -340,6 +358,31 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _buildStartUpScreen() {
+    // ✅ If there's a pending alarm, show AzanFullScreen directly as initial screen
+    // This avoids navigator race condition when trying to navigate after startup
+    if (_hasPendingAlarm) {
+      debugPrint('📱 Showing AzanFullScreen as initial screen for pending alarm');
+      _isAzanScreenCurrentlyShowing = true;
+      return AzanFullScreen(
+        prayerName: _pendingPrayerName,
+        prayerTime: _pendingPrayerTime,
+        currentThemeMode: _themeMode,
+        currentLanguage: _languageCode,
+        onThemeToggle: () {
+          final newMode = _themeMode == ThemeMode.light
+              ? ThemeMode.dark
+              : ThemeMode.light;
+          setState(() => _themeMode = newMode);
+        },
+        onLanguageChange: (String code) {
+          setState(() => _languageCode = code);
+        },
+        onThemeChange: (ThemeMode newMode) {
+          setState(() => _themeMode = newMode);
+        },
+      );
+    }
+
     // Always show the proper startup screen
     // Azan will be pushed on top after first frame if needed
     if (!_isLegalAccepted) {
