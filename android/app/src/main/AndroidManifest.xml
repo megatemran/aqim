@@ -1,21 +1,39 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- BASIC PERMISSIONS -->
+    <!-- ✅ ESSENTIAL PERMISSIONS (Play Store Approved) -->
+
+    <!-- Network: Fetch prayer times from JAKIM/AlAdhan APIs and display ads -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Camera: Rakaat counter feature using pose detection -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Location: Determine prayer times based on user's location and calculate Qibla direction -->
+    <!-- Note: We only use FINE location (no coarse, no background) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Notifications: Send prayer time notifications to user -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Alarms: Schedule exact prayer time alarms (cannot be delayed) -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- Boot: Restore prayer alarms after device restart -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Screen: Keep screen on during prayer notifications -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Haptic: Vibrate during prayer notifications -->
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Lock Screen: Show fullscreen azan when phone is locked -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
+    <!-- Battery: Prevent Android from killing prayer alarms (required for alarm clock apps) -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    
+
+
     <application
         android:label="Aqim"
         android:name="${applicationName}"
@@ -51,9 +69,22 @@
             <intent-filter>
                 <action android:name="net.brings2you.aqim.PRAYER_ALARM" />
                 <action android:name="net.brings2you.aqim.DAILY_RESCHEDULE" />
+                <action android:name="net.brings2you.aqim.START_FOREGROUND_SERVICE" />
+                <action android:name="net.brings2you.aqim.HEARTBEAT" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!-- ✅ PRAYER ALARM FOREGROUND SERVICE - Ensures alarms trigger exactly on time -->
+        <service
+            android:name=".PrayerAlarmForegroundService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Prayer time notifications for Islamic worship" />
+        </service>
 
         <!-- GOOGLE ADS -->
         <meta-data 

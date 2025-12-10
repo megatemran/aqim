@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 
 class RakaatScreen extends StatefulWidget {
   const RakaatScreen({super.key});
@@ -25,7 +26,7 @@ class _RakaatScreenState extends State<RakaatScreen>
   CameraController? _camera;
   bool _isProcessing = false;
   bool _isSwitching = false;
-  bool _isShowCamera = false;
+  final bool _isShowCamera = false;
   final int _cameraIndex = 1;
   List<Pose> _poses = [];
   final AdsService _adsService = AdsService();
@@ -35,11 +36,16 @@ class _RakaatScreenState extends State<RakaatScreen>
   // For displaying debug info
   String debugText = '';
 
+  // Brightness control
+  double _currentBrightness = 0.5;
+  double? _originalBrightness;
+  bool _isSliderVisible = false;
+
   // ⚙️ RAKAAT TIMING CONFIGURATION
   static const int _minTimeBeforeFirstRakaat = 5; // seconds
-  static const int _minTimeBetweenRakaat2 = 75; // ~1 rakaat cycle
-  static const int _minTimeBetweenRakaat3 = 85; // includes tahiyat awal
-  static const int _minTimeBetweenRakaat4 = 40; // shorter cycle
+  static const int _minTimeBetweenRakaat2 = 68; // 75 ~1 rakaat cycle
+  static const int _minTimeBetweenRakaat3 = 78; // 85 includes tahiyat awal
+  static const int _minTimeBetweenRakaat4 = 40; // 40 shorter cycle
 
   // 🎨 ANIMATION CONFIGURATION
   late AnimationController _rakaatAnimationController;
@@ -50,10 +56,51 @@ class _RakaatScreenState extends State<RakaatScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Hide status bar and navigation bar completely
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    // Also hide all overlays
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.transparent,
+      ),
+    );
+    _initializeBrightness();
     _initializeCamera();
     _initializePoseDetector();
     _initializeAnimation();
-    _loadInterstitialAd();
+    _loadInterstitialAdForExit(); // Load ad but don't show until exit
+  }
+
+  Future<void> _initializeBrightness() async {
+    try {
+      _originalBrightness = await ScreenBrightness().current;
+      // Normal = 50% (0.5), Maximum = 60% (0.6)
+      // Clamp to max 0.6 for slider display
+      _currentBrightness = (_originalBrightness ?? 0.5).clamp(0.0, 0.6);
+      // Don't change actual brightness - let user control via slider
+      debugPrint(
+        '💡 Original brightness: $_originalBrightness, Slider position: $_currentBrightness',
+      );
+    } catch (e) {
+      debugPrint('❌ Error getting brightness: $e');
+    }
+  }
+
+  Future<void> _resetBrightness() async {
+    try {
+      if (_originalBrightness != null) {
+        await ScreenBrightness().setScreenBrightness(_originalBrightness!);
+        if (mounted) {
+          setState(() {
+            _currentBrightness = _originalBrightness!;
+          });
+        }
+        debugPrint('💡 Brightness restored to: $_originalBrightness');
+      }
+    } catch (e) {
+      debugPrint('❌ Error resetting brightness: $e');
+    }
   }
 
   void _initializeAnimation() {
@@ -345,43 +392,40 @@ class _RakaatScreenState extends State<RakaatScreen>
     _camera?.dispose();
     _poseDetector.close();
     _interstitialAd?.dispose();
+    _resetBrightness(); // Reset brightness before exiting
+    // Restore status bar
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge,
+      overlays: SystemUiOverlay.values,
+    );
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_camera == null || !_camera!.value.isInitialized) {
-      return const Scaffold(body: Center(child: LoadingScreen()));
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          await _handleExit(context);
+        },
+        child: const Scaffold(body: Center(child: LoadingScreen())),
+      );
     }
     final cs = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: _isShowCamera
-            ? Brightness.light
-            : isDark
-            ? Brightness.light
-            : Brightness.dark,
-        statusBarBrightness: _isShowCamera
-            ? Brightness.dark
-            : isDark
-            ? Brightness.dark
-            : Brightness.light,
-        systemNavigationBarColor: _isShowCamera ? Colors.black : cs.surface,
-        systemNavigationBarIconBrightness: _isShowCamera
-            ? Brightness.light
-            : isDark
-            ? Brightness.light
-            : Brightness.dark,
-        // Divider
-        // systemNavigationBarDividerColor: cs.outline.withValues(alpha: 0.2),
-      ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleExit(context);
+      },
       child: Scaffold(
+        backgroundColor: Colors.black,
         body: Stack(
           children: [
             _isShowCamera == false
-                ? Container(color: cs.surface)
+                ? Container(color: Colors.black)
                 : Stack(
                     children: [
                       Positioned.fill(child: CameraPreview(_camera!)),
@@ -398,7 +442,6 @@ class _RakaatScreenState extends State<RakaatScreen>
                         ),
                     ],
                   ),
-
             Positioned(
               top: 40,
               right: 20,
@@ -412,13 +455,54 @@ class _RakaatScreenState extends State<RakaatScreen>
                     },
                     icon: const Icon(Icons.arrow_back),
                   ),
-                  IconButton.filledTonal(
-                    onPressed: () {
-                      setState(() {
-                        _isShowCamera = !_isShowCamera;
-                      });
-                    },
-                    icon: Icon(Icons.info_outline),
+                  Row(
+                    children: [
+                      // Brightness toggle button
+                      IconButton.filledTonal(
+                        onPressed: () {
+                          setState(() {
+                            _isSliderVisible = !_isSliderVisible;
+                          });
+                        },
+                        icon: Icon(
+                          _isSliderVisible
+                              ? Icons.brightness_medium
+                              : Icons.brightness_low,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      // Info button
+                      IconButton.filledTonal(
+                        onPressed: () async {
+                          // Save current brightness before showing dialog
+                          final savedBrightness = _currentBrightness;
+
+                          // Temporarily set to normal brightness for dialog
+                          if (_originalBrightness != null) {
+                            await ScreenBrightness().setScreenBrightness(
+                              _originalBrightness!,
+                            );
+                          }
+
+                          if (mounted) {
+                            // Show dialog
+                            await caraLetakTelefon();
+
+                            // Restore previous brightness after dialog closes
+                            await ScreenBrightness().setScreenBrightness(
+                              savedBrightness,
+                            );
+
+                            if (mounted) {
+                              setState(() {
+                                _currentBrightness = savedBrightness;
+                              });
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.info_outline),
+                      ),
+                    ],
                   ),
                   // FloatingActionButton(
                   //   onPressed: () {
@@ -434,6 +518,85 @@ class _RakaatScreenState extends State<RakaatScreen>
                   //   child: const Icon(Icons.cameraswitch),
                   // ),
                 ],
+              ),
+            ),
+            // Brightness Slider (Vertical) - Right Side with Animation
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              right: _isSliderVisible ? 10 : -70,
+              top: 200,
+              bottom: 200,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: _isSliderVisible ? 1.0 : 0.0,
+                child: Container(
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: .center,
+                    children: [
+                      Icon(
+                        Icons.brightness_medium,
+                        color: Colors.white.withValues(alpha: 0.7),
+                        size: 20,
+                      ),
+                      Expanded(
+                        child: RotatedBox(
+                          quarterTurns: 3,
+                          child: SliderTheme(
+                            data: SliderThemeData(
+                              trackHeight: 4,
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 8,
+                              ),
+                              overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 16,
+                              ),
+                            ),
+                            child: Slider(
+                              value: _currentBrightness.clamp(0.0, 0.6),
+                              min: 0.0,
+                              max: 0.6,
+                              activeColor: Colors.white,
+                              inactiveColor: Colors.white.withValues(
+                                alpha: 0.3,
+                              ),
+                              onChanged: (value) async {
+                                setState(() {
+                                  _currentBrightness = value;
+                                });
+                                try {
+                                  // Use cubic curve for MUCH dimmer low brightness
+                                  // This allows VERY low brightness levels
+                                  final adjustedValue = value == 0.0
+                                      ? 0.0
+                                      : (value * value * value) / (0.6 * 0.6);
+                                  await ScreenBrightness().setScreenBrightness(
+                                    adjustedValue.clamp(0.0, 1.0),
+                                  );
+                                  debugPrint(
+                                    '💡 Slider: $value → Brightness: $adjustedValue',
+                                  );
+                                } catch (e) {
+                                  debugPrint('❌ Error setting brightness: $e');
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.brightness_low,
+                        color: Colors.white.withValues(alpha: 0.7),
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
 
@@ -467,12 +630,17 @@ class _RakaatScreenState extends State<RakaatScreen>
                         Transform.scale(
                           scale: _scaleAnimation.value * 1.1,
                           child: Text(
-                            _rakaatCount.toString(),
+                            _isCountingDown
+                                ? _countdown.toString()
+                                : _rakaatCount.toString(),
                             style: TextStyle(
-                              color: (_isShowCamera ? Colors.white : cs.primary)
-                                  .withValues(
-                                    alpha: _opacityAnimation.value * 0.5,
-                                  ),
+                              color: _isCountingDown
+                                  ? Colors.green.withValues(
+                                      alpha: _opacityAnimation.value * 0.5,
+                                    )
+                                  : Colors.white.withValues(
+                                      alpha: _opacityAnimation.value * 0.5,
+                                    ),
                               fontSize: 200.sp,
                               fontWeight: FontWeight.bold,
                             ),
@@ -482,9 +650,13 @@ class _RakaatScreenState extends State<RakaatScreen>
                       Transform.scale(
                         scale: _scaleAnimation.value,
                         child: Text(
-                          _rakaatCount.toString(),
+                          _isCountingDown
+                              ? _countdown.toString()
+                              : _rakaatCount.toString(),
                           style: TextStyle(
-                            color: _isShowCamera ? Colors.white : cs.onSurface,
+                            color: _isCountingDown
+                                ? Colors.green
+                                : Colors.greenAccent,
                             fontSize: 200.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -555,19 +727,19 @@ class _RakaatScreenState extends State<RakaatScreen>
                             ),
                           ),
                     SizedBox(height: 16.h),
-                    Text(
-                      'Letakkan telefon di hadapan anda ketika solat\n'
-                      'dan tekan MULA untuk mula mengira rakaat.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: _isShowCamera
-                            ? Colors.white.withValues(alpha: 0.6)
-                            : cs.onSurface.withValues(alpha: 0.6),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
+                    // Text(
+                    //   'Letakkan telefon di hadapan anda ketika solat\n'
+                    //   'dan tekan MULA untuk mula mengira rakaat.',
+                    //   textAlign: TextAlign.center,
+                    //   style: TextStyle(
+                    //     color: _isShowCamera
+                    //         ? Colors.white.withValues(alpha: 0.6)
+                    //         : cs.onSurface.withValues(alpha: 0.6),
+                    //     fontSize: 14,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
+                    // SizedBox(height: 16.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -577,22 +749,14 @@ class _RakaatScreenState extends State<RakaatScreen>
                             child: OutlinedButton(
                               onPressed: _resetRakaatCount,
                               style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: _isShowCamera
-                                      ? Colors.white
-                                      : cs.outline,
-                                ),
+                                side: const BorderSide(color: Colors.white),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: Text(
+                              child: const Text(
                                 'Set Semula',
-                                style: TextStyle(
-                                  color: _isShowCamera
-                                      ? Colors.white
-                                      : cs.onSurface,
-                                ),
+                                style: TextStyle(color: Colors.white),
                               ),
                             ),
                           ),
@@ -602,14 +766,18 @@ class _RakaatScreenState extends State<RakaatScreen>
                           child: FilledButton(
                             onPressed: _toggleKiraRakaat,
                             style: FilledButton.styleFrom(
-                              backgroundColor: _isStart ? cs.error : cs.primary,
+                              backgroundColor: (_isStart || _isCountingDown)
+                                  ? Colors.red
+                                  : Colors.green,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                             child: Text(
-                              _isStart ? 'Berhenti' : 'Mula',
-                              style: TextStyle(color: cs.onPrimary),
+                              (_isStart || _isCountingDown)
+                                  ? 'Berhenti'
+                                  : 'Mula',
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -679,6 +847,27 @@ class _RakaatScreenState extends State<RakaatScreen>
     );
   }
 
+  /// Handle exit with ad display
+  Future<void> _handleExit(BuildContext context) async {
+    if (_interstitialAd != null && isShowAds) {
+      debugPrint('📢 Showing rakaat exit ad');
+      try {
+        await _interstitialAd!.show();
+        // Ad will be disposed in the callback, then we pop
+      } catch (e) {
+        debugPrint('❌ Error showing exit ad: $e');
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    } else {
+      debugPrint('⏭️ No ad to show, exiting directly');
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
   Uint8List _convertYUV420toNV21(CameraImage image) {
     final int width = image.width;
     final int height = image.height;
@@ -721,6 +910,8 @@ class _RakaatScreenState extends State<RakaatScreen>
   int _timerCounter = 0;
   int _rakaatCount = 0;
   bool _isStart = false;
+  bool _isCountingDown = false;
+  int _countdown = 3;
   PrayerPosition _previousPosition = PrayerPosition.unknown;
   PrayerPosition _currentPosition = PrayerPosition.unknown;
 
@@ -790,13 +981,15 @@ class _RakaatScreenState extends State<RakaatScreen>
   }
 
   void _toggleKiraRakaat() {
-    if (_isStart) {
-      // Stop timer
+    if (_isStart || _isCountingDown) {
+      // Stop timer and countdown
       _timer?.cancel();
 
       if (mounted) {
         setState(() {
           _isStart = false;
+          _isCountingDown = false;
+          _countdown = 3;
           _timerCounter = 0;
           _previousPosition = PrayerPosition.unknown;
           _rakaatCount = 0;
@@ -804,24 +997,56 @@ class _RakaatScreenState extends State<RakaatScreen>
         });
       }
     } else {
-      // Start timer
+      // Start countdown 3, 2, 1
       if (mounted) {
         setState(() {
-          _isStart = true;
+          _isCountingDown = true;
+          _countdown = 3;
         });
       }
 
-      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      // Countdown timer
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (!mounted) return;
-        setState(() {
-          _timerCounter++;
-        });
+
+        if (_countdown > 1) {
+          // Continue countdown
+          setState(() {
+            _countdown--;
+          });
+          // Trigger animation
+          _rakaatAnimationController.forward(from: 0.0);
+        } else if (_countdown == 1) {
+          // Last countdown, prepare to start
+          setState(() {
+            _countdown = 0;
+          });
+          _rakaatAnimationController.forward(from: 0.0);
+        } else {
+          // Countdown finished, start tracking
+          timer.cancel();
+          if (mounted) {
+            setState(() {
+              _isCountingDown = false;
+              _isStart = true;
+              _timerCounter = 0;
+            });
+          }
+
+          // Start rakaat tracking timer
+          _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            if (!mounted) return;
+            setState(() {
+              _timerCounter++;
+            });
+          });
+        }
       });
     }
   }
 
-  /// Load Interstitial Ad on screen opening
-  void _loadInterstitialAd() {
+  /// Load Interstitial Ad for exit (don't show immediately)
+  void _loadInterstitialAdForExit() {
     if (!isShowAds) {
       debugPrint('❌ Ads disabled - skipping rakaat interstitial');
       return;
@@ -836,7 +1061,7 @@ class _RakaatScreenState extends State<RakaatScreen>
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
-          debugPrint('✅ Rakaat interstitial ad loaded');
+          debugPrint('✅ Rakaat exit ad loaded (ready to show on exit)');
 
           // Check if screen is still mounted before setting
           if (_isDisposed || !mounted) {
@@ -847,15 +1072,10 @@ class _RakaatScreenState extends State<RakaatScreen>
           _interstitialAd = ad;
           _setFullScreenContentCallback(ad);
 
-          // Show the ad immediately after setup
-          ad.show().catchError((error) {
-            debugPrint('❌ Failed to show rakaat ad: $error');
-            ad.dispose();
-            _interstitialAd = null;
-          });
+          // Don't show the ad here - it will be shown when user exits
         },
         onAdFailedToLoad: (LoadAdError error) {
-          debugPrint('❌ Failed to load rakaat interstitial ad: $error');
+          debugPrint('❌ Failed to load rakaat exit ad: $error');
           _interstitialAd = null;
         },
       ),
@@ -865,17 +1085,25 @@ class _RakaatScreenState extends State<RakaatScreen>
   void _setFullScreenContentCallback(InterstitialAd ad) {
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) {
-        debugPrint('✅ Rakaat ad showed full screen content.');
+        debugPrint('✅ Rakaat exit ad showed full screen content.');
       },
       onAdFailedToShowFullScreenContent: (ad, err) {
-        debugPrint('❌ Rakaat ad failed to show: $err');
+        debugPrint('❌ Rakaat exit ad failed to show: $err');
         ad.dispose();
         _interstitialAd = null;
+        // Navigate back even if ad fails
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       },
       onAdDismissedFullScreenContent: (ad) {
-        debugPrint('✅ Rakaat ad was dismissed.');
+        debugPrint('✅ Rakaat exit ad was dismissed, navigating back.');
         ad.dispose();
         _interstitialAd = null;
+        // Navigate back after ad is dismissed
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       },
     );
   }
@@ -894,11 +1122,13 @@ class _RakaatScreenState extends State<RakaatScreen>
   }
 
   PrayerPosition _detectPrayerPosition() {
-    const double confidenceThreshold = 0.6;
+    const double confidenceThreshold = 0.5;
     final pose = _poses.isNotEmpty ? _poses.first : Pose(landmarks: {});
 
-    // Get key landmarks
+    // Get all landmarks
     final nose = pose.landmarks[PoseLandmarkType.nose];
+    final leftEye = pose.landmarks[PoseLandmarkType.leftEye];
+    final rightEye = pose.landmarks[PoseLandmarkType.rightEye];
     final bahuKiri = pose.landmarks[PoseLandmarkType.leftShoulder];
     final bahuKanan = pose.landmarks[PoseLandmarkType.rightShoulder];
     final sikuKiri = pose.landmarks[PoseLandmarkType.leftElbow];
@@ -910,247 +1140,465 @@ class _RakaatScreenState extends State<RakaatScreen>
     final lututKiri = pose.landmarks[PoseLandmarkType.leftKnee];
     final lututKanan = pose.landmarks[PoseLandmarkType.rightKnee];
 
-    if (nose == null ||
-        bahuKiri == null ||
+    // Minimum requirement: shoulders must be visible
+    if (bahuKiri == null ||
         bahuKanan == null ||
-        tanganKiri == null ||
-        tanganKanan == null) {
-      return PrayerPosition.unknown;
-    }
-
-    // =====================================================
-    // DETECT SEDEKAP (dengan atau tanpa pinggul)
-    // =====================================================
-    if (nose.likelihood > confidenceThreshold &&
-        bahuKiri.likelihood > confidenceThreshold &&
-        bahuKanan.likelihood > confidenceThreshold &&
-        sikuKiri != null &&
-        sikuKiri.likelihood > confidenceThreshold &&
-        sikuKanan != null &&
-        sikuKanan.likelihood > confidenceThreshold &&
-        tanganKiri.likelihood > confidenceThreshold &&
-        tanganKanan.likelihood > confidenceThreshold) {
-      // Kira purata kedudukan untuk kestabilan
-      final purataBahuY = (bahuKiri.y + bahuKanan.y) / 2;
-      final tengahBadan = (bahuKiri.x + bahuKanan.x) / 2;
-
-      // Ambil koordinat Z untuk check tangan di HADAPAN atau BELAKANG badan
-      final purataBahuZ = (bahuKiri.z + bahuKanan.z) / 2;
-      final purataTanganZ = (tanganKiri.z + tanganKanan.z) / 2;
-
-      // Tangan mesti di HADAPAN bahu
-      final bool tanganDiHadapan = purataTanganZ < purataBahuZ + 50;
-
-      // Syarat-syarat utama untuk sedekap:
-
-      // 1. Tangan berada di kawasan dada (antara atas bahu dan bawah siku)
-      //    Kalau pinggul tak nampak, guna siku sebagai batas bawah
-      final purataSikuY = (sikuKiri.y + sikuKanan.y) / 2;
-
-      bool tanganDiKawasanDada;
-      if (pinggulKiri != null &&
-          pinggulKanan != null &&
-          pinggulKiri.likelihood > confidenceThreshold &&
-          pinggulKanan.likelihood > confidenceThreshold) {
-        // Kalau pinggul nampak, guna pinggul sebagai batas bawah
-        final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
-        tanganDiKawasanDada =
-            tanganKiri.y > purataBahuY - 100 &&
-            tanganKanan.y > purataBahuY - 100 &&
-            tanganKiri.y < purataPinggulY &&
-            tanganKanan.y < purataPinggulY;
-      } else {
-        // Kalau pinggul TAK nampak, guna formula alternatif
-        // Tangan mesti bawah dari bahu tapi atas dari siku
-        tanganDiKawasanDada =
-            tanganKiri.y > purataBahuY - 100 &&
-            tanganKanan.y > purataBahuY - 100 &&
-            tanganKiri.y >
-                purataSikuY - 150 && // Tangan dekat dengan tahap siku
-            tanganKanan.y > purataSikuY - 150;
-      }
-
-      // 2. Tangan rapat antara satu sama lain (posisi silang/lipat)
-      final bool tanganBerdekatan = (tanganKanan.x - tanganKiri.x).abs() < 100;
-
-      // 3. Tangan berada dekat dengan garisan tengah badan
-      final purataTanganX = (tanganKiri.x + tanganKanan.x) / 2;
-      final bool tanganDiTengah = (purataTanganX - tengahBadan).abs() < 100;
-
-      // 4. Siku dalam posisi lipat semula jadi
-      final bool sikuSemulajadi =
-          sikuKiri.y > purataBahuY - 80 && sikuKanan.y > purataBahuY - 80;
-
-      // 5. Tangan di bawah hidung (untuk pastikan bukan posisi doa/ihram)
-      final bool tanganDiBawahHidung =
-          tanganKiri.y > nose.y - 50 && tanganKanan.y > nose.y - 50;
-
-      if (tanganDiKawasanDada &&
-          tanganBerdekatan &&
-          tanganDiTengah &&
-          sikuSemulajadi &&
-          tanganDiHadapan &&
-          tanganDiBawahHidung) {
-        return PrayerPosition.sedekap;
-      }
-    }
-    // =====================================================
-    // DETECT TAKBIRAATUL IHRAM
-    // =====================================================
-    //Detect Takbirautul Ihram position
-    if (nose.likelihood > confidenceThreshold &&
-        bahuKiri.likelihood > confidenceThreshold &&
-        bahuKanan.likelihood > confidenceThreshold &&
-        tanganKiri.likelihood > confidenceThreshold &&
-        tanganKanan.likelihood > confidenceThreshold &&
-        sikuKiri!.likelihood > confidenceThreshold &&
-        sikuKanan!.likelihood > confidenceThreshold) {
-      // Check if hands are raised near the shoulders
-      if (tanganKiri.y < bahuKiri.y &&
-          tanganKanan.y < bahuKanan.y &&
-          sikuKiri.y > bahuKiri.y &&
-          sikuKanan.y > bahuKanan.y) {
-        return PrayerPosition.ihram; // Takbirautul Ihram
-      }
-    }
-    // =====================================================
-    // DETECT QIYAM (Standing - dengan atau tanpa tangan/siku)
-    // =====================================================
-    if (nose.likelihood > confidenceThreshold &&
-        bahuKiri.likelihood > confidenceThreshold &&
-        bahuKanan.likelihood > confidenceThreshold) {
-      // Kira purata bahu
-      final avgBahuY = (bahuKiri.y + bahuKanan.y) / 2;
-      // final tengahBadan = (bahuKiri.x + bahuKanan.x) / 2;
-
-      // Check tangan nampak atau tidak
-      bool tanganNampak =
-          tanganKiri.likelihood > confidenceThreshold &&
-          tanganKanan.likelihood > confidenceThreshold;
-
-      if (tanganNampak) {
-        // ============================================
-        // QIYAM DENGAN TANGAN NAMPAK
-        // ============================================
-        final avgTanganY = (tanganKiri.y + tanganKanan.y) / 2;
-
-        // Tangan di bawah bahu (berdiri relaks)
-        final bool handsDown = avgTanganY > avgBahuY;
-
-        // Tangan tidak terlalu rapat (bukan sedekap)
-        final bool handsApart = (tanganKanan.x - tanganKiri.x).abs() > 100;
-
-        if (handsDown && handsApart) {
-          return PrayerPosition.qiyam;
-        }
-      } else {
-        // ============================================
-        // QIYAM TANPA TANGAN NAMPAK
-        // ============================================
-        // Detect qiyam berdasarkan postur badan sahaja
-
-        // 1. Badan tegak - hidung sepatutnya lebih tinggi dari bahu
-        final bool badanTegak = nose.y < avgBahuY;
-
-        // 2. Check pinggul kalau ada (untuk pastikan posisi berdiri)
-        bool posisiBerdiri = true;
-        if (pinggulKiri != null &&
-            pinggulKanan != null &&
-            pinggulKiri.likelihood > confidenceThreshold &&
-            pinggulKanan.likelihood > confidenceThreshold) {
-          // Pinggul sepatutnya jauh di bawah bahu untuk posisi berdiri
-          final avgPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
-          posisiBerdiri = avgPinggulY > avgBahuY + 100;
-        }
-
-        // 3. Bahu seimbang (tidak condong ke kiri/kanan)
-        final bool bahuSeimbang = (bahuKiri.y - bahuKanan.y).abs() < 50;
-
-        if (badanTegak && posisiBerdiri && bahuSeimbang) {
-          return PrayerPosition.qiyam;
-        }
-      }
-    }
-
-    // =====================================================
-    // DETECT RUKU
-    // =====================================================
-    // Check confidence
-    if (nose.likelihood < confidenceThreshold ||
-        bahuKiri.likelihood < confidenceThreshold ||
-        bahuKanan.likelihood < confidenceThreshold ||
-        pinggulKiri!.likelihood < confidenceThreshold ||
-        pinggulKanan!.likelihood < confidenceThreshold) {
-      return PrayerPosition.unknown;
-    }
-
-    // Calculate averages
-    final purataBahuY = (bahuKiri.y + bahuKanan.y) / 2;
-    final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
-
-    // Condition 1: Kepala di bawah bahu (membongkok)
-    final bool kepalaBawahBahu = nose.y > purataBahuY + 50;
-
-    // Condition 2: Badan bengkok (pinggul di bawah bahu tapi tak terlalu rendah)
-    final bool badanBengkok =
-        purataPinggulY > purataBahuY + 100 &&
-        purataPinggulY < purataBahuY + 350;
-
-    // Condition 3: Kepala tidak terlalu rendah (bukan sujud)
-    final bool bukanSujud = nose.y < purataPinggulY + 150;
-
-    // Optional: Check tangan dekat lutut (if available)
-    bool tanganDekatLutut = true;
-    if (lututKiri != null &&
-        lututKanan != null &&
-        tanganKiri.likelihood > confidenceThreshold &&
-        tanganKanan.likelihood > confidenceThreshold) {
-      final purataTanganY = (tanganKiri.y + tanganKanan.y) / 2;
-      final purataLututY = (lututKiri.y + lututKanan.y) / 2;
-      tanganDekatLutut = (purataTanganY - purataLututY).abs() < 150;
-    }
-
-    if (kepalaBawahBahu && badanBengkok && bukanSujud && tanganDekatLutut) {
-      return PrayerPosition.ruku;
-    }
-
-    // =====================================================
-    // DETECT SUJUD
-    // =====================================================
-
-    // Check confidence
-    if (nose.likelihood < confidenceThreshold ||
         bahuKiri.likelihood < confidenceThreshold ||
         bahuKanan.likelihood < confidenceThreshold) {
       return PrayerPosition.unknown;
     }
-    // calculate averages
 
-    // Condition 1: Kepala sangat rendah (dekat lantai)
-    final bool kepalaSangatRendah = nose.y > purataBahuY + 200;
+    final purataBahuY = (bahuKiri.y + bahuKanan.y) / 2;
+    final tengahBadanX = (bahuKiri.x + bahuKanan.x) / 2;
 
-    // Condition 2: Bahu juga rendah (badan sujud)
-    bool bahuRendah = true;
-    if (pinggulKiri.likelihood > confidenceThreshold &&
-        pinggulKanan.likelihood > confidenceThreshold) {
-      final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
-      // Bahu hampir sama level dengan pinggul atau lebih rendah
-      bahuRendah = purataBahuY > purataPinggulY - 100;
-    }
+    // =====================================================
+    // 1️⃣ DETECT SUJUD (HIGHEST PRIORITY)
+    // =====================================================
 
-    // Condition 3: Check Z-axis (kepala ke hadapan)
-    bool kepalaDiHadapan = true;
-    if (nose.z != 0 && bahuKiri.z != 0) {
-      // Check if Z available
-      final purataBahuZ = (bahuKiri.z + bahuKanan.z) / 2;
-      kepalaDiHadapan = nose.z > purataBahuZ + 20;
-    }
+    // Method 1: Face completely hidden
+    bool noseHidden = nose == null || nose.likelihood < 0.3;
+    bool eyesHidden =
+        (leftEye == null || leftEye.likelihood < 0.3) &&
+        (rightEye == null || rightEye.likelihood < 0.3);
 
-    if (kepalaSangatRendah && bahuRendah && kepalaDiHadapan) {
+    if (noseHidden && eyesHidden) {
+      debugPrint('🕌 SUJUD Method 1: Face completely hidden');
       return PrayerPosition.sujud;
     }
 
+    // Method 2: Nose EXTREMELY low
+    if (nose != null && nose.likelihood > 0.2) {
+      final noseToShoulderDist = nose.y - purataBahuY;
+
+      if (noseToShoulderDist > 250) {
+        debugPrint('🕌 SUJUD Method 2: Nose extremely low');
+        return PrayerPosition.sujud;
+      }
+    }
+
+    // Method 3: Body compressed
+    if (pinggulKiri != null &&
+        pinggulKanan != null &&
+        pinggulKiri.likelihood > confidenceThreshold &&
+        pinggulKanan.likelihood > confidenceThreshold) {
+      final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
+      final bodyHeight = purataPinggulY - purataBahuY;
+
+      if (bodyHeight < 200) {
+        if (nose == null ||
+            nose.likelihood < confidenceThreshold ||
+            nose.y > purataBahuY + 100) {
+          debugPrint('🕌 SUJUD Method 3: Body compressed');
+          return PrayerPosition.sujud;
+        }
+      }
+
+      // Method 4: Nose below hips
+      if (nose != null && nose.likelihood > 0.2) {
+        if (nose.y > purataPinggulY + 30) {
+          debugPrint('🕌 SUJUD Method 4: Nose below hips');
+          return PrayerPosition.sujud;
+        }
+      }
+    }
+
+    // Method 5: Elbows extremely low
+    if (sikuKiri != null &&
+        sikuKanan != null &&
+        sikuKiri.likelihood > confidenceThreshold &&
+        sikuKanan.likelihood > confidenceThreshold) {
+      final purataSikuY = (sikuKiri.y + sikuKanan.y) / 2;
+      final elbowToShoulderDist = purataSikuY - purataBahuY;
+
+      if (elbowToShoulderDist > 300) {
+        bool lowProfile = false;
+
+        if (nose != null && nose.likelihood > 0.2) {
+          lowProfile = nose.y > purataBahuY + 100;
+        } else {
+          lowProfile = true;
+        }
+
+        if (lowProfile) {
+          debugPrint('🕌 SUJUD Method 5: Elbows very low');
+          return PrayerPosition.sujud;
+        }
+      }
+    }
+
+    // Method 6: Wrists on ground
+    if (tanganKiri != null &&
+        tanganKanan != null &&
+        tanganKiri.likelihood > confidenceThreshold &&
+        tanganKanan.likelihood > confidenceThreshold) {
+      final purataTanganY = (tanganKiri.y + tanganKanan.y) / 2;
+      final wristToShoulderDist = purataTanganY - purataBahuY;
+
+      if (wristToShoulderDist > 350) {
+        bool noseLowOrHidden =
+            nose == null ||
+            nose.likelihood < confidenceThreshold ||
+            nose.y > purataBahuY + 150;
+
+        if (noseLowOrHidden) {
+          debugPrint('🕌 SUJUD Method 6: Wrists on ground');
+          return PrayerPosition.sujud;
+        }
+      }
+    }
+
+    // Method 7: Body folded with knees
+    if (lututKiri != null &&
+        lututKanan != null &&
+        lututKiri.likelihood > confidenceThreshold &&
+        lututKanan.likelihood > confidenceThreshold) {
+      final purataLututY = (lututKiri.y + lututKanan.y) / 2;
+      final kneeToShoulderDist = purataLututY - purataBahuY;
+
+      if (kneeToShoulderDist < 300 && kneeToShoulderDist > 0) {
+        bool bodyFolded = false;
+
+        if (nose != null && nose.likelihood > 0.2) {
+          bodyFolded = nose.y > purataBahuY + 150;
+        } else if (pinggulKiri != null && pinggulKanan != null) {
+          final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
+          final bodyHeight = purataPinggulY - purataBahuY;
+          bodyFolded = bodyHeight < 250;
+        }
+
+        if (bodyFolded) {
+          debugPrint('🕌 SUJUD Method 7: Body folded');
+          return PrayerPosition.sujud;
+        }
+      }
+    }
+
+    // =====================================================
+    // 2️⃣ DETECT RUKU (BOWING)
+    // =====================================================
+    // =====================================================
+    // 2️⃣ DETECT RUKU (BOWING) - ULTRA RELAXED VERSION
+    // =====================================================
+    if (nose != null && nose.likelihood > confidenceThreshold) {
+      // PRIMARY METHOD: With hips visible
+      if (pinggulKiri != null &&
+          pinggulKanan != null &&
+          pinggulKiri.likelihood > confidenceThreshold &&
+          pinggulKanan.likelihood > confidenceThreshold) {
+        final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
+        final bodyHeight = purataPinggulY - purataBahuY;
+
+        // 1. Head bowed down (RELAXED: reduced from 80 to 60)
+        final noseToShoulderDist = nose.y - purataBahuY;
+        final bool kepalaBawah = noseToShoulderDist > 60;
+
+        // 2. Nose still above hips (RELAXED: reduced from 80 to 50)
+        final noseToHipDist = purataPinggulY - nose.y;
+        final bool kepalaDiAtasPinggul = noseToHipDist > 50;
+
+        // 3. Body bent forward (RELAXED: reduced from 100 to 80)
+        final bool badanBengkok = purataPinggulY > purataBahuY + 80;
+
+        // 4. Body NOT compressed (RELAXED: lower bound reduced)
+        final bool bodyNotCompressed = bodyHeight > 150 && bodyHeight < 600;
+
+        // MAIN RUKUK DETECTION
+        if (kepalaBawah &&
+            kepalaDiAtasPinggul &&
+            badanBengkok &&
+            bodyNotCompressed) {
+          debugPrint(
+            '🙇 RUKU: NoseToShoulder=${noseToShoulderDist.toInt()}, '
+            'NoseToHip=${noseToHipDist.toInt()}, '
+            'BodyHeight=${bodyHeight.toInt()}',
+          );
+          return PrayerPosition.ruku;
+        }
+      }
+
+      // SECONDARY METHOD: Using shoulders and nose only (no hips needed)
+      // This catches rukuk even when hips are not clearly visible
+      final noseToShoulderDist = nose.y - purataBahuY;
+
+      // Conditions:
+      // - Nose significantly below shoulders (bowing)
+      // - But not too extreme (not sujud)
+      if (noseToShoulderDist > 60 && noseToShoulderDist < 250) {
+        // Additional check: make sure it's not sujud by checking if face is still visible
+        final bool faceStillVisible =
+            nose.likelihood > confidenceThreshold &&
+                (leftEye != null && leftEye.likelihood > 0.3) ||
+            (rightEye != null && rightEye.likelihood > 0.3);
+
+        if (faceStillVisible) {
+          debugPrint(
+            '🙇 RUKU (secondary): NoseToShoulder=${noseToShoulderDist.toInt()}',
+          );
+          return PrayerPosition.ruku;
+        }
+      }
+
+      // TERTIARY METHOD: Using elbows and wrists (when hips not visible)
+      if (sikuKiri != null &&
+          sikuKanan != null &&
+          sikuKiri.likelihood > confidenceThreshold &&
+          sikuKanan.likelihood > confidenceThreshold &&
+          tanganKiri != null &&
+          tanganKanan != null &&
+          tanganKiri.likelihood > confidenceThreshold &&
+          tanganKanan.likelihood > confidenceThreshold) {
+        final purataSikuY = (sikuKiri.y + sikuKanan.y) / 2;
+        final purataTanganY = (tanganKiri.y + tanganKanan.y) / 2;
+
+        // Head bowed (RELAXED)
+        final bool headBowed = nose.y > purataBahuY + 60;
+
+        // Elbows below shoulders (RELAXED: reduced from 150 to 120)
+        final bool elbowsLow = purataSikuY > purataBahuY + 120;
+
+        // Wrists below elbows (RELAXED: reduced from 50 to 30)
+        final bool wristsLow = purataTanganY > purataSikuY + 30;
+
+        // But not too low (not sujud)
+        final bool notTooLow = purataTanganY < purataBahuY + 500;
+
+        // Face still visible
+        final bool faceVisible = nose.likelihood > 0.4;
+
+        if (headBowed && elbowsLow && wristsLow && notTooLow && faceVisible) {
+          debugPrint('🙇 RUKU (tertiary): Using elbows/wrists');
+          return PrayerPosition.ruku;
+        }
+      }
+
+      // QUATERNARY METHOD: Simple angle check
+      // Just check if nose is moderately below shoulders with stable visibility
+      if (nose.y > purataBahuY + 70 && nose.y < purataBahuY + 200) {
+        // Make sure shoulders are relatively level (not tilted weirdly)
+        final shoulderBalance = (bahuKiri.y - bahuKanan.y).abs();
+
+        if (shoulderBalance < 80) {
+          debugPrint('🙇 RUKU (quaternary): Simple bowing detected');
+          return PrayerPosition.ruku;
+        }
+      }
+    }
+
+    // =====================================================
+    // 3️⃣ DETECT TAKBIRAATUL IHRAM (Hands raised)
+    // =====================================================
+    if (nose != null &&
+        nose.likelihood > confidenceThreshold &&
+        tanganKiri != null &&
+        tanganKiri.likelihood > confidenceThreshold &&
+        tanganKanan != null &&
+        tanganKanan.likelihood > confidenceThreshold &&
+        sikuKiri != null &&
+        sikuKiri.likelihood > confidenceThreshold &&
+        sikuKanan != null &&
+        sikuKanan.likelihood > confidenceThreshold) {
+      final purataTanganY = (tanganKiri.y + tanganKanan.y) / 2;
+
+      final bool handsRaised = purataTanganY < purataBahuY - 30;
+      final bool bodyUpright = nose.y < purataBahuY - 30;
+      final bool handsNearFace = (purataTanganY - nose.y).abs() < 150;
+
+      if (handsRaised && bodyUpright && handsNearFace) {
+        debugPrint('🤲 IHRAM detected');
+        return PrayerPosition.ihram;
+      }
+    }
+
+    // =====================================================
+    // 4️⃣ DETECT SEDEKAP (Hands folded)
+    // =====================================================
+    if (nose != null &&
+        nose.likelihood > confidenceThreshold &&
+        tanganKiri != null &&
+        tanganKiri.likelihood > confidenceThreshold &&
+        tanganKanan != null &&
+        tanganKanan.likelihood > confidenceThreshold) {
+      final purataTanganY = (tanganKiri.y + tanganKanan.y) / 2;
+      final purataTanganX = (tanganKiri.x + tanganKanan.x) / 2;
+
+      final bool bodyUpright = nose.y < purataBahuY - 20;
+
+      bool handsInChestArea = false;
+      if (pinggulKiri != null &&
+          pinggulKanan != null &&
+          pinggulKiri.likelihood > confidenceThreshold &&
+          pinggulKanan.likelihood > confidenceThreshold) {
+        final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
+        handsInChestArea =
+            purataTanganY > nose.y &&
+            purataTanganY > purataBahuY - 50 &&
+            purataTanganY < purataPinggulY - 30;
+      } else {
+        handsInChestArea =
+            purataTanganY > nose.y &&
+            purataTanganY > purataBahuY - 50 &&
+            purataTanganY < purataBahuY + 350;
+      }
+
+      final bool handsTogether = (tanganKanan.x - tanganKiri.x).abs() < 180;
+      final bool handsAtCenter = (purataTanganX - tengahBadanX).abs() < 150;
+      final bool handsNotRaised = purataTanganY > purataBahuY - 80;
+
+      if (bodyUpright &&
+          handsInChestArea &&
+          handsTogether &&
+          handsAtCenter &&
+          handsNotRaised) {
+        debugPrint('🤲 SEDEKAP detected');
+        return PrayerPosition.sedekap;
+      }
+    }
+
+    // =====================================================
+    // 5️⃣ DETECT QIYAM (Standing)
+    // =====================================================
+    if (nose != null && nose.likelihood > confidenceThreshold) {
+      final bool headUp = nose.y < purataBahuY - 30;
+
+      bool bodyVertical = true;
+      if (pinggulKiri != null &&
+          pinggulKanan != null &&
+          pinggulKiri.likelihood > confidenceThreshold &&
+          pinggulKanan.likelihood > confidenceThreshold) {
+        final purataPinggulY = (pinggulKiri.y + pinggulKanan.y) / 2;
+        bodyVertical = purataPinggulY > purataBahuY + 150;
+      }
+
+      final bool legsVisible =
+          (lututKiri != null && lututKiri.likelihood > 0.3) ||
+          (lututKanan != null && lututKanan.likelihood > 0.3);
+
+      final bool shouldersLevel = (bahuKiri.y - bahuKanan.y).abs() < 60;
+
+      bool handsAtSides = false;
+      if (tanganKiri != null &&
+          tanganKanan != null &&
+          tanganKiri.likelihood > confidenceThreshold &&
+          tanganKanan.likelihood > confidenceThreshold) {
+        final purataTanganY = (tanganKiri.y + tanganKanan.y) / 2;
+        final bool handsDown = purataTanganY > purataBahuY + 50;
+        final bool handsApart = (tanganKanan.x - tanganKiri.x).abs() > 130;
+        handsAtSides = handsDown && handsApart;
+      } else {
+        handsAtSides = true;
+      }
+
+      if (headUp &&
+          bodyVertical &&
+          shouldersLevel &&
+          (handsAtSides || legsVisible)) {
+        debugPrint('🧍 QIYAM detected');
+        return PrayerPosition.qiyam;
+      }
+    }
+
+    // =====================================================
+    // 6️⃣ FALLBACK
+    // =====================================================
+    if (nose != null &&
+        nose.likelihood > confidenceThreshold &&
+        nose.y < purataBahuY - 20) {
+      debugPrint('🧍 QIYAM (fallback)');
+      return PrayerPosition.qiyam;
+    }
+
+    debugPrint('❓ UNKNOWN');
     return PrayerPosition.unknown;
+  }
+
+  // Tambah method ini dalam class _RakaatScreenState
+  Future<void> caraLetakTelefon() async {
+    await showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.9),
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(0),
+          child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Stack(
+              children: [
+                // Gambar utama
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                          'assets/images/cara_letak_telefon.png',
+                        ),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Close button di atas
+                Positioned(
+                  top: 50,
+                  right: 20,
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Indicator di bawah
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        // Tap to close text
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            "Jika anda sering terlupa bilangan rakaat, letakkan telefon di tengah sejadah seperti dalam gambar dan tekan 'Mula'. Aplikasi ini menggunakan teknologi pose detection untuk mengesan pergerakan solat dan merekod setiap rakaat secara automatik.",
+                            textAlign: .center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

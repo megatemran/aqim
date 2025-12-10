@@ -4,6 +4,9 @@
 import 'package:aqim/services/app_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../utils/plugin.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({
@@ -28,9 +31,106 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String _selectedLanguage = 'ms';
 
   @override
+  void initState() {
+    _initAsync();
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initAsync() async {
+    await _setDefaultSettings();
+  }
+
+  Future<void> _setDefaultSettings() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Check if this is first time (no settings saved yet)
+      final isFirstTime = prefs.getBool('is_first_time') ?? true;
+
+      if (!isFirstTime) {
+        debugPrint('⚡ Settings already exist, skipping default setup');
+        return;
+      }
+
+      debugPrint('🎯 First time setup - Setting default values...');
+
+      // NOTIFICATION SETTINGS
+      await prefs.setBool(prefNotificationsEnabled, true);
+      await prefs.setBool(prefSoundEnabled, true);
+      await prefs.setBool(prefVibrationEnabled, true);
+
+      // PRAYER ENABLE/DISABLE
+      await prefs.setBool(prefSubuhEnabled, true);
+      await prefs.setBool(prefZohorEnabled, true);
+      await prefs.setBool(prefAsarEnabled, true);
+      await prefs.setBool(prefMaghribEnabled, true);
+      await prefs.setBool(prefIsyakEnabled, true);
+
+      // PRAYER SOUNDS
+      await prefs.setString(prefSubuhSound, 'azan_subuh_tv3_2018');
+      await prefs.setString(prefZohorSound, 'azan_zohor_ashfaq_hussain');
+      await prefs.setString(prefAsarSound, 'azan_asar_tv1_2018');
+      await prefs.setString(prefMaghribSound, 'azan_maghrib_tv3_2018');
+      await prefs.setString(prefIsyakSound, 'azan_isyak_munif_hijjaz');
+
+      // PRAYER VIBRATION
+      await prefs.setBool(prefSubuhVibrate, true);
+      await prefs.setBool(prefZohorVibrate, true);
+      await prefs.setBool(prefAsarVibrate, true);
+      await prefs.setBool(prefMaghribVibrate, true);
+      await prefs.setBool(prefIsyakVibrate, true);
+
+      // PRAYER LED
+      await prefs.setBool(prefSubuhLed, true);
+      await prefs.setBool(prefZohorLed, true);
+      await prefs.setBool(prefAsarLed, true);
+      await prefs.setBool(prefMaghribLed, true);
+      await prefs.setBool(prefIsyakLed, true);
+
+      // PRAYER FULLSCREEN
+      await prefs.setBool(prefSubuhFullscreen, true);
+      await prefs.setBool(prefZohorFullscreen, true);
+      await prefs.setBool(prefAsarFullscreen, true);
+      await prefs.setBool(prefMaghribFullscreen, true);
+      await prefs.setBool(prefIsyakFullscreen, true);
+
+      // PRAYER REMINDERS (5 minutes)
+      await prefs.setBool(prefSubuhReminder5Min, false);
+      await prefs.setBool(prefZohorReminder5Min, false);
+      await prefs.setBool(prefAsarReminder5Min, false);
+      await prefs.setBool(prefMaghribReminder5Min, false);
+      await prefs.setBool(prefIsyakReminder5Min, false);
+
+      // PRAYER REMINDERS (10 minutes)
+      await prefs.setBool(prefSubuhReminder10Min, false);
+      await prefs.setBool(prefZohorReminder10Min, false);
+      await prefs.setBool(prefAsarReminder10Min, false);
+      await prefs.setBool(prefMaghribReminder10Min, false);
+      await prefs.setBool(prefIsyakReminder10Min, false);
+
+      // PRAYER REMINDERS (15 minutes)
+      await prefs.setBool(prefSubuhReminder15Min, false);
+      await prefs.setBool(prefZohorReminder15Min, false);
+      await prefs.setBool(prefAsarReminder15Min, false);
+      await prefs.setBool(prefMaghribReminder15Min, false);
+      await prefs.setBool(prefIsyakReminder15Min, false);
+
+      // TIME FORMAT
+      await prefs.setBool(prefIs24HourFormat, true);
+
+      // Mark as no longer first time
+      await prefs.setBool('is_first_time', false);
+
+      debugPrint('✅ Default settings saved successfully!');
+    } catch (e) {
+      debugPrint('error setdefaultsettings: $e');
+    }
   }
 
   void _nextPage() {

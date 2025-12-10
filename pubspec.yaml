@@ -2,7 +2,7 @@ name: aqim
 description: "Aqim - Prayer Times & Qibla app for Malaysia. Accurate Malaysian prayer times, automatic azan, qibla compass, daily duas, and beautiful home screen widgets."
 publish_to: 'none'
 
-version: 1.0.2+2
+version: 1.0.4+4
 
 environment:
   sdk: ^3.10.0
@@ -36,7 +36,9 @@ dependencies:
   flutter_compass: ^0.8.0
   qr_flutter: ^4.1.0
   audioplayers: ^6.1.0
+  
   vibration: ^3.1.4
+  screen_brightness: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -99,10 +99,33 @@ class AdsService {
       'ca-app-pub-7677814397287910/8873979667';
   final String kiblatInterstitial1Ios = '';
 
+  final String doaInterstitial1Android =
+      'ca-app-pub-7677814397287910/9505315308';
+  final String doaInterstitial1Ios = '';
+
   // Ad instances
   AppOpenAd? appOpenAd;
   BannerAd? bannerAd;
   InterstitialAd? interstitialAd;
+
+  // ✅ Preloaded banner ads cache for all screens
+  static BannerAd? _preloadedHomeBanner;
+  static bool _isPreloadingHomeBanner = false;
+
+  static BannerAd? _preloadedDoaBanner1;
+  static bool _isPreloadingDoaBanner1 = false;
+
+  static BannerAd? _preloadedDoaBanner2;
+  static bool _isPreloadingDoaBanner2 = false;
+
+  static BannerAd? _preloadedSolatBanner;
+  static bool _isPreloadingSolatBanner = false;
+
+  static BannerAd? _preloadedWidgetBanner;
+  static bool _isPreloadingWidgetBanner = false;
+
+  static BannerAd? _preloadedAzanBanner;
+  static bool _isPreloadingAzanBanner = false;
 
   // ==================== GETTERS FOR AD UNIT IDS ====================
   // In debug mode, use test ad unit IDs
@@ -188,6 +211,11 @@ class AdsService {
     return Platform.isAndroid ? kiblatInterstitial1Android : kiblatInterstitial1Ios;
   }
 
+  String get doaInterstitial1AdString {
+    if (kDebugMode) return Platform.isAndroid ? testInterstitialAndroid : testInterstitialIos;
+    return Platform.isAndroid ? doaInterstitial1Android : doaInterstitial1Ios;
+  }
+
   // ==================== INITIALIZATION ====================
 
   /// ✅ Initialize Google Mobile Ads
@@ -262,92 +290,429 @@ class AdsService {
 
   // ==================== BANNER ADS ====================
 
+  /// ✅ Preload Home Banner 1 (call this in main.dart after initGoogleMobileAds)
+  static Future<void> preloadHomeBanner() async {
+    if (!isShowAds || _isPreloadingHomeBanner || _preloadedHomeBanner != null) {
+      return; // Already preloading or preloaded
+    }
+
+    _isPreloadingHomeBanner = true;
+    print('🔄 Preloading home banner ad...');
+
+    final adsService = AdsService();
+    final bannerAd = BannerAd(
+      adUnitId: adsService.homeBanner1AdString,
+      request: adsService._buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          _preloadedHomeBanner = ad as BannerAd;
+          _isPreloadingHomeBanner = false;
+          print('✅ Home banner preloaded successfully (ready to display)');
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('❌ Home banner preload failed: ${err.message}');
+          ad.dispose();
+          _preloadedHomeBanner = null;
+          _isPreloadingHomeBanner = false;
+        },
+      ),
+    );
+
+    bannerAd.load();
+  }
+
+  /// ✅ Get preloaded Home Banner (instant, no loading time)
+  static BannerAd? getPreloadedHomeBanner() {
+    final preloaded = _preloadedHomeBanner;
+    _preloadedHomeBanner = null; // Clear cache after use
+
+    if (preloaded != null) {
+      print('⚡ Using preloaded home banner (instant display)');
+    }
+
+    return preloaded;
+  }
+
+  // ==================== PRELOAD DOA BANNERS ====================
+
+  /// ✅ Preload Doa Banner 1
+  static Future<void> preloadDoaBanner1() async {
+    if (!isShowAds || _isPreloadingDoaBanner1 || _preloadedDoaBanner1 != null) {
+      return;
+    }
+
+    _isPreloadingDoaBanner1 = true;
+    print('🔄 Preloading Doa banner 1...');
+
+    final adsService = AdsService();
+    final bannerAd = BannerAd(
+      adUnitId: adsService.doaBanner1AdString,
+      request: adsService._buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          _preloadedDoaBanner1 = ad as BannerAd;
+          _isPreloadingDoaBanner1 = false;
+          print('✅ Doa banner 1 preloaded successfully');
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('❌ Doa banner 1 preload failed: ${err.message}');
+          ad.dispose();
+          _preloadedDoaBanner1 = null;
+          _isPreloadingDoaBanner1 = false;
+        },
+      ),
+    );
+
+    bannerAd.load();
+  }
+
+  static BannerAd? getPreloadedDoaBanner1() {
+    final preloaded = _preloadedDoaBanner1;
+    _preloadedDoaBanner1 = null;
+    if (preloaded != null) print('⚡ Using preloaded Doa banner 1');
+    return preloaded;
+  }
+
+  /// ✅ Preload Doa Banner 2
+  static Future<void> preloadDoaBanner2() async {
+    if (!isShowAds || _isPreloadingDoaBanner2 || _preloadedDoaBanner2 != null) {
+      return;
+    }
+
+    _isPreloadingDoaBanner2 = true;
+    print('🔄 Preloading Doa banner 2...');
+
+    final adsService = AdsService();
+    final bannerAd = BannerAd(
+      adUnitId: adsService.doaBanner2AdString,
+      request: adsService._buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          _preloadedDoaBanner2 = ad as BannerAd;
+          _isPreloadingDoaBanner2 = false;
+          print('✅ Doa banner 2 preloaded successfully');
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('❌ Doa banner 2 preload failed: ${err.message}');
+          ad.dispose();
+          _preloadedDoaBanner2 = null;
+          _isPreloadingDoaBanner2 = false;
+        },
+      ),
+    );
+
+    bannerAd.load();
+  }
+
+  static BannerAd? getPreloadedDoaBanner2() {
+    final preloaded = _preloadedDoaBanner2;
+    _preloadedDoaBanner2 = null;
+    if (preloaded != null) print('⚡ Using preloaded Doa banner 2');
+    return preloaded;
+  }
+
+  // ==================== PRELOAD SOLAT BANNER ====================
+
+  /// ✅ Preload Solat Banner
+  static Future<void> preloadSolatBanner() async {
+    if (!isShowAds || _isPreloadingSolatBanner || _preloadedSolatBanner != null) {
+      return;
+    }
+
+    _isPreloadingSolatBanner = true;
+    print('🔄 Preloading Solat banner...');
+
+    final adsService = AdsService();
+    final bannerAd = BannerAd(
+      adUnitId: adsService.solatBanner1AdString,
+      request: adsService._buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          _preloadedSolatBanner = ad as BannerAd;
+          _isPreloadingSolatBanner = false;
+          print('✅ Solat banner preloaded successfully');
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('❌ Solat banner preload failed: ${err.message}');
+          ad.dispose();
+          _preloadedSolatBanner = null;
+          _isPreloadingSolatBanner = false;
+        },
+      ),
+    );
+
+    bannerAd.load();
+  }
+
+  static BannerAd? getPreloadedSolatBanner() {
+    final preloaded = _preloadedSolatBanner;
+    _preloadedSolatBanner = null;
+    if (preloaded != null) print('⚡ Using preloaded Solat banner');
+    return preloaded;
+  }
+
+  // ==================== PRELOAD WIDGET BANNER ====================
+
+  /// ✅ Preload Widget Banner
+  static Future<void> preloadWidgetBanner() async {
+    if (!isShowAds || _isPreloadingWidgetBanner || _preloadedWidgetBanner != null) {
+      return;
+    }
+
+    _isPreloadingWidgetBanner = true;
+    print('🔄 Preloading Widget banner...');
+
+    final adsService = AdsService();
+    final bannerAd = BannerAd(
+      adUnitId: adsService.widgetBanner1AdString,
+      request: adsService._buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          _preloadedWidgetBanner = ad as BannerAd;
+          _isPreloadingWidgetBanner = false;
+          print('✅ Widget banner preloaded successfully');
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('❌ Widget banner preload failed: ${err.message}');
+          ad.dispose();
+          _preloadedWidgetBanner = null;
+          _isPreloadingWidgetBanner = false;
+        },
+      ),
+    );
+
+    bannerAd.load();
+  }
+
+  static BannerAd? getPreloadedWidgetBanner() {
+    final preloaded = _preloadedWidgetBanner;
+    _preloadedWidgetBanner = null;
+    if (preloaded != null) print('⚡ Using preloaded Widget banner');
+    return preloaded;
+  }
+
+  // ==================== PRELOAD AZAN BANNER ====================
+
+  /// ✅ Preload Azan Banner
+  static Future<void> preloadAzanBanner() async {
+    if (!isShowAds || _isPreloadingAzanBanner || _preloadedAzanBanner != null) {
+      return;
+    }
+
+    _isPreloadingAzanBanner = true;
+    print('🔄 Preloading Azan banner...');
+
+    final adsService = AdsService();
+    final bannerAd = BannerAd(
+      adUnitId: adsService.azanBanner1AdString,
+      request: adsService._buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          _preloadedAzanBanner = ad as BannerAd;
+          _isPreloadingAzanBanner = false;
+          print('✅ Azan banner preloaded successfully');
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('❌ Azan banner preload failed: ${err.message}');
+          ad.dispose();
+          _preloadedAzanBanner = null;
+          _isPreloadingAzanBanner = false;
+        },
+      ),
+    );
+
+    bannerAd.load();
+  }
+
+  static BannerAd? getPreloadedAzanBanner() {
+    final preloaded = _preloadedAzanBanner;
+    _preloadedAzanBanner = null;
+    if (preloaded != null) print('⚡ Using preloaded Azan banner');
+    return preloaded;
+  }
+
+  // ==================== PRELOAD ALL BANNERS ====================
+
+  /// ✅ Preload all banner ads at once (call in main.dart)
+  static Future<void> preloadAllBanners() async {
+    if (!isShowAds) return;
+
+    print('🚀 Preloading ALL banner ads...');
+
+    // Preload all banners in parallel
+    await Future.wait([
+      preloadHomeBanner(),
+      preloadDoaBanner1(),
+      preloadDoaBanner2(),
+      preloadSolatBanner(),
+      preloadWidgetBanner(),
+      preloadAzanBanner(),
+    ]);
+
+    print('✅ All banner ads preloaded and ready!');
+  }
+
   /// Load Home Banner 1 with Islamic filtering
+  /// ✅ Now tries to use preloaded banner first for instant display
   BannerAd? loadBannerHome1({
     required Function(Ad) onAdLoaded,
     required Function(Ad, LoadAdError) onAdFailedToLoad,
   }) {
-    if (isShowAds) {
-      BannerAd bannerAd = BannerAd(
-        adUnitId: homeBanner1AdString,
-        request: _buildIslamicAdRequest(), // ✅ Uses Islamic keywords
-        size: AdSize.banner,
-        listener: BannerAdListener(
-          onAdLoaded: onAdLoaded,
-          onAdFailedToLoad: onAdFailedToLoad,
-        ),
-      );
-      bannerAd.load();
-      return bannerAd;
+    if (!isShowAds) {
+      print('❌ Ads are disabled or AdMob is not ready.');
+      return null;
     }
-    print('❌ Ads are disabled or AdMob is not ready.');
-    return null;
+
+    // ✅ Try to use preloaded banner first (instant display)
+    final preloadedBanner = getPreloadedHomeBanner();
+    if (preloadedBanner != null) {
+      // Trigger onAdLoaded callback immediately
+      Future.microtask(() => onAdLoaded(preloadedBanner));
+
+      // Start preloading next banner in background
+      Future.delayed(const Duration(seconds: 2), () {
+        preloadHomeBanner();
+      });
+
+      return preloadedBanner;
+    }
+
+    // ✅ Fallback: Load new banner (with loading time)
+    print('⚠️ No preloaded banner, loading fresh one...');
+    BannerAd bannerAd = BannerAd(
+      adUnitId: homeBanner1AdString,
+      request: _buildIslamicAdRequest(), // ✅ Uses Islamic keywords
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          onAdLoaded(ad);
+          // Start preloading next banner for future use
+          Future.delayed(const Duration(seconds: 2), () {
+            preloadHomeBanner();
+          });
+        },
+        onAdFailedToLoad: onAdFailedToLoad,
+      ),
+    );
+    bannerAd.load();
+    return bannerAd;
   }
 
   /// Load Doa Banner 1 with Islamic filtering
+  /// ✅ Uses preloaded banner for instant display
   BannerAd? loadBannerDoa1({
     required Function(Ad) onAdLoaded,
     required Function(Ad, LoadAdError) onAdFailedToLoad,
   }) {
-    if (isShowAds) {
-      BannerAd bannerAd = BannerAd(
-        adUnitId: doaBanner1AdString,
-        request: _buildIslamicAdRequest(), // ✅ Uses Islamic keywords
-        size: AdSize.banner,
-        listener: BannerAdListener(
-          onAdLoaded: onAdLoaded,
-          onAdFailedToLoad: onAdFailedToLoad,
-        ),
-      );
-      bannerAd.load();
-      return bannerAd;
+    if (!isShowAds) {
+      print('❌ Ads are disabled or AdMob is not ready.');
+      return null;
     }
-    print('❌ Ads are disabled or AdMob is not ready.');
-    return null;
+
+    // ✅ Try preloaded banner first
+    final preloaded = getPreloadedDoaBanner1();
+    if (preloaded != null) {
+      Future.microtask(() => onAdLoaded(preloaded));
+      Future.delayed(const Duration(seconds: 2), preloadDoaBanner1);
+      return preloaded;
+    }
+
+    // Fallback: Load fresh banner
+    print('⚠️ No preloaded Doa banner 1, loading fresh...');
+    BannerAd bannerAd = BannerAd(
+      adUnitId: doaBanner1AdString,
+      request: _buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          onAdLoaded(ad);
+          Future.delayed(const Duration(seconds: 2), preloadDoaBanner1);
+        },
+        onAdFailedToLoad: onAdFailedToLoad,
+      ),
+    );
+    bannerAd.load();
+    return bannerAd;
   }
 
   /// Load Doa Banner 2 with Islamic filtering
+  /// ✅ Uses preloaded banner for instant display
   BannerAd? loadBannerDoa2({
     required Function(Ad) onAdLoaded,
     required Function(Ad, LoadAdError) onAdFailedToLoad,
   }) {
-    if (isShowAds) {
-      BannerAd bannerAd = BannerAd(
-        adUnitId: doaBanner2AdString,
-        request: _buildIslamicAdRequest(), // ✅ Uses Islamic keywords
-        size: AdSize.banner,
-        listener: BannerAdListener(
-          onAdLoaded: onAdLoaded,
-          onAdFailedToLoad: onAdFailedToLoad,
-        ),
-      );
-      bannerAd.load();
-      return bannerAd;
+    if (!isShowAds) {
+      print('❌ Ads are disabled or AdMob is not ready.');
+      return null;
     }
-    print('❌ Ads are disabled or AdMob is not ready.');
-    return null;
+
+    // ✅ Try preloaded banner first
+    final preloaded = getPreloadedDoaBanner2();
+    if (preloaded != null) {
+      Future.microtask(() => onAdLoaded(preloaded));
+      Future.delayed(const Duration(seconds: 2), preloadDoaBanner2);
+      return preloaded;
+    }
+
+    // Fallback: Load fresh banner
+    print('⚠️ No preloaded Doa banner 2, loading fresh...');
+    BannerAd bannerAd = BannerAd(
+      adUnitId: doaBanner2AdString,
+      request: _buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          onAdLoaded(ad);
+          Future.delayed(const Duration(seconds: 2), preloadDoaBanner2);
+        },
+        onAdFailedToLoad: onAdFailedToLoad,
+      ),
+    );
+    bannerAd.load();
+    return bannerAd;
   }
 
   /// Load Solat Banner 1 with Islamic filtering
+  /// ✅ Uses preloaded banner for instant display
   BannerAd? loadBannerSolat1({
     required Function(Ad) onAdLoaded,
     required Function(Ad, LoadAdError) onAdFailedToLoad,
   }) {
-    if (isShowAds) {
-      BannerAd bannerAd = BannerAd(
-        adUnitId: solatBanner1AdString,
-        request: _buildIslamicAdRequest(), // ✅ Uses Islamic keywords
-        size: AdSize.banner,
-        listener: BannerAdListener(
-          onAdLoaded: onAdLoaded,
-          onAdFailedToLoad: onAdFailedToLoad,
-        ),
-      );
-      bannerAd.load();
-      return bannerAd;
+    if (!isShowAds) {
+      print('❌ Ads are disabled or AdMob is not ready.');
+      return null;
     }
-    print('❌ Ads are disabled or AdMob is not ready.');
-    return null;
+
+    // ✅ Try preloaded banner first
+    final preloaded = getPreloadedSolatBanner();
+    if (preloaded != null) {
+      Future.microtask(() => onAdLoaded(preloaded));
+      Future.delayed(const Duration(seconds: 2), preloadSolatBanner);
+      return preloaded;
+    }
+
+    // Fallback: Load fresh banner
+    print('⚠️ No preloaded Solat banner, loading fresh...');
+    BannerAd bannerAd = BannerAd(
+      adUnitId: solatBanner1AdString,
+      request: _buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          onAdLoaded(ad);
+          Future.delayed(const Duration(seconds: 2), preloadSolatBanner);
+        },
+        onAdFailedToLoad: onAdFailedToLoad,
+      ),
+    );
+    bannerAd.load();
+    return bannerAd;
   }
 
   /// Load Kiblah Banner 1 with Islamic filtering
@@ -372,6 +737,8 @@ class AdsService {
     return null;
   }
 
+  /// Load Azan Banner with Islamic filtering
+  /// ✅ Uses preloaded banner for instant display
   BannerAd? loadBannerAzan1({
     required Function(Ad) onAdLoaded,
     required Function(Ad, LoadAdError) onAdFailedToLoad,
@@ -381,48 +748,73 @@ class AdsService {
       return null;
     }
 
+    // ✅ Try preloaded banner first
+    final preloaded = getPreloadedAzanBanner();
+    if (preloaded != null) {
+      Future.microtask(() => onAdLoaded(preloaded));
+      Future.delayed(const Duration(seconds: 2), preloadAzanBanner);
+      return preloaded;
+    }
+
+    // Fallback: Load fresh banner
+    print('⚠️ No preloaded Azan banner, loading fresh...');
     final banner = BannerAd(
       adUnitId: azanBanner1AdString,
       size: AdSize.banner,
       request: _buildIslamicAdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          print('🎉 Banner loaded');
+          print('🎉 Azan banner loaded');
           onAdLoaded(ad);
+          Future.delayed(const Duration(seconds: 2), preloadAzanBanner);
         },
         onAdFailedToLoad: (ad, err) {
-          print("❌ Banner failed: ${err.message}");
+          print("❌ Azan banner failed: ${err.message}");
           onAdFailedToLoad(ad, err);
           ad.dispose();
         },
       ),
     );
 
-    // IMPORTANT!!!
     banner.load();
     return banner;
   }
 
   /// Load Widget Banner 1 with Islamic filtering
+  /// ✅ Uses preloaded banner for instant display
   BannerAd? loadBannerWidget1({
     required Function(Ad) onAdLoaded,
     required Function(Ad, LoadAdError) onAdFailedToLoad,
   }) {
-    if (isShowAds) {
-      BannerAd bannerAd = BannerAd(
-        adUnitId: widgetBanner1AdString,
-        request: _buildIslamicAdRequest(), // ✅ Uses Islamic keywords
-        size: AdSize.banner,
-        listener: BannerAdListener(
-          onAdLoaded: onAdLoaded,
-          onAdFailedToLoad: onAdFailedToLoad,
-        ),
-      );
-      bannerAd.load();
-      return bannerAd;
+    if (!isShowAds) {
+      print('❌ Ads are disabled or AdMob is not ready.');
+      return null;
     }
-    print('❌ Ads are disabled or AdMob is not ready.');
-    return null;
+
+    // ✅ Try preloaded banner first
+    final preloaded = getPreloadedWidgetBanner();
+    if (preloaded != null) {
+      Future.microtask(() => onAdLoaded(preloaded));
+      Future.delayed(const Duration(seconds: 2), preloadWidgetBanner);
+      return preloaded;
+    }
+
+    // Fallback: Load fresh banner
+    print('⚠️ No preloaded Widget banner, loading fresh...');
+    BannerAd bannerAd = BannerAd(
+      adUnitId: widgetBanner1AdString,
+      request: _buildIslamicAdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          onAdLoaded(ad);
+          Future.delayed(const Duration(seconds: 2), preloadWidgetBanner);
+        },
+        onAdFailedToLoad: onAdFailedToLoad,
+      ),
+    );
+    bannerAd.load();
+    return bannerAd;
   }
 
   // ==================== INTERSTITIAL ADS ====================
@@ -625,9 +1017,39 @@ class AdsService {
     interstitialAd = null;
   }
 
+  /// ✅ Dispose all preloaded banners
+  static void disposeAllPreloadedBanners() {
+    _preloadedHomeBanner?.dispose();
+    _preloadedHomeBanner = null;
+    _isPreloadingHomeBanner = false;
+
+    _preloadedDoaBanner1?.dispose();
+    _preloadedDoaBanner1 = null;
+    _isPreloadingDoaBanner1 = false;
+
+    _preloadedDoaBanner2?.dispose();
+    _preloadedDoaBanner2 = null;
+    _isPreloadingDoaBanner2 = false;
+
+    _preloadedSolatBanner?.dispose();
+    _preloadedSolatBanner = null;
+    _isPreloadingSolatBanner = false;
+
+    _preloadedWidgetBanner?.dispose();
+    _preloadedWidgetBanner = null;
+    _isPreloadingWidgetBanner = false;
+
+    _preloadedAzanBanner?.dispose();
+    _preloadedAzanBanner = null;
+    _isPreloadingAzanBanner = false;
+
+    print('🗑️ All preloaded banners disposed');
+  }
+
   /// Dispose all ads
   void disposeAll() {
     disposeBannerAd();
     disposeInterstitialAd();
+    disposeAllPreloadedBanners();
   }
 }

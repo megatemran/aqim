@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:aqim/services/prayer_alarm_service.dart';
 
 class PermissionIntroScreen extends StatefulWidget {
   final VoidCallback onContinue;
@@ -11,7 +12,8 @@ class PermissionIntroScreen extends StatefulWidget {
   State<PermissionIntroScreen> createState() => _PermissionIntroScreenState();
 }
 
-class _PermissionIntroScreenState extends State<PermissionIntroScreen> {
+class _PermissionIntroScreenState extends State<PermissionIntroScreen>
+    with WidgetsBindingObserver {
   String _locationStatus = 'denied';
   String _notificationStatus = 'denied';
   String _alarmStatus = 'denied';
@@ -43,7 +45,24 @@ class _PermissionIntroScreenState extends State<PermissionIntroScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkInitialPermissions();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Re-check permissions when user returns from Settings
+    if (state == AppLifecycleState.resumed) {
+      debugPrint('🔄 App resumed - rechecking permissions...');
+      _checkInitialPermissions();
+    }
   }
 
   static Widget _buildPermissionItem({
@@ -108,12 +127,15 @@ class _PermissionIntroScreenState extends State<PermissionIntroScreen> {
   Future<void> _checkInitialPermissions() async {
     final loc = await Permission.location.status;
     final noti = await Permission.notification.status;
-    final alarm = await Permission.scheduleExactAlarm.status;
+
+    // ✅ Use native method channel for exact alarm permission check
+    // permission_handler does NOT properly support scheduleExactAlarm on Android 12+
+    // final alarm = await PrayerAlarmService.canScheduleExactAlarms();
 
     setState(() {
       _locationStatus = loc.isGranted ? 'granted' : 'denied';
       _notificationStatus = noti.isGranted ? 'granted' : 'denied';
-      _alarmStatus = alarm.isGranted ? 'granted' : 'denied';
+      _alarmStatus = alarm ? 'granted' : 'denied';
     });
   }
 
@@ -230,23 +252,71 @@ class _PermissionIntroScreenState extends State<PermissionIntroScreen> {
                         setState(() => _notificationStatus = result);
                       },
                     ),
-                    const SizedBox(height: 20),
-                    _buildPermissionItem(
-                      icon: Icons.alarm_rounded,
-                      title: 'Alarm Tepat',
-                      description:
-                          'Memastikan azan berbunyi tepat pada waktunya',
-                      cs: cs,
-                      status: _alarmStatus,
-                      onTap: () async {
-                        final result = await _requestPermission(
-                          permission: Permission.scheduleExactAlarm,
-                        );
-                        setState(() => _alarmStatus = result);
-                      },
-                    ),
+                    // Only show exact alarm permission on Android 12-13
+                    // Android 14+ auto-grants USE_EXACT_ALARM for alarm apps
+                    if (_alarmStatus != 'granted') ...[
+                      const SizedBox(height: 20),
+                      _buildPermissionItem(
+                        icon: Icons.alarm_rounded,
+                        title: 'Alarm Tepat',
+                        description:
+                            'Memastikan azan berbunyi tepat pada waktunya',
+                        cs: cs,
+                        status: _alarmStatus,
+                        onTap: () async {
+                          // ✅ Open exact alarm settings using native method
+                          // permission_handler does NOT work for scheduleExactAlarm
+                          await PrayerAlarmService.openExactAlarmSettings();
+
+                          // Wait a bit for user to grant permission
+                          await Future.delayed(const Duration(seconds: 1));
+
+                          // Re-check permission status
+                          final isGranted =
+                              await PrayerAlarmService.canScheduleExactAlarms();
+                          setState(() {
+                            _alarmStatus = isGranted ? 'granted' : 'denied';
+                          });
+                        },
+                      ),
+                    ],
                   ],
                 ),
+
+                // Info note for Android 14+ (exact alarm auto-granted)
+                // if (_alarmStatus == 'granted' ||
+                //     _alarmStatus == 'already granted') ...[
+                //   const SizedBox(height: 16),
+                //   Container(
+                //     padding: const EdgeInsets.all(12),
+                //     decoration: BoxDecoration(
+                //       color: Colors.green.withValues(alpha: 0.1),
+                //       borderRadius: BorderRadius.circular(12),
+                //       border: Border.all(
+                //         color: Colors.green.withValues(alpha: 0.3),
+                //       ),
+                //     ),
+                //     child: Row(
+                //       children: [
+                //         Icon(
+                //           Icons.info_outline,
+                //           color: Colors.green.shade700,
+                //           size: 20,
+                //         ),
+                //         const SizedBox(width: 12),
+                //         Expanded(
+                //           child: Text(
+                //             'Alarm tepat telah diaktifkan automatik untuk aplikasi waktu solat',
+                //             style: TextStyle(
+                //               fontSize: 12,
+                //               color: Colors.green.shade900,
+                //             ),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ],
                 const SizedBox(height: 40),
 
                 // Continue Button
@@ -254,9 +324,12 @@ class _PermissionIntroScreenState extends State<PermissionIntroScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed:
-                        (_locationStatus == 'granted' &&
-                            _notificationStatus == 'granted' &&
-                            _alarmStatus == 'granted')
+                        (_locationStatus == 'granted' ||
+                                _locationStatus == 'already granted') &&
+                            (_notificationStatus == 'granted' ||
+                                _notificationStatus == 'already granted') &&
+                            (_alarmStatus == 'granted' ||
+                                _alarmStatus == 'already granted')
                         ? widget.onContinue
                         : null,
 

@@ -46,7 +46,7 @@ class _AzanFullScreenState extends State<AzanFullScreen>
   late Timer _clockTimer;
   String _currentTime = DateFormat('hh:mm:ss a').format(DateTime.now());
   bool _isStopping = false;
-  String _azanFile = 'azan_munif_hijjaz.mp3'; // Default
+  String _azanFile = 'azan_isyak_munif_hijjaz.mp3'; // Default
   final GlobalService _globalService = GlobalService();
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
@@ -165,7 +165,7 @@ class _AzanFullScreenState extends State<AzanFullScreen>
         break;
       default:
         _shouldPlaySound = false;
-        _azanFile = 'azan_munif_hijjaz.mp3';
+        _azanFile = 'azan_isyak_munif_hijjaz.mp3';
         _shouldVibrate = false;
         _shouldUseLed = false;
     }
@@ -648,15 +648,26 @@ class _AzanFullScreenState extends State<AzanFullScreen>
   String _getAzanDisplayName(String azanFile) {
     // Remove .mp3 extension if present
     final cleanFile = azanFile.replaceAll('.mp3', '');
-
-    if (cleanFile.contains('munif_hijjaz') ||
-        cleanFile == 'azan_munif_hijjaz') {
-      return 'Azan Munif Hijjaz';
+    if (cleanFile.contains('azan_subuh') ||
+        cleanFile == 'azan_subuh_tv3_2018') {
+      return 'Azan Subuh TV3 2018';
     }
-    if (cleanFile.contains('maghrib_tv3') ||
+    if (cleanFile.contains('azan_zohor') ||
+        cleanFile == 'azan_zohor_ashfaq_hussain') {
+      return 'Azan Zohor Ashfaq Hussain';
+    }
+    if (cleanFile.contains('azan_asar') || cleanFile == 'azan_asar_tv1_2018') {
+      return 'Azan Asar TV1 2018';
+    }
+    if (cleanFile.contains('azan_maghrib') ||
         cleanFile == 'azan_maghrib_tv3_2018') {
       return 'Azan Maghrib TV3 2018';
     }
+    if (cleanFile.contains('azan_isyak') ||
+        cleanFile == 'azan_isyak_munif_hijjaz') {
+      return 'Azan Isyak Munif Hijjaz';
+    }
+
     return 'Azan Default';
   }
 }

@@ -63,10 +63,12 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-    implementation("com.google.android.material:material:1.13.0")
+    // ✅ Updated to latest Material Design library with edge-to-edge support
+    implementation("com.google.android.material:material:1.14.0-alpha07")
     implementation("androidx.glance:glance:1.2.0-beta01")
     implementation("androidx.glance:glance-appwidget:1.2.0-beta01")
-    implementation("androidx.core:core-ktx:1.12.0")
+    // ✅ Updated AndroidX Core to latest version for edge-to-edge APIs
+    implementation("androidx.core:core-ktx:1.15.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.work:work-runtime-ktx:2.8.1")
 

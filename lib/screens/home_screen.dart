@@ -15,6 +15,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/prayer_time_model.dart';
 import '../services/ads_service.dart';
@@ -67,13 +69,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
     _animationController = AnimationController(
       duration: const Duration(seconds: 8),
       vsync: this,
     )..repeat(reverse: true);
-    _initializeHomeScreenFast();
+
+    // ✅ Load banner FIRST (uses preloaded banner for instant display)
     _loadBannerHome();
-    super.initState();
+
+    // Then initialize screen data
+    _initializeHomeScreenFast();
   }
 
   int _bannerLoadAttempts = 0;
@@ -150,6 +156,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       await _setupNextPrayer();
       // await noti.initSetupNotification();
 
+      // ✅ Check exact alarm permission after setup (critical for precise prayer times)
+      _checkExactAlarmPermission();
+
       // ✅ Update widget in background WITHOUT blocking UI
       _updateWidgetInBackground();
 
@@ -195,13 +204,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       // Wait a bit to not overwhelm user on first launch
       await Future.delayed(const Duration(seconds: 2));
 
-      final isDisabled =
-          await PrayerAlarmService.isBatteryOptimizationDisabled();
+      // final isDisabled =
+      //     await PrayerAlarmService.isBatteryOptimizationDisabled();
+      final status = await Permission.ignoreBatteryOptimizations.status;
 
-      if (!isDisabled && mounted) {
-        // Show dialog to explain and request exemption
-        _showBatteryOptimizationDialog();
+      if (!status.isGranted && mounted) {
+        // _showBatteryOptimizationDialog();
+
+        await Permission.ignoreBatteryOptimizations.isGranted;
       } else {
+        // Permission dah diberi
         debugPrint('✅ Battery optimization already disabled');
       }
     } catch (e) {
@@ -209,34 +221,60 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _showBatteryOptimizationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Izinkan Penggera Waktu Solat'),
-          content: const Text(
-            'Untuk memastikan penggera waktu solat berfungsi dengan baik walaupun dalam keadaan bateri rendah atau aplikasi tidak digunakan, sila benarkan aplikasi ini untuk mengabaikan pengoptimuman bateri.\n\n'
-            'Ini penting untuk memastikan anda tidak terlepas waktu solat.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Nanti'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await PrayerAlarmService.requestDisableBatteryOptimization();
-              },
-              child: const Text('Benarkan'),
-            ),
-          ],
-        );
-      },
-    );
+  // void _showBatteryOptimizationDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Izinkan Penggera Waktu Solat'),
+  //         content: const Text(
+  //           'Untuk memastikan penggera waktu solat berfungsi dengan baik walaupun dalam keadaan bateri rendah atau aplikasi tidak digunakan, sila benarkan aplikasi ini untuk mengabaikan pengoptimuman bateri.\n\n'
+  //           'Ini penting untuk memastikan anda tidak terlepas waktu solat.',
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: const Text('Nanti'),
+  //           ),
+  //           FilledButton(
+  //             onPressed: () async {
+  //               Navigator.of(context).pop();
+  //               await PrayerAlarmService.requestDisableBatteryOptimization();
+  //             },
+  //             child: const Text('Benarkan'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  /// Check and request exact alarm permission if needed (Android 12+)
+  /// This is ONLY shown if user skipped permission intro screen or permission was revoked
+  Future<void> _checkExactAlarmPermission() async {
+    try {
+      // Wait a bit for UI to settle before showing dialog
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (!mounted) return;
+
+      // ✅ Only show if permission intro was completed (not first launch)
+      // This avoids duplicate permission request
+      final prefs = await SharedPreferences.getInstance();
+      final isFirstLaunch = prefs.getBool('prefIsFirstLaunch') ?? true;
+
+      if (isFirstLaunch) {
+        // User is still in onboarding flow - don't show dialog
+        debugPrint('⏭️ Skipping exact alarm dialog - user in onboarding');
+        return;
+      }
+
+      // Show permission dialog if needed (for existing users or revoked permissions)
+    } catch (e) {
+      debugPrint('❌ Error checking exact alarm permission: $e');
+    }
   }
 
   @override

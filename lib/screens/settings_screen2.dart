@@ -1,4 +1,5 @@
 import 'package:aqim/utils/plugin.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -34,7 +35,7 @@ class _SettingsScreen2State extends State<SettingsScreen2> {
     return Scaffold(
       appBar: AppBar(title: Text(loc.translate('appearance')), elevation: 0),
       body: Padding(
-        padding: EdgeInsetsGeometry.symmetric(horizontal: 24.w),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: ListView(
           children: [
             TitleTheme(text: loc.translate('theme')),
@@ -79,25 +80,9 @@ class _SettingsScreen2State extends State<SettingsScreen2> {
                   flag: '🇲🇾',
                   currentLanguage: widget.currentLanguage,
                 ),
-                // BuildLanguageOption(
-                //   onLanguageChange: widget.onLanguageChange,
-                //   code: 'en',
-                //   name: 'English',
-                //   flag: '🇬🇧',
-                //   currentLanguage: widget.currentLanguage,
-                // ),
-                // BuildLanguageOption(
-                //   onLanguageChange: widget.onLanguageChange,
-                //   code: 'ar',
-                //   name: 'العربية',
-                //   flag: '🇸🇦',
-                //   currentLanguage: widget.currentLanguage,
-                // ),
               ],
             ),
 
-            // TitleTheme(text: loc.translate('time_format')),
-            // BuildTimeFormat(cs: cs, loc: loc),
             TitleTheme(text: loc.translate('notification')),
             BuildSettingContainer(
               listWidgets: [
@@ -231,17 +216,12 @@ class _BuildThemeOptionState extends State<BuildThemeOption> {
               : null,
         ),
         child: ListTile(
-          // contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-          // dense: true,
-          // visualDensity: VisualDensity(horizontal: -2, vertical: -2),
-          // Leading Icon
           leading: Icon(
             widget.icon,
             size: 24.sp,
             color: cs.onSurface.withValues(alpha: 0.7),
           ),
 
-          // Title text
           title: Text(
             widget.label,
             style: TextStyle(
@@ -250,7 +230,6 @@ class _BuildThemeOptionState extends State<BuildThemeOption> {
               color: cs.onSurface,
             ),
           ),
-          // Checkmark when selected
           trailing: isSelected
               ? Icon(Icons.check, color: cs.primary, size: 20.sp)
               : null,
@@ -318,13 +297,8 @@ class _BuildLanguageOptionState extends State<BuildLanguageOption> {
               : null,
         ),
         child: ListTile(
-          // contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-          // dense: true,
-          // visualDensity: VisualDensity(horizontal: -2, vertical: -2),
-          // FLAG (leading)
           leading: Text(widget.flag, style: TextStyle(fontSize: 24.sp)),
 
-          // LANGUAGE NAME (title)
           title: Text(
             widget.name,
             style: TextStyle(
@@ -334,12 +308,10 @@ class _BuildLanguageOptionState extends State<BuildLanguageOption> {
             ),
           ),
 
-          // CHECK ICON IF SELECTED (trailing)
           trailing: isSelected
               ? Icon(Icons.check, size: 20.sp, color: cs.primary)
               : null,
 
-          // Make whole tile tappable
           onTap: () {
             setState(() {
               widget.onLanguageChange(widget.code);
@@ -379,9 +351,6 @@ class _BuildTimeFormatState extends State<BuildTimeFormat> {
       ),
       child: ListTile(
         contentPadding: EdgeInsets.only(left: 16.w, right: 10.w),
-        // dense: true,
-        // visualDensity: VisualDensity(horizontal: -2, vertical: -1),
-        // Leading icon
         leading: Icon(
           Icons.access_time,
           size: 24.sp,
@@ -390,7 +359,6 @@ class _BuildTimeFormatState extends State<BuildTimeFormat> {
               : widget.cs.onSurface.withValues(alpha: 0.6),
         ),
 
-        // Title + subtitle
         title: Text(
           widget.loc.translate('24_hour_format'),
           style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w500),
@@ -406,7 +374,6 @@ class _BuildTimeFormatState extends State<BuildTimeFormat> {
           ),
         ),
 
-        // Switch
         trailing: Transform.scale(
           scale: 0.6,
           child: Switch(
@@ -418,7 +385,6 @@ class _BuildTimeFormatState extends State<BuildTimeFormat> {
           ),
         ),
 
-        // Make entire tile clickable
         onTap: () async {
           await globalService.updateSetting(prefIs24HourFormat, !is24Hour);
           setState(() {});
@@ -450,6 +416,17 @@ class BuildPrayerSection extends StatefulWidget {
 
 class _BuildPrayerSectionState extends State<BuildPrayerSection> {
   final GlobalService _globalService = GlobalService();
+
+  // Azan preview audio player state
+  AudioPlayer? _azanPreviewPlayer;
+  int?
+  _currentAudioIndex; // Track which audio is playing (for player display only)
+  bool _isAzanPlaying = false;
+  bool _isAzanPaused = false;
+  Duration _azanCurrentPosition = Duration.zero;
+  Duration _azanTotalDuration = Duration.zero;
+  Function? _modalSetState;
+
   bool _getPrayerEnabled(String prayerKey) {
     switch (prayerKey) {
       case 'subuh':
@@ -515,7 +492,7 @@ class _BuildPrayerSectionState extends State<BuildPrayerSection> {
       case 'isyak':
         return _globalService.isyakSound;
       default:
-        return 'azan_munif_hijjaz';
+        return 'azan_isyak_munif_hijjaz';
     }
   }
 
@@ -570,57 +547,6 @@ class _BuildPrayerSectionState extends State<BuildPrayerSection> {
     }
   }
 
-  // bool _getPrayerReminder5Min(String prayerKey) {
-  //   switch (prayerKey) {
-  //     case 'subuh':
-  //       return _globalService.subuhReminder5Min;
-  //     case 'zohor':
-  //       return _globalService.zohorReminder5Min;
-  //     case 'asar':
-  //       return _globalService.asarReminder5Min;
-  //     case 'maghrib':
-  //       return _globalService.maghribReminder5Min;
-  //     case 'isyak':
-  //       return _globalService.isyakReminder5Min;
-  //     default:
-  //       return false;
-  //   }
-  // }
-
-  // bool _getPrayerReminder10Min(String prayerKey) {
-  //   switch (prayerKey) {
-  //     case 'subuh':
-  //       return _globalService.subuhReminder10Min;
-  //     case 'zohor':
-  //       return _globalService.zohorReminder10Min;
-  //     case 'asar':
-  //       return _globalService.asarReminder10Min;
-  //     case 'maghrib':
-  //       return _globalService.maghribReminder10Min;
-  //     case 'isyak':
-  //       return _globalService.isyakReminder10Min;
-  //     default:
-  //       return false;
-  //   }
-  // }
-
-  // bool _getPrayerReminder15Min(String prayerKey) {
-  //   switch (prayerKey) {
-  //     case 'subuh':
-  //       return _globalService.subuhReminder15Min;
-  //     case 'zohor':
-  //       return _globalService.zohorReminder15Min;
-  //     case 'asar':
-  //       return _globalService.asarReminder15Min;
-  //     case 'maghrib':
-  //       return _globalService.maghribReminder15Min;
-  //     case 'isyak':
-  //       return _globalService.isyakReminder15Min;
-  //     default:
-  //       return false;
-  //   }
-  // }
-
   Future<void> _updatePrayerLed(String prayerKey, bool value) async {
     String prefKey;
     switch (prayerKey) {
@@ -646,84 +572,6 @@ class _BuildPrayerSectionState extends State<BuildPrayerSection> {
     await _globalService.updateSetting(prefKey, value);
     setState(() {});
   }
-
-  // Future<void> _updatePrayerReminder5Min(String prayerKey, bool value) async {
-  //   String prefKey;
-  //   switch (prayerKey) {
-  //     case 'subuh':
-  //       prefKey = prefSubuhReminder5Min;
-  //       break;
-  //     case 'zohor':
-  //       prefKey = prefZohorReminder5Min;
-  //       break;
-  //     case 'asar':
-  //       prefKey = prefAsarReminder5Min;
-  //       break;
-  //     case 'maghrib':
-  //       prefKey = prefMaghribReminder5Min;
-  //       break;
-  //     case 'isyak':
-  //       prefKey = prefIsyakReminder5Min;
-  //       break;
-  //     default:
-  //       return;
-  //   }
-
-  //   await _globalService.updateSetting(prefKey, value);
-  //   setState(() {});
-  // }
-
-  // Future<void> _updatePrayerReminder10Min(String prayerKey, bool value) async {
-  //   String prefKey;
-  //   switch (prayerKey) {
-  //     case 'subuh':
-  //       prefKey = prefSubuhReminder10Min;
-  //       break;
-  //     case 'zohor':
-  //       prefKey = prefZohorReminder10Min;
-  //       break;
-  //     case 'asar':
-  //       prefKey = prefAsarReminder10Min;
-  //       break;
-  //     case 'maghrib':
-  //       prefKey = prefMaghribReminder10Min;
-  //       break;
-  //     case 'isyak':
-  //       prefKey = prefIsyakReminder10Min;
-  //       break;
-  //     default:
-  //       return;
-  //   }
-
-  //   await _globalService.updateSetting(prefKey, value);
-  //   setState(() {});
-  // }
-
-  // Future<void> _updatePrayerReminder15Min(String prayerKey, bool value) async {
-  //   String prefKey;
-  //   switch (prayerKey) {
-  //     case 'subuh':
-  //       prefKey = prefSubuhReminder15Min;
-  //       break;
-  //     case 'zohor':
-  //       prefKey = prefZohorReminder15Min;
-  //       break;
-  //     case 'asar':
-  //       prefKey = prefAsarReminder15Min;
-  //       break;
-  //     case 'maghrib':
-  //       prefKey = prefMaghribReminder15Min;
-  //       break;
-  //     case 'isyak':
-  //       prefKey = prefIsyakReminder15Min;
-  //       break;
-  //     default:
-  //       return;
-  //   }
-
-  //   await _globalService.updateSetting(prefKey, value);
-  //   setState(() {});
-  // }
 
   Future<void> _updatePrayerFullscreen(String prayerKey, bool value) async {
     String prefKey;
@@ -755,12 +603,10 @@ class _BuildPrayerSectionState extends State<BuildPrayerSection> {
   Widget build(BuildContext context) {
     final isEnabled = _getPrayerEnabled(widget.prayerKey);
     return Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
           contentPadding: EdgeInsets.only(left: 16.w, right: 3.w),
-          // dense: true,
-          // visualDensity: VisualDensity(horizontal: -2, vertical: 1),
           leading: Icon(widget.icon),
           title: Text(
             widget.prayerName,
@@ -843,122 +689,10 @@ class _BuildPrayerSectionState extends State<BuildPrayerSection> {
             ),
           ),
         ),
-        // Reminder Section Header
 
-        // 5 minutes before
-        // ListTile(
-        //   enabled: isEnabled,
-        //   contentPadding: EdgeInsets.only(left: 72.w, right: 5.w),
-        //   dense: true,
-        //   visualDensity: VisualDensity(horizontal: -2, vertical: -2),
-        //   title: Text(
-        //     'Peringatan sebelum azan',
-        //     style: TextStyle(fontSize: 14.sp),
-        //   ),
-        //   subtitle: Text('5 minit sebelum', style: TextStyle(fontSize: 12.sp)),
-        //   trailing: Transform.scale(
-        //     scale: 0.6,
-        //     child: Switch(
-        //       value: _getPrayerReminder5Min(widget.prayerKey),
-        //       onChanged: isEnabled
-        //           ? (value) =>
-        //                 _updatePrayerReminder5Min(widget.prayerKey, value)
-        //           : null,
-        //     ),
-        //   ),
-        // ),
-        // ListTile(
-        //   enabled: isEnabled,
-        //   contentPadding: EdgeInsets.only(left: 72.w, right: 5.w),
-        //   dense: true,
-        //   visualDensity: VisualDensity(horizontal: -2, vertical: -2),
-        //   title: Text(
-        //     'Peringatan sebelum azan',
-        //     style: TextStyle(fontSize: 14.sp),
-        //   ),
-        //   subtitle: Text('10 minit sebelum', style: TextStyle(fontSize: 12.sp)),
-        //   trailing: Transform.scale(
-        //     scale: 0.6,
-        //     child: Switch(
-        //       value: _getPrayerReminder10Min(widget.prayerKey),
-        //       onChanged: isEnabled
-        //           ? (value) =>
-        //                 _updatePrayerReminder10Min(widget.prayerKey, value)
-        //           : null,
-        //     ),
-        //   ),
-        // ),
-        // ListTile(
-        //   enabled: isEnabled,
-        //   contentPadding: EdgeInsets.only(left: 72.w, right: 5.w),
-        //   dense: true,
-        //   visualDensity: VisualDensity(horizontal: -2, vertical: -2),
-        //   title: Text(
-        //     'Peringatan sebelum azan',
-        //     style: TextStyle(fontSize: 14.sp),
-        //   ),
-        //   subtitle: Text('15 minit sebelum', style: TextStyle(fontSize: 12.sp)),
-        //   trailing: Transform.scale(
-        //     scale: 0.6,
-        //     child: Switch(
-        //       value: _getPrayerReminder15Min(widget.prayerKey),
-        //       onChanged: isEnabled
-        //           ? (value) =>
-        //                 _updatePrayerReminder15Min(widget.prayerKey, value)
-        //           : null,
-        //     ),
-        //   ),
-        // ),
         SizedBox(height: 13.h),
         !widget.isLast! ? Divider() : SizedBox.shrink(),
       ],
-    );
-  }
-
-  void _showAzanPicker(String prayerKey, ColorScheme colorScheme) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        final currentSound = _getPrayerSound(prayerKey);
-        return Container(
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: Text(
-                  'Pilih Azan',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Divider(height: 1.h),
-              ...azanOptions.map((azan) {
-                final isSelected = currentSound == azan['file'];
-                return ListTile(
-                  leading: Icon(
-                    isSelected
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_unchecked,
-                    color: isSelected ? colorScheme.primary : null,
-                  ),
-                  title: Text(azan['name']!),
-                  trailing: isSelected
-                      ? Icon(Icons.check, color: colorScheme.primary)
-                      : null,
-                  onTap: () {
-                    _updatePrayerSound(prayerKey, azan['file']!);
-                    Navigator.pop(context);
-                  },
-                );
-              }),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -985,7 +719,9 @@ class _BuildPrayerSectionState extends State<BuildPrayerSection> {
     }
 
     await _globalService.updateSetting(prefKey, value);
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _updatePrayerVibrate(String prayerKey, bool value) async {
@@ -1069,10 +805,507 @@ class _BuildPrayerSectionState extends State<BuildPrayerSection> {
                   Navigator.pop(context);
                 },
               ),
+              SizedBox(height: 50.h),
             ],
           ),
         );
       },
     );
+  }
+
+  // Audio Player Lifecycle Methods
+  void _initAzanPreviewPlayer() {
+    _azanPreviewPlayer = AudioPlayer();
+
+    _azanPreviewPlayer!.onPlayerStateChanged.listen((state) {
+      if (mounted) {
+        _isAzanPlaying = state == PlayerState.playing;
+        _isAzanPaused = state == PlayerState.paused;
+        _modalSetState?.call(() {});
+      }
+    });
+
+    _azanPreviewPlayer!.onDurationChanged.listen((duration) {
+      if (mounted) {
+        _azanTotalDuration = duration;
+        _modalSetState?.call(() {});
+      }
+    });
+
+    _azanPreviewPlayer!.onPositionChanged.listen((position) {
+      if (mounted) {
+        _azanCurrentPosition = position;
+        _modalSetState?.call(() {});
+      }
+    });
+
+    _azanPreviewPlayer!.onPlayerComplete.listen((_) {
+      if (mounted) {
+        _isAzanPlaying = false;
+        _azanCurrentPosition = Duration.zero;
+        _modalSetState?.call(() {});
+      }
+    });
+  }
+
+  void _disposeAzanPreviewPlayer() {
+    _azanPreviewPlayer?.stop();
+    _azanPreviewPlayer?.dispose();
+    _azanPreviewPlayer = null;
+  }
+
+  Future<void> _playAzan(int index, String azanFile) async {
+    // Update which audio is playing (for player display)
+    _currentAudioIndex = index;
+
+    String soundFile = azanFile.endsWith('.mp3') ? azanFile : '$azanFile.mp3';
+    await _azanPreviewPlayer?.stop();
+    await _azanPreviewPlayer?.play(AssetSource('sounds/$soundFile'));
+  }
+
+  Future<void> _pauseResumeAzan() async {
+    if (_isAzanPlaying) {
+      await _azanPreviewPlayer?.pause();
+    } else if (_isAzanPaused) {
+      await _azanPreviewPlayer?.resume();
+    }
+  }
+
+  Future<void> _stopAzan() async {
+    await _azanPreviewPlayer?.stop();
+    _isAzanPlaying = false;
+    _isAzanPaused = false;
+    _azanCurrentPosition = Duration.zero;
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
+  void _showAzanPicker(String prayerKey, ColorScheme colorScheme) {
+    // Initialize audio player and reset state
+    _initAzanPreviewPlayer();
+
+    // Get saved sound and find index
+    final savedSound = _getPrayerSound(prayerKey);
+    final savedIndex = azanOptions.indexWhere((a) => a['file'] == savedSound);
+
+    // Set initial audio index to saved azan
+    _currentAudioIndex = savedIndex != -1 ? savedIndex : 0;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            _modalSetState = setModalState;
+
+            // Get CURRENT saved sound - this determines "Dipilih" badge
+            final currentSavedSound = _getPrayerSound(prayerKey);
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.90,
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              ),
+              child: Column(
+                children: [
+                  // Header
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 16.h,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Pilih Azan ${widget.prayerName}',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            _disposeAzanPreviewPlayer();
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.close_rounded, size: 24.sp),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(height: 1.h, thickness: 1),
+
+                  // Audio Player Section
+                  Container(
+                    margin: EdgeInsets.all(20.w),
+                    padding: EdgeInsets.all(20.w),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer.withValues(
+                        alpha: 0.3,
+                      ),
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        // Track Info
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(10.w),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: Icon(
+                                Icons.music_note,
+                                color: colorScheme.onPrimaryContainer,
+                                size: 24.sp,
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _isAzanPlaying || _isAzanPaused
+                                        ? 'Sedang Dimainkan'
+                                        : 'Pratonton',
+                                    style: TextStyle(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  Text(
+                                    azanOptions[_currentAudioIndex ??
+                                        0]['name']!,
+                                    style: TextStyle(
+                                      color: colorScheme.onSurface,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20.h),
+
+                        // Seekable Progress Slider
+                        Column(
+                          children: [
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                trackHeight: 4.h,
+                                thumbShape: RoundSliderThumbShape(
+                                  enabledThumbRadius: 8.r,
+                                ),
+                                overlayShape: RoundSliderOverlayShape(
+                                  overlayRadius: 16.r,
+                                ),
+                                activeTrackColor: colorScheme.primary,
+                                inactiveTrackColor:
+                                    colorScheme.surfaceContainerHighest,
+                                thumbColor: colorScheme.primary,
+                                overlayColor: colorScheme.primary.withValues(
+                                  alpha: 0.2,
+                                ),
+                              ),
+                              child: Slider(
+                                value: _azanTotalDuration.inSeconds > 0
+                                    ? _azanCurrentPosition.inSeconds
+                                          .toDouble()
+                                          .clamp(
+                                            0.0,
+                                            _azanTotalDuration.inSeconds
+                                                .toDouble(),
+                                          )
+                                    : 0.0,
+                                min: 0.0,
+                                max: _azanTotalDuration.inSeconds > 0
+                                    ? _azanTotalDuration.inSeconds.toDouble()
+                                    : 1.0,
+                                onChanged: (value) async {
+                                  // Seek to new position when user drags
+                                  final newPosition = Duration(
+                                    seconds: value.toInt(),
+                                  );
+                                  await _azanPreviewPlayer?.seek(newPosition);
+                                  setModalState(() {
+                                    _azanCurrentPosition = newPosition;
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 4.w),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    _formatDuration(_azanCurrentPosition),
+                                    style: TextStyle(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'monospace',
+                                    ),
+                                  ),
+                                  Text(
+                                    _formatDuration(_azanTotalDuration),
+                                    style: TextStyle(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'monospace',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 16.h),
+
+                        // Player Controls - ALWAYS show play button (never changes based on list selection)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Previous
+                            IconButton(
+                              onPressed: () async {
+                                await _azanPreviewPlayer?.stop();
+                                int newIndex =
+                                    (_currentAudioIndex == 0 ||
+                                        _currentAudioIndex == null)
+                                    ? azanOptions.length - 1
+                                    : _currentAudioIndex! - 1;
+
+                                _currentAudioIndex = newIndex;
+                                await _playAzan(
+                                  newIndex,
+                                  azanOptions[newIndex]['file']!,
+                                );
+
+                                // Save selection when navigating with prev button
+                                await _updatePrayerSound(
+                                  prayerKey,
+                                  azanOptions[newIndex]['file']!,
+                                );
+
+                                setModalState(() {});
+                              },
+                              icon: Icon(Icons.skip_previous_rounded),
+                              iconSize: 32.sp,
+                              color: colorScheme.onSurface,
+                            ),
+
+                            SizedBox(width: 8.w),
+
+                            // Play/Pause - Icon changes based on playing state only
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: colorScheme.primary,
+                              ),
+                              child: IconButton(
+                                onPressed: () async {
+                                  if (_isAzanPlaying) {
+                                    await _pauseResumeAzan();
+                                  } else if (_isAzanPaused) {
+                                    await _pauseResumeAzan();
+                                  } else {
+                                    // Not playing, start from current audio index
+                                    final selectedFile =
+                                        azanOptions[_currentAudioIndex ??
+                                            0]['file']!;
+                                    await _playAzan(
+                                      _currentAudioIndex ?? 0,
+                                      selectedFile,
+                                    );
+                                  }
+                                  setModalState(() {});
+                                },
+                                icon: Icon(
+                                  _isAzanPlaying
+                                      ? Icons.pause_rounded
+                                      : Icons.play_arrow_rounded,
+                                ),
+                                iconSize: 32.sp,
+                                color: colorScheme.onPrimary,
+                                padding: EdgeInsets.all(12.w),
+                              ),
+                            ),
+
+                            SizedBox(width: 8.w),
+                            // Stop
+                            IconButton(
+                              onPressed: () async {
+                                await _stopAzan();
+                                setModalState(() {});
+                              },
+                              icon: Icon(Icons.stop_rounded),
+                              iconSize: 32.sp,
+                              color: colorScheme.onSurface,
+                            ),
+                            SizedBox(width: 8.w),
+                            // Next
+                            IconButton(
+                              onPressed: () async {
+                                await _azanPreviewPlayer?.stop();
+                                int newIndex =
+                                    (_currentAudioIndex == null ||
+                                        _currentAudioIndex! >=
+                                            azanOptions.length - 1)
+                                    ? 0
+                                    : _currentAudioIndex! + 1;
+
+                                _currentAudioIndex = newIndex;
+                                await _playAzan(
+                                  newIndex,
+                                  azanOptions[newIndex]['file']!,
+                                );
+
+                                // Save selection when navigating with next button
+                                await _updatePrayerSound(
+                                  prayerKey,
+                                  azanOptions[newIndex]['file']!,
+                                );
+
+                                setModalState(() {});
+                              },
+                              icon: Icon(Icons.skip_next_rounded),
+                              iconSize: 32.sp,
+                              color: colorScheme.onSurface,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // List of Azans - UI stays stable, only "Dipilih" badge changes on save
+                  Expanded(
+                    child: ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        // vertical: 12.h,
+                        horizontal: 16.w,
+                      ),
+                      itemCount: azanOptions.length,
+                      itemBuilder: (context, index) {
+                        final azan = azanOptions[index];
+
+                        // "Dipilih" badge shows for SAVED selection only
+                        final isSavedSelection =
+                            currentSavedSound == azan['file'];
+
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 8.h),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.5,
+                              ),
+                              width: 1,
+                            ),
+                          ),
+                          child: ListTile(
+                            onTap: () async {
+                              // Play audio preview
+                              _currentAudioIndex = index;
+                              await _playAzan(index, azan['file']!);
+
+                              // Save selection immediately
+                              await _updatePrayerSound(
+                                prayerKey,
+                                azan['file']!,
+                              );
+
+                              // Refresh to show "Dipilih" badge
+                              setModalState(() {});
+                            },
+                            leading: Icon(
+                              isSavedSelection
+                                  ? Icons.check_circle
+                                  : Icons.radio_button_unchecked,
+                              color: isSavedSelection
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                              size: 24.sp,
+                            ),
+                            title: Text(
+                              azan['name']!,
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: isSavedSelection
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            // Show "Dipilih" ONLY for saved selection
+                            trailing: isSavedSelection
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w,
+                                      vertical: 4.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    child: Text(
+                                      'Dipilih',
+                                      style: TextStyle(
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // SizedBox(height: 40.h),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      _modalSetState = null;
+      _disposeAzanPreviewPlayer();
+      // Rebuild parent to show updated subtitle
+      if (mounted) setState(() {});
+    });
   }
 }

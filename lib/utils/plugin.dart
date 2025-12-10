@@ -131,17 +131,31 @@ final String channelDescriptionSimple = 'Ala Simple je Notifications ni';
 //   showInCompactView: true,
 //   actionType: ActionType.KeepOnTop,
 // );
-bool isShowAds = false;
+bool isShowAds = true;
 PrayerTimeData? prayerTimeData;
 final double radius = 12.r;
 
 final List<Map<String, String>> azanOptions = [
   {
-    'name': 'Azan Munif Hijjaz',
-    'file': 'azan_munif_hijjaz',
-    'channelId': 'azan_munif_hijjaz_notification',
-    'channelName': 'Azan Munif Hijjaz Notifications',
-    'channelDescription': 'Play Azan Munif Hijjaz Notifications',
+    'name': 'Azan Subuh Tv3 2018',
+    'file': 'azan_subuh_tv3_2018',
+    'channelId': 'azan_maghrib_tv3_notification',
+    'channelName': 'Azan Subuh TV3 Notification',
+    'channelDescription': 'Play Azan Subuh TV3 Notifications',
+  },
+  {
+    'name': 'Azan Zohor Ashfaq Hussain',
+    'file': 'azan_zohor_ashfaq_hussain',
+    'channelId': 'azan_zohor_ashfaq_hussain_notification',
+    'channelName': 'Azan Zohor Ashfaq Hussain Notification',
+    'channelDescription': 'Play Azan Zohor Ashfaq Hussain Notifications',
+  },
+  {
+    'name': 'Azan Asar Tv1 2018',
+    'file': 'azan_asar_tv1_2018',
+    'channelId': 'azan_asar_tv1_notification',
+    'channelName': 'Azan Asar TV1 Notification',
+    'channelDescription': 'Play Azan Asar TV1 Notifications',
   },
   {
     'name': 'Azan Maghrib Tv3 2018',
@@ -150,11 +164,11 @@ final List<Map<String, String>> azanOptions = [
     'channelName': 'Azan Maghrib TV3 Notification',
     'channelDescription': 'Play Azan Maghrib TV3 Notifications',
   },
-  // {'name': 'Azan Al-Aqsa', 'file': 'azan_alaqsa.mp3'},
-  // {'name': 'Azan Mesir', 'file': 'azan_mesir.mp3'},
-  //{'name': 'Azan Turkey', 'file': 'azan_turkey.mp3'},
-  //{'name': 'Azan Malaysia', 'file': 'azan_malaysia'},
-  // {'name': 'Azan Sheikh Sudais', 'file': 'azan_sudais'},
-  // {'name': 'Azan Mishary Rashid', 'file': 'azan_mishary'},
-  // {'name': 'Azan Abdul Basit', 'file': 'azan_abdul_basit'},
+  {
+    'name': 'Azan Isyak Munif Hijjaz',
+    'file': 'azan_isyak_munif_hijjaz',
+    'channelId': 'azan_isyak_munif_hijjaz_notification',
+    'channelName': 'Azan Isyak Munif Hijjaz Notifications',
+    'channelDescription': 'Play Azan Isyak Munif Hijjaz Notifications',
+  },
 ];

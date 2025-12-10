@@ -1,6 +1,7 @@
 import 'package:aqim/screens/home_screen.dart';
 import 'package:aqim/services/global_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -24,11 +25,39 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 // ✅ Track if AzanFullScreen is currently showing to prevent duplicates
 bool _isAzanScreenCurrentlyShowing = false;
+
+/// ✅ Configure edge-to-edge system UI for Android 15+ compatibility
+/// This replaces deprecated SystemChrome.setSystemUIOverlayStyle() methods
+void _configureEdgeToEdgeSystemUI() {
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+  );
+
+  // Set transparent system bars for edge-to-edge display
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Configure edge-to-edge system UI for Android 15+ compatibility
+  _configureEdgeToEdgeSystemUI();
+
   await globalService.initialize();
   await HomeWidgetService().homeWidgetInit();
   await AdsService().initGoogleMobileAds();
+
+  // ✅ Preload ALL banner ads early (so they're ready when screens appear)
+  // This happens in background while app initializes (non-blocking)
+  AdsService.preloadAllBanners();
+
   WakelockPlus.enable();
   // ✅ Initialize Prayer Alarm Service
   // This handles alarms when the app is already running (not terminated)

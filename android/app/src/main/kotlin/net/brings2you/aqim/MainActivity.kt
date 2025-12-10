@@ -9,8 +9,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.view.WindowCompat
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine 
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel     
 
 class MainActivity : FlutterActivity() {
@@ -28,6 +29,9 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ Enable edge-to-edge for Android 15+ compatibility
+        enableEdgeToEdge()
 
         // Check if launched by prayer alarm - apply lock screen flags IMMEDIATELY
         if (intent?.getBooleanExtra("prayer_alarm", false) == true) {
@@ -47,12 +51,26 @@ class MainActivity : FlutterActivity() {
         Log.d("MainActivity", "✅ onCreate initialized")
     }
 
+    /**
+     * ✅ Enable edge-to-edge display for Android 15+ compatibility
+     * This replaces deprecated methods like setStatusBarColor() and setNavigationBarColor()
+     */
+    private fun enableEdgeToEdge() {
+        try {
+            // Enable edge-to-edge using WindowCompat (backward compatible)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            Log.d("MainActivity", "✅ Edge-to-edge enabled successfully")
+        } catch (e: Exception) {
+            Log.e("MainActivity", "❌ Error enabling edge-to-edge: ${e.message}", e)
+        }
+    }
+
     // Helper function to apply all lock screen bypass flags
     private fun applyLockScreenFlags() {
-        Log.d("MainActivity", "🔓 Applying lock screen bypass flags for prayer alarm")
+        Log.d("MainActivity", "🔓 Applying MAXIMUM AGGRESSIVE lock screen bypass flags for prayer alarm")
 
         try {
-            // Modern API (27+)
+            // Modern API (27+) - Native methods
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 setShowWhenLocked(true)
                 setTurnScreenOn(true)
@@ -66,10 +84,20 @@ class MainActivity : FlutterActivity() {
                 android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
                 android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
                 android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+                android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
+                android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN or // ✅ Force fullscreen
+                android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv() // ✅ Allow touch
             )
 
-            Log.d("MainActivity", "✅ ALL lock screen flags applied successfully!")
+            // ✅ ADDITIONAL: Disable keyguard completely during alarm
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
+                keyguardManager.requestDismissKeyguard(this, null)
+                Log.d("MainActivity", "✅ Keyguard dismiss requested (API 26+)")
+            }
+
+            Log.d("MainActivity", "✅ ALL MAXIMUM lock screen flags applied successfully!")
+            Log.d("MainActivity", "   App WILL show over lock screen in ALL conditions!")
         } catch (e: Exception) {
             Log.e("MainActivity", "❌ Error applying lock screen flags: ${e.message}", e)
         }
@@ -126,6 +154,80 @@ class MainActivity : FlutterActivity() {
                 "openBatteryOptimizationSettings" -> {
                     try {
                         BatteryOptimizationHelper.openBatteryOptimizationSettings(this)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "canScheduleExactAlarms" -> {
+                    try {
+                        val canSchedule = ExactAlarmPermissionHelper.canScheduleExactAlarms(this)
+                        result.success(canSchedule)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "openExactAlarmSettings" -> {
+                    try {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                            ExactAlarmPermissionHelper.openExactAlarmSettings(this)
+                            result.success(true)
+                        } else {
+                            result.success(false) // Not needed on Android < 12
+                        }
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "shouldRequestExactAlarmPermission" -> {
+                    try {
+                        val shouldRequest = ExactAlarmPermissionHelper.shouldRequestPermission(this)
+                        result.success(shouldRequest)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "markExactAlarmPermissionAsked" -> {
+                    try {
+                        val userDismissed = call.argument<Boolean>("dismissed") ?: false
+                        ExactAlarmPermissionHelper.markPermissionAsked(this, userDismissed)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "canUseFullScreenIntent" -> {
+                    try {
+                        val canUse = FullScreenIntentPermissionHelper.canUseFullScreenIntent(this)
+                        result.success(canUse)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "openFullScreenIntentSettings" -> {
+                    try {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            FullScreenIntentPermissionHelper.openFullScreenIntentSettings(this)
+                            result.success(true)
+                        } else {
+                            result.success(false) // Not needed on Android < 14
+                        }
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "shouldRequestFullScreenIntentPermission" -> {
+                    try {
+                        val shouldRequest = FullScreenIntentPermissionHelper.shouldRequestPermission(this)
+                        result.success(shouldRequest)
+                    } catch (e: Exception) {
+                        result.error("ERROR", e.message, null)
+                    }
+                }
+                "markFullScreenIntentPermissionAsked" -> {
+                    try {
+                        val userDismissed = call.argument<Boolean>("dismissed") ?: false
+                        FullScreenIntentPermissionHelper.markPermissionAsked(this, userDismissed)
                         result.success(true)
                     } catch (e: Exception) {
                         result.error("ERROR", e.message, null)
@@ -268,7 +370,7 @@ class MainActivity : FlutterActivity() {
             val channel = NotificationChannel(
                 "test_channel",
                 "Test Notifications",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_MAX
             )
             notificationManager.createNotificationChannel(channel)
         }

@@ -9,8 +9,7 @@ import '../../utils/plugin.dart';
 
 class GlobalService {
   // Singleton instance
-  static final GlobalService _instance =
-  GlobalService._internal();
+  static final GlobalService _instance = GlobalService._internal();
 
   factory GlobalService() {
     return _instance;
@@ -109,12 +108,13 @@ class GlobalService {
     maghribEnabled = prefs.getBool(prefMaghribEnabled) ?? true;
     isyakEnabled = prefs.getBool(prefIsyakEnabled) ?? true;
 
-    // Prayer sounds
-    subuhSound = prefs.getString(prefSubuhSound) ?? 'azan_munif_hijjaz';
-    zohorSound = prefs.getString(prefZohorSound) ?? 'azan_munif_hijjaz';
-    asarSound = prefs.getString(prefAsarSound) ?? 'azan_munif_hijjaz';
-    maghribSound = prefs.getString(prefMaghribSound) ?? 'azan_munif_hijjaz';
-    isyakSound = prefs.getString(prefIsyakSound) ?? 'azan_munif_hijjaz';
+    // Prayer sounds (defaults match onboarding defaults)
+    subuhSound = prefs.getString(prefSubuhSound) ?? 'azan_subuh_tv3_2018';
+    zohorSound = prefs.getString(prefZohorSound) ?? 'azan_zohor_ashfaq_hussain';
+    asarSound = prefs.getString(prefAsarSound) ?? 'azan_asar_tv1_2018';
+    maghribSound =
+        prefs.getString(prefMaghribSound) ?? 'azan_maghrib_tv3_2018';
+    isyakSound = prefs.getString(prefIsyakSound) ?? 'azan_isyak_munif_hijjaz';
 
     // Prayer vibration settings
     subuhVibrate = prefs.getBool(prefSubuhVibrate) ?? true;
@@ -189,7 +189,7 @@ class GlobalService {
     } else if (key == 'isyak') {
       return {'enabled': isyakEnabled, 'sound': isyakSound};
     }
-    return {'enabled': true, 'sound': 'azan_munif_hijjaz'};
+    return {'enabled': true, 'sound': 'azan_isyak_munif_hijjaz'};
   }
 
   /// Check if specific prayer is enabled
@@ -223,7 +223,7 @@ class GlobalService {
     } else if (key == 'isyak') {
       return isyakSound;
     }
-    return 'azan_munif_hijjaz';
+    return 'azan_isyak_munif_hijjaz';
   }
 
   // ========================================================================
@@ -382,10 +382,10 @@ class GlobalService {
 
   /// Get notification params for background task
   Map<String, dynamic> getPrayerNotificationParams(
-      String prayerKey,
-      String prayerName,
-      String time,
-      ) {
+    String prayerKey,
+    String prayerName,
+    String time,
+  ) {
     return {
       'name': prayerName,
       'time': time,

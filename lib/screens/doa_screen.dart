@@ -29,6 +29,9 @@ class _DoaScreenState extends State<DoaScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedCarouselIndex = 0;
+  final AdsService _adsService = AdsService();
+  InterstitialAd? _interstitialAd;
+  bool _isDisposed = false;
 
   @override
   void initState() {
@@ -36,13 +39,16 @@ class _DoaScreenState extends State<DoaScreen>
     _tabController = TabController(length: 2, vsync: this);
     _loadBannerDoa();
     _loadBannerDoa2();
+    _loadInterstitialAdForExit(); // Load ad but don't show until exit
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     _tabController.dispose();
     _bannerDoa?.dispose();
     _bannerDoa2?.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -111,33 +117,40 @@ class _DoaScreenState extends State<DoaScreen>
     final cs = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: cs.surface,
-      appBar: _buildAppBar(cs),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            // _buildHeaderSection(cs, isDark),
-            _buildCarouselSection(cs, isDark),
-            // 📱 Banner Ad (centered)
-            if (_isBannerDoaLoaded && _bannerDoa != null && isShowAds)
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 16.h),
-                child: Center(
-                  child: SizedBox(
-                    width: _bannerDoa!.size.width.toDouble(),
-                    height: _bannerDoa!.size.height.toDouble(),
-                    child: AdWidget(ad: _bannerDoa!),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleExit(context);
+      },
+      child: Scaffold(
+        backgroundColor: cs.surface,
+        appBar: _buildAppBar(cs),
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              // _buildHeaderSection(cs, isDark),
+              _buildCarouselSection(cs, isDark),
+              // 📱 Banner Ad (centered)
+              if (_isBannerDoaLoaded && _bannerDoa != null && isShowAds)
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 16.h),
+                  child: Center(
+                    child: SizedBox(
+                      width: _bannerDoa!.size.width.toDouble(),
+                      height: _bannerDoa!.size.height.toDouble(),
+                      child: AdWidget(ad: _bannerDoa!),
+                    ),
                   ),
                 ),
-              ),
-            _buildTabNavigation(cs),
-            _buildCategoryGrid(cs),
-          ],
+              _buildTabNavigation(cs),
+              _buildCategoryGrid(cs),
+            ],
+          ),
         ),
-      ),
-    );
+      ), // Close Scaffold
+    ); // Close PopScope
   }
 
   // ✨ AppBar
@@ -725,5 +738,89 @@ class _DoaScreenState extends State<DoaScreen>
         },
       );
     });
+  }
+
+  /// Handle exit with ad display
+  Future<void> _handleExit(BuildContext context) async {
+    if (_interstitialAd != null && isShowAds) {
+      debugPrint('📢 Showing doa exit ad');
+      try {
+        await _interstitialAd!.show();
+        // Ad will be disposed in the callback, then we pop
+      } catch (e) {
+        debugPrint('❌ Error showing exit ad: $e');
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    } else {
+      debugPrint('⏭️ No ad to show, exiting directly');
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  /// Load Interstitial Ad for exit (don't show immediately)
+  void _loadInterstitialAdForExit() {
+    if (!isShowAds) {
+      debugPrint('❌ Ads disabled - skipping doa interstitial');
+      return;
+    }
+
+    // Prevent multiple loads - dispose old ad properly
+    _interstitialAd?.dispose();
+    _interstitialAd = null;
+
+    InterstitialAd.load(
+      adUnitId: _adsService.doaInterstitial1AdString,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          debugPrint('✅ Doa exit ad loaded (ready to show on exit)');
+
+          // Check if screen is still mounted before setting
+          if (_isDisposed || !mounted) {
+            ad.dispose();
+            return;
+          }
+
+          _interstitialAd = ad;
+          _setFullScreenContentCallback(ad);
+
+          // Don't show the ad here - it will be shown when user exits
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          debugPrint('❌ Failed to load doa exit ad: $error');
+          _interstitialAd = null;
+        },
+      ),
+    );
+  }
+
+  void _setFullScreenContentCallback(InterstitialAd ad) {
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (ad) {
+        debugPrint('✅ Doa exit ad showed full screen content.');
+      },
+      onAdFailedToShowFullScreenContent: (ad, err) {
+        debugPrint('❌ Doa exit ad failed to show: $err');
+        ad.dispose();
+        _interstitialAd = null;
+        // Navigate back even if ad fails
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      onAdDismissedFullScreenContent: (ad) {
+        debugPrint('✅ Doa exit ad was dismissed, navigating back.');
+        ad.dispose();
+        _interstitialAd = null;
+        // Navigate back after ad is dismissed
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+    );
   }
 }
