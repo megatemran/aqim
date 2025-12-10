@@ -6,6 +6,69 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Aqim** is a Flutter-based Islamic prayer times application for Malaysia, providing prayer schedules, Qibla direction, rakaat counter, duas, and home widgets. The app supports both Malaysian prayer times (via JAKIM API) and international locations (via AlAdhan API).
 
+## ⚠️ CRITICAL: Backup Policy (MUST FOLLOW)
+
+**BEFORE making ANY changes to code files, you MUST create a git backup commit first.**
+
+### Mandatory Backup Workflow
+
+When the user asks you to modify ANY file(s), follow these steps **WITHOUT EXCEPTION**:
+
+1. **STOP and CREATE BACKUP FIRST**
+   ```bash
+   # Stage all current changes
+   git add -A
+
+   # Create backup commit with clear message
+   git commit -m "🔒 BACKUP: Before [brief description of upcoming changes]
+
+   This is a mandatory safety backup before making changes.
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+   ```
+
+2. **VERIFY backup was created**
+   ```bash
+   git log --oneline -1
+   ```
+
+3. **ONLY THEN proceed with the requested changes**
+
+### Examples
+
+**BAD (DO NOT DO THIS):**
+```
+User: "Please update rakaat_screen.dart"
+Claude: *immediately edits the file* ❌
+```
+
+**GOOD (ALWAYS DO THIS):**
+```
+User: "Please update rakaat_screen.dart"
+Claude: "Before I make any changes, let me create a backup commit first..."
+        *creates backup commit*
+        "Backup created successfully (commit abc123). Now updating rakaat_screen.dart..."
+        *proceeds with edits* ✅
+```
+
+### Why This Matters
+
+- **User's work is precious** - Never risk losing user's changes
+- **Easy rollback** - User can always return to backup if something goes wrong
+- **Change tracking** - Clear git history of what changed and when
+- **Peace of mind** - User can trust that their work is safe
+
+### Exceptions
+
+The ONLY time you can skip backup:
+- User explicitly says "no backup needed" or "skip backup"
+- You're only reading files (no modifications)
+- You're only running commands (no code changes)
+
+**When in doubt, ALWAYS create a backup. It's better to have too many backups than too few.**
+
 ## Development Commands
 
 ### Build & Run
