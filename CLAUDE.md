@@ -24,8 +24,7 @@ When the user asks you to modify ANY file(s), follow these steps **WITHOUT EXCEP
    git add -A
 
    # Create backup commit with clear message
-   git commit -m "🔒 BACKUP: Before [brief description of upcoming changes]
-
+   git commit -m "🔒 BACKUP [dated][time]: Before [brief description of upcoming changes] 
    This is a mandatory safety backup before making changes.
 
    🤖 Generated with [Claude Code](https://claude.com/claude-code)

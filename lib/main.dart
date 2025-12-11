@@ -29,9 +29,7 @@ bool _isAzanScreenCurrentlyShowing = false;
 /// ✅ Configure edge-to-edge system UI for Android 15+ compatibility
 /// This replaces deprecated SystemChrome.setSystemUIOverlayStyle() methods
 void _configureEdgeToEdgeSystemUI() {
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.edgeToEdge,
-  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // Set transparent system bars for edge-to-edge display
   SystemChrome.setSystemUIOverlayStyle(
@@ -66,59 +64,60 @@ void main() async {
       debugPrint('🔔 [MAIN.DART] Prayer Alarm Received while app is active!');
       debugPrint('   Prayer: $prayerName');
       debugPrint('   Time: $prayerTime');
-      debugPrint('   Navigator state: ${navigatorKey.currentState != null ? "READY" : "NULL"}');
+      debugPrint(
+        '   Navigator state: ${navigatorKey.currentState != null ? "READY" : "NULL"}',
+      );
 
       // Show azan screen when app is active
       if (navigatorKey.currentState != null) {
         debugPrint('📱 [MAIN.DART] Calling _showAzanScreenWhenActive()');
         _showAzanScreenWhenActive(prayerName, prayerTime);
       } else {
-        debugPrint('❌ [MAIN.DART] Navigator is NULL, cannot show AzanFullScreen');
+        debugPrint(
+          '❌ [MAIN.DART] Navigator is NULL, cannot show AzanFullScreen',
+        );
       }
     },
   );
 
-  //SHOW ERROR WIDGET
-  // ErrorWidget.builder = (FlutterErrorDetails details) {
-  //   return Material(
-  //     child: Container(
-  //       color: Colors.green,
-  //       child: Column(
-  //         mainAxisAlignment: .center,
-  //         children: [
-  //           Text(
-  //             details.exception.toString(),
-  //             style: TextStyle(
-  //               fontSize: 30,
-  //               fontWeight: .bold,
-  //               color: Colors.white,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // };
   runApp(const MyApp());
 }
 
 // Helper function to show azan when app is already running
-void _showAzanScreenWhenActive(String prayerName, String prayerTime, {int retryCount = 0}) {
-  debugPrint('🚀 [_showAzanScreenWhenActive] START - Prayer: $prayerName, Time: $prayerTime (attempt ${retryCount + 1})');
+void _showAzanScreenWhenActive(
+  String prayerName,
+  String prayerTime, {
+  int retryCount = 0,
+}) {
+  debugPrint(
+    '🚀 [_showAzanScreenWhenActive] START - Prayer: $prayerName, Time: $prayerTime (attempt ${retryCount + 1})',
+  );
 
   final navigator = navigatorKey.currentState;
   if (navigator == null) {
-    debugPrint('❌ [_showAzanScreenWhenActive] Navigator not available (attempt ${retryCount + 1}/5)');
+    debugPrint(
+      '❌ [_showAzanScreenWhenActive] Navigator not available (attempt ${retryCount + 1}/5)',
+    );
 
     // Retry up to 5 times with increasing delays
     if (retryCount < 5) {
-      final delay = Duration(milliseconds: 100 * (retryCount + 1)); // 100ms, 200ms, 300ms, 400ms, 500ms
-      debugPrint('⏳ [_showAzanScreenWhenActive] Retrying in ${delay.inMilliseconds}ms...');
+      final delay = Duration(
+        milliseconds: 100 * (retryCount + 1),
+      ); // 100ms, 200ms, 300ms, 400ms, 500ms
+      debugPrint(
+        '⏳ [_showAzanScreenWhenActive] Retrying in ${delay.inMilliseconds}ms...',
+      );
       Future.delayed(delay, () {
-        _showAzanScreenWhenActive(prayerName, prayerTime, retryCount: retryCount + 1);
+        _showAzanScreenWhenActive(
+          prayerName,
+          prayerTime,
+          retryCount: retryCount + 1,
+        );
       });
     } else {
-      debugPrint('❌ [_showAzanScreenWhenActive] Navigator still not ready after 5 attempts, giving up');
+      debugPrint(
+        '❌ [_showAzanScreenWhenActive] Navigator still not ready after 5 attempts, giving up',
+      );
     }
     return;
   }
@@ -163,8 +162,12 @@ void _showAzanScreenWhenActive(String prayerName, String prayerTime, {int retryC
     return;
   }
 
-  debugPrint('📱 [_showAzanScreenWhenActive] Showing azan screen (app is active)');
-  debugPrint('📱 [_showAzanScreenWhenActive] Setting _isAzanScreenCurrentlyShowing = true');
+  debugPrint(
+    '📱 [_showAzanScreenWhenActive] Showing azan screen (app is active)',
+  );
+  debugPrint(
+    '📱 [_showAzanScreenWhenActive] Setting _isAzanScreenCurrentlyShowing = true',
+  );
   _isAzanScreenCurrentlyShowing = true;
 
   // Get current theme and language from SharedPreferences
@@ -174,7 +177,9 @@ void _showAzanScreenWhenActive(String prayerName, String prayerTime, {int retryC
     final themeMode = ThemeMode.values[prefs.getInt(prefThemeMode) ?? 0];
     final languageCode = prefs.getString(prefLanguageCode) ?? 'ms';
 
-    debugPrint('📱 [_showAzanScreenWhenActive] About to push AzanFullScreen route...');
+    debugPrint(
+      '📱 [_showAzanScreenWhenActive] About to push AzanFullScreen route...',
+    );
     navigator
         .push(
           PageRouteBuilder(
@@ -186,7 +191,9 @@ void _showAzanScreenWhenActive(String prayerName, String prayerTime, {int retryC
 
             // PAGE
             pageBuilder: (context, animation, secondaryAnimation) {
-              debugPrint('🎨 [_showAzanScreenWhenActive] pageBuilder called - building AzanFullScreen widget');
+              debugPrint(
+                '🎨 [_showAzanScreenWhenActive] pageBuilder called - building AzanFullScreen widget',
+              );
               return AzanFullScreen(
                 prayerName: prayerName,
                 prayerTime: prayerTime,
@@ -209,10 +216,14 @@ void _showAzanScreenWhenActive(String prayerName, String prayerTime, {int retryC
         )
         .then((_) {
           _isAzanScreenCurrentlyShowing = false;
-          debugPrint('✅ [_showAzanScreenWhenActive] AzanFullScreen dismissed, flag reset');
+          debugPrint(
+            '✅ [_showAzanScreenWhenActive] AzanFullScreen dismissed, flag reset',
+          );
         });
 
-    debugPrint('📱 [_showAzanScreenWhenActive] navigator.push() called successfully');
+    debugPrint(
+      '📱 [_showAzanScreenWhenActive] navigator.push() called successfully',
+    );
   });
 
   debugPrint('🏁 [_showAzanScreenWhenActive] END');
@@ -281,9 +292,13 @@ class _MyAppState extends State<MyApp> {
           _hasPendingAlarm = true;
           _pendingPrayerName = prayerName;
           _pendingPrayerTime = prayerTime;
-          debugPrint('✅ [_loadPreferences] Will show AzanFullScreen as initial screen');
+          debugPrint(
+            '✅ [_loadPreferences] Will show AzanFullScreen as initial screen',
+          );
         } else {
-          debugPrint('⏰ [_loadPreferences] Pending alarm too old or invalid, ignoring');
+          debugPrint(
+            '⏰ [_loadPreferences] Pending alarm too old or invalid, ignoring',
+          );
           await prefs.setBool('has_pending_alarm', false);
         }
       }
@@ -355,7 +370,9 @@ class _MyAppState extends State<MyApp> {
     // ✅ If there's a pending alarm, show AzanFullScreen directly as initial screen
     // This avoids navigator race condition when trying to navigate after startup
     if (_hasPendingAlarm) {
-      debugPrint('📱 [_buildStartUpScreen] Showing AzanFullScreen as initial screen for pending alarm');
+      debugPrint(
+        '📱 [_buildStartUpScreen] Showing AzanFullScreen as initial screen for pending alarm',
+      );
       debugPrint('   Prayer: $_pendingPrayerName');
       debugPrint('   Time: $_pendingPrayerTime');
       _isAzanScreenCurrentlyShowing = true;
