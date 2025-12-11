@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:aqim/main.dart';
 import 'package:aqim/screens/kiblat_screen.dart';
+import 'package:aqim/screens/prayer_alarm_debug_screen.dart';
 import 'package:aqim/screens/rakaat_screen.dart';
 import 'package:aqim/screens/settings_screen2.dart';
 import 'package:aqim/services/doa_service.dart';
@@ -220,36 +221,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       debugPrint('❌ Error checking battery optimization: $e');
     }
   }
-
-  // void _showBatteryOptimizationDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Izinkan Penggera Waktu Solat'),
-  //         content: const Text(
-  //           'Untuk memastikan penggera waktu solat berfungsi dengan baik walaupun dalam keadaan bateri rendah atau aplikasi tidak digunakan, sila benarkan aplikasi ini untuk mengabaikan pengoptimuman bateri.\n\n'
-  //           'Ini penting untuk memastikan anda tidak terlepas waktu solat.',
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: const Text('Nanti'),
-  //           ),
-  //           FilledButton(
-  //             onPressed: () async {
-  //               Navigator.of(context).pop();
-  //               await PrayerAlarmService.requestDisableBatteryOptimization();
-  //             },
-  //             child: const Text('Benarkan'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 
   /// Check and request exact alarm permission if needed (Android 12+)
   /// This is ONLY shown if user skipped permission intro screen or permission was revoked
@@ -469,23 +440,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
-                  // FilledButton(
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => SettingsScreen2(
-                  //           onThemeToggle: widget.onThemeToggle,
-                  //           onLanguageChange: widget.onLanguageChange,
-                  //           currentThemeMode: widget.currentThemeMode,
-                  //           currentLanguage: widget.currentLanguage,
-                  //           onThemeChange: widget.onThemeChange,
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  //   child: const Text('Settins Screen 2'),
-                  // ),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PrayerAlarmDebugScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('Debug Screen'),
+                  ),
                   // FilledButton(
                   //   onPressed: () {
                   //     Navigator.push(

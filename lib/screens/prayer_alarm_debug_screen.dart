@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:aqim/services/prayer_alarm_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:home_widget/home_widget.dart';
 
 /// Debug screen to test prayer alarms
 class PrayerAlarmDebugScreen extends StatefulWidget {
@@ -182,9 +183,11 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
                       ],
                     ),
                     SizedBox(height: 12),
-                    Text('1. Use "Schedule Test Alarm" to test in 2 minutes'),
+                    Text('1. Use "Schedule Test Alarm" to test in 1 minute'),
                     SizedBox(height: 4),
-                    Text('2. Check logs: adb logcat | Select-String "PrayerAlarm"'),
+                    Text(
+                      '2. Check logs: adb logcat | Select-String "PrayerAlarm"',
+                    ),
                     SizedBox(height: 4),
                     Text('3. Or: adb logcat -s PrayerAlarmReceiver'),
                     SizedBox(height: 4),
@@ -239,21 +242,19 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
   Future<void> _scheduleTestAlarm() async {
     setState(() {
       _isLoading = true;
-      _status = 'Scheduling test alarm for 2 minutes from now...';
+      _status = 'Scheduling test alarm for 1 minute from now...';
     });
 
     try {
-      // Get current time + 2 minutes (to allow time for setup)
       final now = DateTime.now();
-      final testTime = now.add(Duration(minutes: 2));
+      final testTime = now.add(Duration(minutes: 1));
       final timeString =
           '${testTime.hour.toString().padLeft(2, '0')}:${testTime.minute.toString().padLeft(2, '0')}';
 
       // Save to HomeWidgetPreferences (where PrayerAlarmReceiver reads from)
-      final prefs = await SharedPreferences.getInstance();
-
+      // ✅ IMPORTANT: Use HomeWidget.saveWidgetData, NOT SharedPreferences!
       // Use Asar for test (so it's clear which prayer is being tested)
-      await prefs.setString('flutter.HomeWidgetPreferences.asar', timeString);
+      await HomeWidget.saveWidgetData<String>('asar', timeString);
 
       debugPrint('🧪 DEBUG: Set test alarm for Asar at $timeString');
       debugPrint('🧪 DEBUG: Current time: ${now.hour}:${now.minute}');
@@ -265,7 +266,7 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
 
       setState(() {
         _status = success
-            ? '✅ Test alarm (ASAR) scheduled for $timeString\n(${testTime.difference(now).inMinutes} minutes from now)\n\nWatch for:\n• Logcat logs\n• Notification\n• Fullscreen azan'
+            ? '✅ Test alarm (ASAR) scheduled for $timeString\n(in 1 minute)\n\nWatch for:\n• Logcat logs\n• Notification\n• Fullscreen azan'
             : '❌ Failed to schedule alarm';
         _isLoading = false;
       });
@@ -273,7 +274,9 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('🧪 Test alarm set for $timeString (Asar)\nCheck: adb logcat | Select-String "PrayerAlarm"'),
+            content: Text(
+              '🧪 Test alarm in 1 minute!\nCheck: adb logcat | Select-String "PrayerAlarm"',
+            ),
             duration: Duration(seconds: 8),
             backgroundColor: Colors.green,
           ),
