@@ -30,6 +30,13 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // ✅ Set window background to teal IMMEDIATELY to prevent black screen
+        // This must be done BEFORE any other window configuration
+        window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(
+            android.graphics.Color.parseColor("#00897B") // Teal color matching AzanFullScreen
+        ))
+        Log.d("MainActivity", "✅ Window background set to TEAL (#00897B)")
+
         // ✅ Enable edge-to-edge for Android 15+ compatibility
         enableEdgeToEdge()
 

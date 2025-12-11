@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Modify this file to customize your launch splash screen -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/black" />
+    <!-- ✅ Changed from black to teal to match AzanFullScreen -->
+    <!-- This prevents black screen flash during alarm -->
+    <item>
+        <color android:color="#00897B"/>
+    </item>
 
     <!-- You can insert your own image assets here -->
     <item>

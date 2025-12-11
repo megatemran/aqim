@@ -14,7 +14,8 @@
     </style>
 
     <style name="NormalTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
+        <!-- ✅ Use launch_background for consistency (prevents flash) -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
         <!-- ✅ Enable edge-to-edge enforcement (required for Android 15+) -->
         <item name="android:windowOptOutEdgeToEdgeEnforcement">false</item>
         <!-- ✅ Make system bars transparent for edge-to-edge -->
