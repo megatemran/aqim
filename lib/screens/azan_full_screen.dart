@@ -58,6 +58,7 @@ class _AzanFullScreenState extends State<AzanFullScreen>
   final adsService = AdsService();
   BannerAd? _banner01;
   bool _isBannerLoaded = false;
+  bool _isLoadingAd = false; // ✅ Prevent duplicate ad loads
 
   @override
   void initState() {
@@ -101,6 +102,16 @@ class _AzanFullScreenState extends State<AzanFullScreen>
       debugPrint('❌ Ads disabled - skipping azan banner');
       return;
     }
+
+    // ✅ Prevent duplicate ad loads
+    if (_isLoadingAd) {
+      debugPrint('⏸️ Ad already loading, skipping duplicate request');
+      return;
+    }
+
+    _isLoadingAd = true;
+    debugPrint('📢 [_loadBannerAzan] START');
+
     try {
       await adsService.initGoogleMobileAds();
 
@@ -112,11 +123,14 @@ class _AzanFullScreenState extends State<AzanFullScreen>
               _banner01 = ad as BannerAd;
               _isBannerLoaded = true;
             });
-            debugPrint('✅ Banner ad loaded successfully');
+            debugPrint('✅ [_loadBannerAzan] Banner ad loaded successfully');
+          } else {
+            debugPrint('⚠️ [_loadBannerAzan] Widget unmounted, disposing ad');
+            ad.dispose();
           }
         },
         onAdFailedToLoad: (ad, err) {
-          debugPrint('❌ Failed to load banner ad: ${err.message}');
+          debugPrint('❌ [_loadBannerAzan] Failed to load banner ad: ${err.message}');
           if (mounted) {
             setState(() {
               _banner01 = null;
@@ -127,7 +141,7 @@ class _AzanFullScreenState extends State<AzanFullScreen>
         },
       );
     } catch (e) {
-      debugPrint('❌ Error in loadBannerAzan: $e');
+      debugPrint('❌ [_loadBannerAzan] Error: $e');
       if (mounted) {
         setState(() {
           _banner01 = null;
@@ -351,12 +365,17 @@ class _AzanFullScreenState extends State<AzanFullScreen>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('🎨 [AzanFullScreen] build() called - Rendering UI for ${widget.prayerName}');
+    // ✅ Reduce log spam - build() is called every second by clock timer
+    // Only log on first few builds for debugging
+    if (_currentPosition.inSeconds < 5) {
+      debugPrint('🎨 [AzanFullScreen] build() - UI rendering for ${widget.prayerName}');
+    }
     return GestureDetector(
       onDoubleTap: _stopAlarm,
       onLongPress: _stopAlarm,
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
+        backgroundColor: Colors.teal.shade700, // ✅ Prevent black background flash
         body: Container(
           width: double.infinity,
           height: double.infinity,

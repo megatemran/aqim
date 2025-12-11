@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## PLEASE REMEMBER THIS
 
 dont use withOpacity() because its deprecated use withValues()
+
 ## ⚠️ CRITICAL: Backup Policy (MUST FOLLOW)
 
 **BEFORE making ANY changes to code files, you MUST create a git backup commit first.**
