@@ -62,6 +62,10 @@ class _AzanFullScreenState extends State<AzanFullScreen>
   @override
   void initState() {
     super.initState();
+    debugPrint('🚀 [AzanFullScreen] initState() START');
+    debugPrint('   Prayer: ${widget.prayerName}');
+    debugPrint('   Time: ${widget.prayerTime}');
+
     _loadBannerAzan();
     _loadPrayerSettings();
     _setupUI();
@@ -71,15 +75,21 @@ class _AzanFullScreenState extends State<AzanFullScreen>
 
     // Play sound if enabled
     if (_shouldPlaySound) {
+      debugPrint('🎵 [AzanFullScreen] Playing azan...');
       _playAzan();
+    } else {
+      debugPrint('🔇 [AzanFullScreen] Sound disabled for ${widget.prayerName}');
     }
 
     // Vibrate if enabled
     if (_shouldVibrate) {
+      debugPrint('📳 [AzanFullScreen] Triggering vibration...');
       _triggerVibration();
+    } else {
+      debugPrint('📴 [AzanFullScreen] Vibration disabled for ${widget.prayerName}');
     }
 
-    debugPrint('✅ AzanFullScreen initialized');
+    debugPrint('✅ [AzanFullScreen] initState() COMPLETE');
     debugPrint('🔔 Prayer: ${widget.prayerName}');
     debugPrint('🎵 Should play: $_shouldPlaySound');
     debugPrint('📳 Should vibrate: $_shouldVibrate');
@@ -341,6 +351,7 @@ class _AzanFullScreenState extends State<AzanFullScreen>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('🎨 [AzanFullScreen] build() called - Rendering UI for ${widget.prayerName}');
     return GestureDetector(
       onDoubleTap: _stopAlarm,
       onLongPress: _stopAlarm,

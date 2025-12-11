@@ -249,16 +249,28 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun handlePrayerAlarmIntent(intent: Intent?) {
+        Log.d("MainActivity", "🔍 [handlePrayerAlarmIntent] START")
+
         if (intent?.getBooleanExtra("prayer_alarm", false) == true) {
-            val prayerName = intent.getStringExtra("prayer_name") ?: return
-            val prayerTime = intent.getStringExtra("prayer_time") ?: return
+            Log.d("MainActivity", "✅ [handlePrayerAlarmIntent] This IS a prayer alarm intent")
+
+            val prayerName = intent.getStringExtra("prayer_name") ?: run {
+                Log.e("MainActivity", "❌ [handlePrayerAlarmIntent] prayer_name is NULL, aborting")
+                return
+            }
+            val prayerTime = intent.getStringExtra("prayer_time") ?: run {
+                Log.e("MainActivity", "❌ [handlePrayerAlarmIntent] prayer_time is NULL, aborting")
+                return
+            }
+
+            Log.d("MainActivity", "📋 [handlePrayerAlarmIntent] Prayer: $prayerName, Time: $prayerTime")
 
             // Check for duplicate alarm triggers
             val alarmKey = "$prayerName:$prayerTime"
             val now = System.currentTimeMillis()
 
             if (alarmKey == lastAlarmTrigger && (now - lastAlarmTime) < ALARM_DEBOUNCE_MS) {
-                Log.d("MainActivity", "⏭️ Skipping duplicate alarm: $prayerName (${now - lastAlarmTime}ms ago)")
+                Log.d("MainActivity", "⏭️ [handlePrayerAlarmIntent] Skipping duplicate alarm: $prayerName (${now - lastAlarmTime}ms ago)")
                 return
             }
 
@@ -266,26 +278,35 @@ class MainActivity : FlutterActivity() {
             lastAlarmTrigger = alarmKey
             lastAlarmTime = now
 
-            Log.d("MainActivity", "🔔 Prayer alarm received: $prayerName at $prayerTime")
+            Log.d("MainActivity", "🔔 [handlePrayerAlarmIntent] Prayer alarm received: $prayerName at $prayerTime")
 
             // Clear intent extras to prevent re-trigger
             intent.removeExtra("prayer_alarm")
             intent.removeExtra("prayer_name")
             intent.removeExtra("prayer_time")
+            Log.d("MainActivity", "🧹 [handlePrayerAlarmIntent] Intent extras cleared")
 
             // Wait for Flutter to be ready, then send data
             flutterEngine?.dartExecutor?.let { executor ->
+                Log.d("MainActivity", "🎯 [handlePrayerAlarmIntent] Flutter engine available, scheduling callback...")
                 // Post to handler to ensure Flutter is ready
                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    Log.d("MainActivity", "📤 [handlePrayerAlarmIntent] Invoking methodChannel.onPrayerAlarm...")
                     methodChannel?.invokeMethod("onPrayerAlarm", mapOf(
                         "prayerName" to prayerName,
                         "prayerTime" to prayerTime,
                         "timestamp" to System.currentTimeMillis()
                     ))
-                    Log.d("MainActivity", "✅ Sent prayer alarm to Flutter: $prayerName")
+                    Log.d("MainActivity", "✅ [handlePrayerAlarmIntent] Sent prayer alarm to Flutter: $prayerName")
                 }, 500) // Wait 500ms for Flutter to initialize (faster response)
+            } ?: run {
+                Log.e("MainActivity", "❌ [handlePrayerAlarmIntent] Flutter engine is NULL!")
             }
+        } else {
+            Log.d("MainActivity", "ℹ️ [handlePrayerAlarmIntent] Not a prayer alarm intent, ignoring")
         }
+
+        Log.d("MainActivity", "🏁 [handlePrayerAlarmIntent] END")
     }
     
     private fun testNotification() {

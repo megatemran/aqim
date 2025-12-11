@@ -63,13 +63,17 @@ void main() async {
   // This handles alarms when the app is already running (not terminated)
   await PrayerAlarmService.initialize(
     onAlarmReceived: (prayerName, prayerTime) {
-      debugPrint('🔔 Prayer Alarm Received while app is active!');
+      debugPrint('🔔 [MAIN.DART] Prayer Alarm Received while app is active!');
       debugPrint('   Prayer: $prayerName');
       debugPrint('   Time: $prayerTime');
+      debugPrint('   Navigator state: ${navigatorKey.currentState != null ? "READY" : "NULL"}');
 
       // Show azan screen when app is active
       if (navigatorKey.currentState != null) {
+        debugPrint('📱 [MAIN.DART] Calling _showAzanScreenWhenActive()');
         _showAzanScreenWhenActive(prayerName, prayerTime);
+      } else {
+        debugPrint('❌ [MAIN.DART] Navigator is NULL, cannot show AzanFullScreen');
       }
     },
   );
@@ -100,16 +104,20 @@ void main() async {
 
 // Helper function to show azan when app is already running
 void _showAzanScreenWhenActive(String prayerName, String prayerTime) {
+  debugPrint('🚀 [_showAzanScreenWhenActive] START - Prayer: $prayerName, Time: $prayerTime');
+
   final navigator = navigatorKey.currentState;
   if (navigator == null) {
-    debugPrint('❌ Navigator not available');
+    debugPrint('❌ [_showAzanScreenWhenActive] Navigator not available');
     return;
   }
+
+  debugPrint('✅ [_showAzanScreenWhenActive] Navigator is available');
 
   // Check if AzanFullScreen is already open
   if (_isAzanScreenCurrentlyShowing) {
     debugPrint(
-      '⚠️ AzanFullScreen already open, navigating to HomeScreen instead',
+      '⚠️ [_showAzanScreenWhenActive] AzanFullScreen already open, navigating to HomeScreen instead',
     );
 
     // Reset flag and pop all routes to go to HomeScreen
@@ -144,14 +152,18 @@ void _showAzanScreenWhenActive(String prayerName, String prayerTime) {
     return;
   }
 
-  debugPrint('📱 Showing azan screen (app is active)');
+  debugPrint('📱 [_showAzanScreenWhenActive] Showing azan screen (app is active)');
+  debugPrint('📱 [_showAzanScreenWhenActive] Setting _isAzanScreenCurrentlyShowing = true');
   _isAzanScreenCurrentlyShowing = true;
 
   // Get current theme and language from SharedPreferences
+  debugPrint('📱 [_showAzanScreenWhenActive] Loading SharedPreferences...');
   SharedPreferences.getInstance().then((prefs) {
+    debugPrint('📱 [_showAzanScreenWhenActive] SharedPreferences loaded');
     final themeMode = ThemeMode.values[prefs.getInt(prefThemeMode) ?? 0];
     final languageCode = prefs.getString(prefLanguageCode) ?? 'ms';
 
+    debugPrint('📱 [_showAzanScreenWhenActive] About to push AzanFullScreen route...');
     navigator
         .push(
           PageRouteBuilder(
@@ -163,6 +175,7 @@ void _showAzanScreenWhenActive(String prayerName, String prayerTime) {
 
             // PAGE
             pageBuilder: (context, animation, secondaryAnimation) {
+              debugPrint('🎨 [_showAzanScreenWhenActive] pageBuilder called - building AzanFullScreen widget');
               return AzanFullScreen(
                 prayerName: prayerName,
                 prayerTime: prayerTime,
@@ -185,9 +198,13 @@ void _showAzanScreenWhenActive(String prayerName, String prayerTime) {
         )
         .then((_) {
           _isAzanScreenCurrentlyShowing = false;
-          debugPrint('✅ AzanFullScreen dismissed, flag reset');
+          debugPrint('✅ [_showAzanScreenWhenActive] AzanFullScreen dismissed, flag reset');
         });
+
+    debugPrint('📱 [_showAzanScreenWhenActive] navigator.push() called successfully');
   });
+
+  debugPrint('🏁 [_showAzanScreenWhenActive] END');
 }
 
 class MyApp extends StatefulWidget {
@@ -358,10 +375,17 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _buildStartUpScreen() {
+    debugPrint('🔧 [_buildStartUpScreen] Called');
+    debugPrint('   _hasPendingAlarm: $_hasPendingAlarm');
+    debugPrint('   _pendingPrayerName: $_pendingPrayerName');
+    debugPrint('   _pendingPrayerTime: $_pendingPrayerTime');
+
     // ✅ If there's a pending alarm, show AzanFullScreen directly as initial screen
     // This avoids navigator race condition when trying to navigate after startup
     if (_hasPendingAlarm) {
-      debugPrint('📱 Showing AzanFullScreen as initial screen for pending alarm');
+      debugPrint('📱 [_buildStartUpScreen] Showing AzanFullScreen as initial screen for pending alarm');
+      debugPrint('   Prayer: $_pendingPrayerName');
+      debugPrint('   Time: $_pendingPrayerTime');
       _isAzanScreenCurrentlyShowing = true;
       return AzanFullScreen(
         prayerName: _pendingPrayerName,
