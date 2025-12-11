@@ -38,9 +38,21 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
             Log.d(TAG, "═══════════════════════════════════════════════════")
             Log.d(TAG, "🔔 Scheduling all prayer alarms...")
             Log.d(TAG, "═══════════════════════════════════════════════════")
-            
+
+            // Read GlobalService settings from Flutter SharedPreferences
+            val flutterPrefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+            val notificationsEnabled = flutterPrefs.getBoolean("flutter.notificationsEnabled", true)
+
+            Log.d(TAG, "⚙️ Global notification setting: $notificationsEnabled")
+
+            if (!notificationsEnabled) {
+                Log.w(TAG, "⚠️ Notifications are disabled globally. Skipping all prayer alarms.")
+                Log.d(TAG, "═══════════════════════════════════════════════════")
+                return
+            }
+
             val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
-            
+
             val prayers = mapOf(
                 "Subuh" to prefs.getString("subuh", ""),
                 "Zohor" to prefs.getString("zohor", ""),
@@ -48,22 +60,33 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
                 "Maghrib" to prefs.getString("maghrib", ""),
                 "Isyak" to prefs.getString("isyak", "")
             )
-            
+
             Log.d(TAG, "📋 Prayer times from SharedPreferences:")
             prayers.forEach { (name, time) ->
                 Log.d(TAG, "   $name: $time")
             }
-            
+
             prayers.forEach { (name, time) ->
                 if (!time.isNullOrEmpty()) {
-                    schedulePrayerAlarm(context, name, time)
+                    // Check if this specific prayer is enabled
+                    // Prayer name from map is capitalized (Subuh, Zohor, etc.)
+                    // But SharedPreferences keys are lowercase first letter (subuhEnabled, zohorEnabled)
+                    val prayerKey = name.lowercase().replaceFirstChar { it.uppercase() } + "Enabled"
+                    val prayerEnabled = flutterPrefs.getBoolean("flutter.${name.lowercase()}Enabled", true)
+
+                    if (prayerEnabled) {
+                        Log.d(TAG, "✅ $name is enabled, scheduling alarm")
+                        schedulePrayerAlarm(context, name, time)
+                    } else {
+                        Log.w(TAG, "⚠️ $name is disabled in settings, skipping alarm")
+                    }
                 } else {
                     Log.w(TAG, "⚠️ $name time is empty, skipping")
                 }
             }
-            
+
             Log.d(TAG, "═══════════════════════════════════════════════════")
-            Log.d(TAG, "✅ All prayer alarms scheduled")
+            Log.d(TAG, "✅ Prayer alarms scheduled (respecting user settings)")
             Log.d(TAG, "═══════════════════════════════════════════════════")
 
             // ✅ Schedule daily safety check to reschedule alarms
@@ -311,15 +334,32 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
 
         val prayerName = intent.getStringExtra(EXTRA_PRAYER_NAME)
         val prayerTime = intent.getStringExtra(EXTRA_PRAYER_TIME)
-        
+
         if (prayerName == null || prayerTime == null) {
             Log.e(TAG, "❌ Prayer name or time is null!")
             return
         }
-        
+
         Log.d(TAG, "📿 Prayer: $prayerName")
         Log.d(TAG, "🕐 Time: $prayerTime")
         Log.d(TAG, "⏰ Triggered at: ${ZonedDateTime.now()}")
+
+        // ✅ VERIFY: Check if notifications are still enabled
+        val flutterPrefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        val notificationsEnabled = flutterPrefs.getBoolean("flutter.notificationsEnabled", true)
+        val prayerEnabled = flutterPrefs.getBoolean("flutter.${prayerName.lowercase()}Enabled", true)
+
+        Log.d(TAG, "⚙️ Notification settings check:")
+        Log.d(TAG, "   Global notifications: $notificationsEnabled")
+        Log.d(TAG, "   $prayerName enabled: $prayerEnabled")
+
+        if (!notificationsEnabled || !prayerEnabled) {
+            Log.w(TAG, "⚠️ Notifications disabled for $prayerName. Cancelling alarm and rescheduling for tomorrow.")
+            // Reschedule for tomorrow in case user re-enables later
+            schedulePrayerAlarm(context, prayerName, prayerTime)
+            Log.d(TAG, "═══════════════════════════════════════════════════")
+            return
+        }
         
         // Wake up device
         Log.d(TAG, "📱 Waking up device...")
@@ -369,8 +409,8 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
             val prayerKey = prayerName.lowercase()
 
             // Get settings for this specific prayer
-            val vibrateEnabled = prefs.getBoolean("flutter.pref${prayerName}Vibrate", true)
-            val ledEnabled = prefs.getBoolean("flutter.pref${prayerName}Led", true)
+            val vibrateEnabled = prefs.getBoolean("flutter.${prayerKey}Vibrate", true)
+            val ledEnabled = prefs.getBoolean("flutter.${prayerKey}Led", true)
 
             Log.d(TAG, "📋 Prayer settings for $prayerName:")
             Log.d(TAG, "   Vibrate: $vibrateEnabled")
