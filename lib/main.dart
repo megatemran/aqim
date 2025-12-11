@@ -103,12 +103,23 @@ void main() async {
 }
 
 // Helper function to show azan when app is already running
-void _showAzanScreenWhenActive(String prayerName, String prayerTime) {
-  debugPrint('🚀 [_showAzanScreenWhenActive] START - Prayer: $prayerName, Time: $prayerTime');
+void _showAzanScreenWhenActive(String prayerName, String prayerTime, {int retryCount = 0}) {
+  debugPrint('🚀 [_showAzanScreenWhenActive] START - Prayer: $prayerName, Time: $prayerTime (attempt ${retryCount + 1})');
 
   final navigator = navigatorKey.currentState;
   if (navigator == null) {
-    debugPrint('❌ [_showAzanScreenWhenActive] Navigator not available');
+    debugPrint('❌ [_showAzanScreenWhenActive] Navigator not available (attempt ${retryCount + 1}/5)');
+
+    // Retry up to 5 times with increasing delays
+    if (retryCount < 5) {
+      final delay = Duration(milliseconds: 100 * (retryCount + 1)); // 100ms, 200ms, 300ms, 400ms, 500ms
+      debugPrint('⏳ [_showAzanScreenWhenActive] Retrying in ${delay.inMilliseconds}ms...');
+      Future.delayed(delay, () {
+        _showAzanScreenWhenActive(prayerName, prayerTime, retryCount: retryCount + 1);
+      });
+    } else {
+      debugPrint('❌ [_showAzanScreenWhenActive] Navigator still not ready after 5 attempts, giving up');
+    }
     return;
   }
 
@@ -235,47 +246,73 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _loadPreferences() async {
     try {
+      debugPrint('🔄 [_loadPreferences] START');
       final prefs = await SharedPreferences.getInstance();
 
       // ✅ Check for pending prayer alarm from Android
       final hasPendingAlarm = prefs.getBool('has_pending_alarm') ?? false;
+      debugPrint('📋 [_loadPreferences] has_pending_alarm: $hasPendingAlarm');
+
       if (hasPendingAlarm) {
         final prayerName = prefs.getString('pending_prayer_name') ?? '';
         final prayerTime = prefs.getString('pending_prayer_time') ?? '';
         final timestamp = prefs.getInt('pending_prayer_timestamp') ?? 0;
 
+        debugPrint('📋 [_loadPreferences] Pending alarm details:');
+        debugPrint('   Prayer: $prayerName');
+        debugPrint('   Time: $prayerTime');
+        debugPrint('   Timestamp: $timestamp');
+
         // Check if alarm is recent (within last 5 minutes)
         final age = DateTime.now().millisecondsSinceEpoch - timestamp;
+        debugPrint('   Age: ${age / 1000}s');
+
         if (age < 5 * 60 * 1000 && prayerName.isNotEmpty) {
           debugPrint(
-            '🔔 Found pending alarm on startup: $prayerName at $prayerTime',
+            '🔔 [_loadPreferences] Found valid pending alarm: $prayerName at $prayerTime',
           );
 
           // Clear the pending alarm flag
           await prefs.setBool('has_pending_alarm', false);
+          debugPrint('🧹 [_loadPreferences] Cleared has_pending_alarm flag');
 
-          // ✅ NEW APPROACH: Store alarm data to show as initial screen
+          // ✅ Store alarm data to show as initial screen
           // This avoids navigator race condition issues
           _hasPendingAlarm = true;
           _pendingPrayerName = prayerName;
           _pendingPrayerTime = prayerTime;
-          debugPrint('✅ Will show AzanFullScreen as initial screen');
+          debugPrint('✅ [_loadPreferences] Will show AzanFullScreen as initial screen');
         } else {
-          debugPrint('⏰ Pending alarm too old or invalid, ignoring');
+          debugPrint('⏰ [_loadPreferences] Pending alarm too old or invalid, ignoring');
           await prefs.setBool('has_pending_alarm', false);
         }
       }
 
+      final legalAccepted = prefs.getBool(prefIsLegalAccepted) ?? false;
+      final firstLaunch = prefs.getBool(prefIsFirstLaunch) ?? true;
+      final permission = prefs.getBool(prefIsPermission) ?? true;
+      final themeMode = ThemeMode.values[prefs.getInt(prefThemeMode) ?? 0];
+      final languageCode = prefs.getString(prefLanguageCode) ?? 'ms';
+
+      debugPrint('📋 [_loadPreferences] Preferences loaded:');
+      debugPrint('   Legal accepted: $legalAccepted');
+      debugPrint('   First launch: $firstLaunch');
+      debugPrint('   Permission: $permission');
+      debugPrint('   Theme: $themeMode');
+      debugPrint('   Language: $languageCode');
+
       setState(() {
-        _isLegalAccepted = prefs.getBool(prefIsLegalAccepted) ?? false;
-        _isFirstLaunch = prefs.getBool(prefIsFirstLaunch) ?? true;
-        _isPermission = prefs.getBool(prefIsPermission) ?? true;
-        _themeMode = ThemeMode.values[prefs.getInt(prefThemeMode) ?? 0];
-        _languageCode = prefs.getString(prefLanguageCode) ?? 'ms';
+        _isLegalAccepted = legalAccepted;
+        _isFirstLaunch = firstLaunch;
+        _isPermission = permission;
+        _themeMode = themeMode;
+        _languageCode = languageCode;
         _isLoading = false;
       });
+
+      debugPrint('✅ [_loadPreferences] COMPLETE - _isLoading set to false');
     } catch (e) {
-      debugPrint('❌ _loadPreferences: $e');
+      debugPrint('❌ [_loadPreferences] ERROR: $e');
       setState(() => _isLoading = false);
     }
   }

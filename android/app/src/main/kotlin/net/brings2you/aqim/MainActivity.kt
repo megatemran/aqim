@@ -85,7 +85,8 @@ class MainActivity : FlutterActivity() {
                 android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
                 android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
                 android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
-                android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN or // ✅ Force fullscreen
+                // ✅ Removed FLAG_FULLSCREEN to prevent black screen flash
+                // Flutter's AzanFullScreen handles fullscreen UI via SystemChrome
                 android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv() // ✅ Allow touch
             )
 
@@ -298,7 +299,7 @@ class MainActivity : FlutterActivity() {
                         "timestamp" to System.currentTimeMillis()
                     ))
                     Log.d("MainActivity", "✅ [handlePrayerAlarmIntent] Sent prayer alarm to Flutter: $prayerName")
-                }, 500) // Wait 500ms for Flutter to initialize (faster response)
+                }, 200) // Reduced to 200ms for faster response (from 500ms)
             } ?: run {
                 Log.e("MainActivity", "❌ [handlePrayerAlarmIntent] Flutter engine is NULL!")
             }
