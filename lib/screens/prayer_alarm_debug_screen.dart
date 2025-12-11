@@ -182,14 +182,19 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
                       ],
                     ),
                     SizedBox(height: 12),
-                    Text('1. Use "Schedule Test Alarm" to test in 1 minute'),
+                    Text('1. Use "Schedule Test Alarm" to test in 2 minutes'),
                     SizedBox(height: 4),
-                    Text('2. Use "Trigger Now" to test dialog immediately'),
+                    Text('2. Check logs: adb logcat | Select-String "PrayerAlarm"'),
                     SizedBox(height: 4),
-                    Text('3. Check logcat for detailed logs'),
+                    Text('3. Or: adb logcat -s PrayerAlarmReceiver'),
                     SizedBox(height: 4),
                     Text(
                       '4. Make sure "Alarms & reminders" permission is granted',
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '5. Test will verify if settings are respected',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -234,28 +239,33 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
   Future<void> _scheduleTestAlarm() async {
     setState(() {
       _isLoading = true;
-      _status = 'Scheduling test alarm for 1 minute from now...';
+      _status = 'Scheduling test alarm for 2 minutes from now...';
     });
 
     try {
-      // Get current time + 1 minute
+      // Get current time + 2 minutes (to allow time for setup)
       final now = DateTime.now();
-      final testTime = now.add(Duration(minutes: 1));
+      final testTime = now.add(Duration(minutes: 2));
       final timeString =
-          '${testTime.hour}:${testTime.minute.toString().padLeft(2, '0')}';
+          '${testTime.hour.toString().padLeft(2, '0')}:${testTime.minute.toString().padLeft(2, '0')}';
 
-      // Save to SharedPreferences
+      // Save to HomeWidgetPreferences (where PrayerAlarmReceiver reads from)
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('isyak', timeString); // Use Isyak for test
+
+      // Use Asar for test (so it's clear which prayer is being tested)
+      await prefs.setString('flutter.HomeWidgetPreferences.asar', timeString);
+
+      debugPrint('🧪 DEBUG: Set test alarm for Asar at $timeString');
+      debugPrint('🧪 DEBUG: Current time: ${now.hour}:${now.minute}');
 
       // Schedule alarm
       final success = await PrayerAlarmService.scheduleAllPrayerAlarms();
 
-      if (!mounted) return; // ✅ Check if widget is still mounted
+      if (!mounted) return;
 
       setState(() {
         _status = success
-            ? '✅ Test alarm scheduled for $timeString (1 minute from now)\nWait for the alarm...'
+            ? '✅ Test alarm (ASAR) scheduled for $timeString\n(${testTime.difference(now).inMinutes} minutes from now)\n\nWatch for:\n• Logcat logs\n• Notification\n• Fullscreen azan'
             : '❌ Failed to schedule alarm';
         _isLoading = false;
       });
@@ -263,14 +273,14 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Alarm set for $timeString. Wait 1 minute!'),
-            duration: Duration(seconds: 5),
+            content: Text('🧪 Test alarm set for $timeString (Asar)\nCheck: adb logcat | Select-String "PrayerAlarm"'),
+            duration: Duration(seconds: 8),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
-      if (!mounted) return; // ✅ Check if widget is still mounted
+      if (!mounted) return;
       setState(() {
         _status = '❌ Error: $e';
         _isLoading = false;
