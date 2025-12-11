@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:aqim/services/prayer_alarm_service.dart';
+import 'package:aqim/services/app_review_service.dart';
+import 'package:aqim/services/app_update_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:home_widget/home_widget.dart';
 
@@ -116,6 +118,104 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
                 padding: EdgeInsets.all(16),
               ),
               onPressed: _isLoading ? null : () => _cancelAllAlarms(),
+            ),
+
+            SizedBox(height: 24),
+
+            // In-App Review Tests
+            Text(
+              'In-App Review Tests',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 12),
+
+            // Test in-app review
+            ElevatedButton.icon(
+              icon: Icon(Icons.star),
+              label: Text('Test In-App Review'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.all(16),
+              ),
+              onPressed: _isLoading ? null : () => _testInAppReview(),
+            ),
+
+            SizedBox(height: 12),
+
+            // Reset review request
+            ElevatedButton.icon(
+              icon: Icon(Icons.refresh),
+              label: Text('Reset Review Data'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.all(16),
+              ),
+              onPressed: _isLoading ? null : () => _resetReviewData(),
+            ),
+
+            SizedBox(height: 12),
+
+            // Show review status
+            ElevatedButton.icon(
+              icon: Icon(Icons.info),
+              label: Text('Check Review Status'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.all(16),
+              ),
+              onPressed: _isLoading ? null : () => _checkReviewStatus(),
+            ),
+
+            SizedBox(height: 12),
+
+            // Open store listing (alternative)
+            ElevatedButton.icon(
+              icon: Icon(Icons.open_in_new),
+              label: Text('Open Play Store (Alternative)'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.all(16),
+              ),
+              onPressed: _isLoading ? null : () => _openStoreListing(),
+            ),
+
+            SizedBox(height: 24),
+
+            // In-App Update Tests
+            Text(
+              'In-App Update Tests',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 12),
+
+            // Check for update
+            ElevatedButton.icon(
+              icon: Icon(Icons.system_update),
+              label: Text('Check for Update'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.all(16),
+              ),
+              onPressed: _isLoading ? null : () => _checkForUpdate(),
+            ),
+
+            SizedBox(height: 12),
+
+            // Test flexible update
+            ElevatedButton.icon(
+              icon: Icon(Icons.download),
+              label: Text('Start Flexible Update'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.all(16),
+              ),
+              onPressed: _isLoading ? null : () => _startFlexibleUpdate(),
             ),
 
             SizedBox(height: 24),
@@ -407,6 +507,306 @@ class _PrayerAlarmDebugScreenState extends State<PrayerAlarmDebugScreen> {
       if (!mounted) return; // ✅ Check if widget is still mounted
       setState(() {
         _status = '❌ Error: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  // ========================================================================
+  // IN-APP REVIEW TEST FUNCTIONS
+  // ========================================================================
+
+  Future<void> _testInAppReview() async {
+    setState(() {
+      _isLoading = true;
+      _status = 'Testing in-app review...';
+    });
+
+    try {
+      final success = await AppReviewService.requestReview();
+
+      if (!mounted) return;
+
+      if (success) {
+        setState(() {
+          _status = '✅ In-app review dialog should appear!\n(5-star rating dialog)';
+          _isLoading = false;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✅ In-app review dialog shown!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _status = '⚠️ Review dialog NOT available\n\n'
+              'Reasons:\n'
+              '• Running in debug mode\n'
+              '• Not from Play Store\n'
+              '• Emulator/device quota\n\n'
+              '💡 Use "Open Store Listing" to test manually';
+          _isLoading = false;
+        });
+
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.orange),
+                  SizedBox(width: 12),
+                  Expanded(child: Text('Review Not Available')),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('In-app review dialog is not available.'),
+                  SizedBox(height: 12),
+                  Text('Common reasons:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Text('• App is in debug/development mode'),
+                  Text('• Not installed from Google Play Store'),
+                  Text('• Running on emulator'),
+                  Text('• Device quota exceeded (Google limit)'),
+                  SizedBox(height: 12),
+                  Text('💡 To test:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Text('1. Build release APK/AAB'),
+                  Text('2. Upload to Play Store (Internal Testing)'),
+                  Text('3. Install from Play Store'),
+                  Text('4. Then test review dialog'),
+                  SizedBox(height: 12),
+                  Text('Or use "Open Store Listing" button to open Play Store directly.'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    AppReviewService.openStoreListing();
+                  },
+                  child: Text('Open Store Listing'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = '❌ Error: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _resetReviewData() async {
+    setState(() {
+      _isLoading = true;
+      _status = 'Resetting review data...';
+    });
+
+    try {
+      await AppReviewService.resetReviewRequest();
+
+      if (!mounted) return;
+
+      setState(() {
+        _status = '✅ Review data reset!\nYou can test again now.';
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Review data reset successfully!'),
+            backgroundColor: Colors.grey,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = '❌ Error: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _checkReviewStatus() async {
+    setState(() {
+      _isLoading = true;
+      _status = 'Checking review status...';
+    });
+
+    try {
+      final status = await AppReviewService.getReviewStatus();
+
+      if (!mounted) return;
+
+      setState(() {
+        _status = '📊 Review Status:\n$status';
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.info, color: Colors.blue),
+                SizedBox(width: 12),
+                Text('Review Status'),
+              ],
+            ),
+            content: Text(status),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Close'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = '❌ Error: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _openStoreListing() async {
+    setState(() {
+      _isLoading = true;
+      _status = 'Opening Play Store...';
+    });
+
+    try {
+      await AppReviewService.openStoreListing();
+
+      if (!mounted) return;
+
+      setState(() {
+        _status = '✅ Play Store opened!\nUser can review manually.';
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Play Store listing opened!'),
+            backgroundColor: Colors.teal,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = '❌ Error: $e\n(App might not be on Play Store yet)';
+        _isLoading = false;
+      });
+    }
+  }
+
+  // ========================================================================
+  // IN-APP UPDATE TEST FUNCTIONS
+  // ========================================================================
+
+  Future<void> _checkForUpdate() async {
+    setState(() {
+      _isLoading = true;
+      _status = 'Checking for app updates...';
+    });
+
+    try {
+      final updateInfo = await AppUpdateService.checkForUpdate();
+
+      if (!mounted) return;
+
+      if (updateInfo == null) {
+        setState(() {
+          _status = '⚠️ Update check not available\n(Android only feature)';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final availability = updateInfo.updateAvailability.toString().split('.').last;
+      final immediate = updateInfo.immediateUpdateAllowed;
+      final flexible = updateInfo.flexibleUpdateAllowed;
+
+      setState(() {
+        _status = '📱 Update Status:\n'
+            'Availability: $availability\n'
+            'Immediate: $immediate\n'
+            'Flexible: $flexible';
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Update check complete! See status above.'),
+            backgroundColor: Colors.indigo,
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = '❌ Error: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _startFlexibleUpdate() async {
+    setState(() {
+      _isLoading = true;
+      _status = 'Starting flexible update...';
+    });
+
+    try {
+      await AppUpdateService.startFlexibleUpdate();
+
+      if (!mounted) return;
+
+      setState(() {
+        _status = '✅ Flexible update started!\nUpdate will download in background.';
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Flexible update started! Check Play Store.'),
+            backgroundColor: Colors.deepPurple,
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = '❌ Error: $e\n(Make sure update is available first)';
         _isLoading = false;
       });
     }

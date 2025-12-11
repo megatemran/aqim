@@ -12,6 +12,8 @@ import 'screens/firstlaunch/onboarding_screen.dart';
 import 'screens/firstlaunch/permission_intro_screen.dart';
 import 'services/ads_service.dart';
 import 'services/app_localization.dart';
+import 'services/app_review_service.dart';
+import 'services/app_update_service.dart';
 import 'services/home_widget_service.dart';
 import 'services/prayer_alarm_service.dart';
 import 'utils/color_seed.dart';
@@ -79,6 +81,16 @@ void main() async {
       }
     },
   );
+
+  // ✅ Check for in-app updates (non-blocking)
+  Future.delayed(const Duration(seconds: 2), () {
+    AppUpdateService.checkForUpdate();
+  });
+
+  // ✅ Check and request in-app review (once per month, non-blocking)
+  Future.delayed(const Duration(seconds: 5), () {
+    AppReviewService.checkAndRequestReview();
+  });
 
   runApp(const MyApp());
 }

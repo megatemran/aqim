@@ -9,6 +9,10 @@ final String prefIsPermission = 'isPermission';
 final String prefThemeMode = 'themeMode';
 final String prefLanguageCode = 'languageCode';
 
+// IN-APP REVIEW
+final String prefLastReviewRequestDate = 'lastReviewRequestDate';
+final String prefReviewRequestCount = 'reviewRequestCount';
+
 // LOCATION
 final String prefCachedLocation = 'cached_location';
 final String prefCachedLocationTime = 'location_cache_time';

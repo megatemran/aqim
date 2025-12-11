@@ -36,9 +36,13 @@ dependencies:
   flutter_compass: ^0.8.0
   qr_flutter: ^4.1.0
   audioplayers: ^6.1.0
-  
+
   vibration: ^3.1.4
   screen_brightness: ^1.0.1
+
+  # In-app update and review
+  in_app_update: ^4.2.3
+  in_app_review: ^2.0.9
 
 dev_dependencies:
   flutter_test:
