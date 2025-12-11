@@ -9,9 +9,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.view.WindowCompat
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngine 
 import io.flutter.plugin.common.MethodChannel     
 
 class MainActivity : FlutterActivity() {
@@ -29,16 +28,6 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ✅ Set window background to teal IMMEDIATELY to prevent black screen
-        // This must be done BEFORE any other window configuration
-        window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(
-            android.graphics.Color.parseColor("#00897B") // Teal color matching AzanFullScreen
-        ))
-        Log.d("MainActivity", "✅ Window background set to TEAL (#00897B)")
-
-        // ✅ Enable edge-to-edge for Android 15+ compatibility
-        enableEdgeToEdge()
 
         // Check if launched by prayer alarm - apply lock screen flags IMMEDIATELY
         if (intent?.getBooleanExtra("prayer_alarm", false) == true) {
@@ -58,26 +47,12 @@ class MainActivity : FlutterActivity() {
         Log.d("MainActivity", "✅ onCreate initialized")
     }
 
-    /**
-     * ✅ Enable edge-to-edge display for Android 15+ compatibility
-     * This replaces deprecated methods like setStatusBarColor() and setNavigationBarColor()
-     */
-    private fun enableEdgeToEdge() {
-        try {
-            // Enable edge-to-edge using WindowCompat (backward compatible)
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-            Log.d("MainActivity", "✅ Edge-to-edge enabled successfully")
-        } catch (e: Exception) {
-            Log.e("MainActivity", "❌ Error enabling edge-to-edge: ${e.message}", e)
-        }
-    }
-
     // Helper function to apply all lock screen bypass flags
     private fun applyLockScreenFlags() {
-        Log.d("MainActivity", "🔓 Applying MAXIMUM AGGRESSIVE lock screen bypass flags for prayer alarm")
+        Log.d("MainActivity", "🔓 Applying lock screen bypass flags for prayer alarm")
 
         try {
-            // Modern API (27+) - Native methods
+            // Modern API (27+)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 setShowWhenLocked(true)
                 setTurnScreenOn(true)
@@ -91,21 +66,10 @@ class MainActivity : FlutterActivity() {
                 android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
                 android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
                 android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
-                // ✅ Removed FLAG_FULLSCREEN to prevent black screen flash
-                // Flutter's AzanFullScreen handles fullscreen UI via SystemChrome
-                android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv() // ✅ Allow touch
+                android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
             )
 
-            // ✅ ADDITIONAL: Disable keyguard completely during alarm
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
-                keyguardManager.requestDismissKeyguard(this, null)
-                Log.d("MainActivity", "✅ Keyguard dismiss requested (API 26+)")
-            }
-
-            Log.d("MainActivity", "✅ ALL MAXIMUM lock screen flags applied successfully!")
-            Log.d("MainActivity", "   App WILL show over lock screen in ALL conditions!")
+            Log.d("MainActivity", "✅ ALL lock screen flags applied successfully!")
         } catch (e: Exception) {
             Log.e("MainActivity", "❌ Error applying lock screen flags: ${e.message}", e)
         }
@@ -257,28 +221,16 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun handlePrayerAlarmIntent(intent: Intent?) {
-        Log.d("MainActivity", "🔍 [handlePrayerAlarmIntent] START")
-
         if (intent?.getBooleanExtra("prayer_alarm", false) == true) {
-            Log.d("MainActivity", "✅ [handlePrayerAlarmIntent] This IS a prayer alarm intent")
-
-            val prayerName = intent.getStringExtra("prayer_name") ?: run {
-                Log.e("MainActivity", "❌ [handlePrayerAlarmIntent] prayer_name is NULL, aborting")
-                return
-            }
-            val prayerTime = intent.getStringExtra("prayer_time") ?: run {
-                Log.e("MainActivity", "❌ [handlePrayerAlarmIntent] prayer_time is NULL, aborting")
-                return
-            }
-
-            Log.d("MainActivity", "📋 [handlePrayerAlarmIntent] Prayer: $prayerName, Time: $prayerTime")
+            val prayerName = intent.getStringExtra("prayer_name") ?: return
+            val prayerTime = intent.getStringExtra("prayer_time") ?: return
 
             // Check for duplicate alarm triggers
             val alarmKey = "$prayerName:$prayerTime"
             val now = System.currentTimeMillis()
 
             if (alarmKey == lastAlarmTrigger && (now - lastAlarmTime) < ALARM_DEBOUNCE_MS) {
-                Log.d("MainActivity", "⏭️ [handlePrayerAlarmIntent] Skipping duplicate alarm: $prayerName (${now - lastAlarmTime}ms ago)")
+                Log.d("MainActivity", "⏭️ Skipping duplicate alarm: $prayerName (${now - lastAlarmTime}ms ago)")
                 return
             }
 
@@ -286,35 +238,26 @@ class MainActivity : FlutterActivity() {
             lastAlarmTrigger = alarmKey
             lastAlarmTime = now
 
-            Log.d("MainActivity", "🔔 [handlePrayerAlarmIntent] Prayer alarm received: $prayerName at $prayerTime")
+            Log.d("MainActivity", "🔔 Prayer alarm received: $prayerName at $prayerTime")
 
             // Clear intent extras to prevent re-trigger
             intent.removeExtra("prayer_alarm")
             intent.removeExtra("prayer_name")
             intent.removeExtra("prayer_time")
-            Log.d("MainActivity", "🧹 [handlePrayerAlarmIntent] Intent extras cleared")
 
             // Wait for Flutter to be ready, then send data
             flutterEngine?.dartExecutor?.let { executor ->
-                Log.d("MainActivity", "🎯 [handlePrayerAlarmIntent] Flutter engine available, scheduling callback...")
                 // Post to handler to ensure Flutter is ready
                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                    Log.d("MainActivity", "📤 [handlePrayerAlarmIntent] Invoking methodChannel.onPrayerAlarm...")
                     methodChannel?.invokeMethod("onPrayerAlarm", mapOf(
                         "prayerName" to prayerName,
                         "prayerTime" to prayerTime,
                         "timestamp" to System.currentTimeMillis()
                     ))
-                    Log.d("MainActivity", "✅ [handlePrayerAlarmIntent] Sent prayer alarm to Flutter: $prayerName")
-                }, 200) // Reduced to 200ms for faster response (from 500ms)
-            } ?: run {
-                Log.e("MainActivity", "❌ [handlePrayerAlarmIntent] Flutter engine is NULL!")
+                    Log.d("MainActivity", "✅ Sent prayer alarm to Flutter: $prayerName")
+                }, 500) // Wait 500ms for Flutter to initialize (faster response)
             }
-        } else {
-            Log.d("MainActivity", "ℹ️ [handlePrayerAlarmIntent] Not a prayer alarm intent, ignoring")
         }
-
-        Log.d("MainActivity", "🏁 [handlePrayerAlarmIntent] END")
     }
     
     private fun testNotification() {
@@ -325,7 +268,7 @@ class MainActivity : FlutterActivity() {
             val channel = NotificationChannel(
                 "test_channel",
                 "Test Notifications",
-                NotificationManager.IMPORTANCE_MAX
+                NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)
         }
