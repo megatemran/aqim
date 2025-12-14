@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- ✅ ESSENTIAL PERMISSIONS (Play Store Approved) -->
 
@@ -33,7 +34,6 @@
     <!-- Battery: Prevent Android from killing prayer alarms (required for alarm clock apps) -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
-
     <application
         android:label="Aqim"
         android:name="${applicationName}"
@@ -61,31 +61,38 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ PRAYER ALARM RECEIVER - Handles prayer alarms and daily safety checks -->
+        <!-- APP RECEIVER -->
         <receiver
-            android:name=".PrayerAlarmReceiver"
+            android:name=".AppReceiver"
             android:exported="true"
             android:enabled="true">
             <intent-filter>
-                <action android:name="net.brings2you.aqim.PRAYER_ALARM" />
+                <action android:name="net.brings2you.aqim.APP_ALARM" />
                 <action android:name="net.brings2you.aqim.DAILY_RESCHEDULE" />
                 <action android:name="net.brings2you.aqim.START_FOREGROUND_SERVICE" />
                 <action android:name="net.brings2you.aqim.HEARTBEAT" />
+                <action android:name="net.brings2you.aqim.APP_SCHEDULER_ALARM" />
+                
+                <!-- AppReceiver juga handle BOOT_COMPLETED sebagai backup -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <!-- ✅ PRAYER ALARM FOREGROUND SERVICE - Ensures alarms trigger exactly on time -->
-        <service
-            android:name=".PrayerAlarmForegroundService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Prayer time notifications for Islamic worship" />
-        </service>
-
+        <!-- Receiver for system events (boot, time changes, etc.) -->
+        <!-- Note: Ensure this is separate from the AppReceiver you have -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+   
         <!-- GOOGLE ADS -->
         <meta-data 
             android:name="com.google.android.gms.ads.APPLICATION_ID" 
@@ -121,12 +128,6 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/bismillah_color_widget_info" />
         </receiver>
 
-        <receiver android:name=".WaktuSolatWidgetUpdater" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
         <!-- DOA WIDGET - Click-based updates only -->
         <receiver android:name=".DoaWidgetReceiver" android:exported="true">
             <intent-filter>
@@ -142,23 +143,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- BOOT RECEIVER - Reschedules alarms on boot, time change, timezone change, app update, etc. -->
-        <receiver android:name=".BootReceiver" android:exported="true">
-            <intent-filter>
-                <!-- Device boot -->
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <!-- Time/Date changes -->
-                <action android:name="android.intent.action.TIME_SET" />
-                <action android:name="android.intent.action.TIME_CHANGED" />
-                <action android:name="android.intent.action.DATE_CHANGED" />
-                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
-                <!-- Locale changes -->
-                <action android:name="android.intent.action.LOCALE_CHANGED" />
-                <!-- App update -->
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
-
+        <!-- Flutter embedding version -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

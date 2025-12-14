@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:aqim/main.dart';
+import 'package:aqim/screens/alarm_test_page.dart';
 import 'package:aqim/screens/kiblat_screen.dart';
 import 'package:aqim/screens/prayer_alarm_debug_screen.dart';
 import 'package:aqim/screens/rakaat_screen.dart';
@@ -440,6 +441,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AlarmTestPage(),
+                        ),
+                      );
+                    },
+                    child: const Text('Alarm Test Page'),
+                  ),
                   FilledButton(
                     onPressed: () {
                       Navigator.push(

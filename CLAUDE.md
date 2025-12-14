@@ -39,6 +39,11 @@ When the user asks you to modify ANY file(s), follow these steps **WITHOUT EXCEP
 
 3. **ONLY THEN proceed with the requested changes**
 
+4. **DO THIS**
+      for color always use 
+      final cs = Theme.of(context).colorScheme;
+      example :   color: cs.primary,
+
 ### Examples
 
 **BAD (DO NOT DO THIS):**

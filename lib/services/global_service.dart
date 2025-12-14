@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:aqim/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -112,8 +114,7 @@ class GlobalService {
     subuhSound = prefs.getString(prefSubuhSound) ?? 'azan_subuh_tv3_2018';
     zohorSound = prefs.getString(prefZohorSound) ?? 'azan_zohor_ashfaq_hussain';
     asarSound = prefs.getString(prefAsarSound) ?? 'azan_asar_tv1_2018';
-    maghribSound =
-        prefs.getString(prefMaghribSound) ?? 'azan_maghrib_tv3_2018';
+    maghribSound = prefs.getString(prefMaghribSound) ?? 'azan_maghrib_tv3_2018';
     isyakSound = prefs.getString(prefIsyakSound) ?? 'azan_isyak_munif_hijjaz';
 
     // Prayer vibration settings
@@ -158,6 +159,89 @@ class GlobalService {
     is24HourFormat = prefs.getBool(prefIs24HourFormat) ?? true;
 
     _isInitialized = true;
+
+    //NEW SETTINGS
+    await prefs.setString('subuhAzanReminderList', jsonEncode([5]));
+    await prefs.setString('zohorAzanReminderList', jsonEncode([5]));
+    await prefs.setString('asarAzanReminderList', jsonEncode([5]));
+    await prefs.setString('maghribAzanReminderList', jsonEncode([5]));
+    await prefs.setString('isyakAzanReminderList', jsonEncode([5]));
+
+    await prefs.setInt('subuhSolatReminder', 5);
+    await prefs.setInt('zohorSolatReminder', 5);
+    await prefs.setInt('asarSolatReminder', 5);
+    await prefs.setInt('maghribSolatReminder', 5);
+    await prefs.setInt('isyakSolatReminder', 5);
+
+    Map<String, dynamic> prayerSettings = {
+      'subuh': {
+        'enabled': true,
+        'sound': 'azan_subuh_tv3_2018',
+        'vibrate': true,
+        'led': true,
+        'fullscreen': true,
+        'reminder5Min': false,
+        'reminder10Min': false,
+        'reminder15Min': false,
+        'beforeAzanReminder': [5, 10, 15],
+        'solatReminder': 10,
+        'ledColor': 0xFFFF0000,
+      },
+      'zohor': {
+        'enabled': true,
+        'sound': 'azan_zohor_ashfaq_hussain',
+        'vibrate': true,
+        'led': true,
+        'fullscreen': true,
+        'reminder5Min': false,
+        'reminder10Min': false,
+        'reminder15Min': false,
+        'beforeAzanReminder': [5, 10, 15],
+        'solatReminder': 10,
+        'ledColor': 0xFFFF0000,
+      },
+      'asar': {
+        'enabled': true,
+        'sound': 'azan_asar_tv1_2018',
+        'vibrate': true,
+        'led': true,
+        'fullscreen': true,
+        'reminder5Min': false,
+        'reminder10Min': false,
+        'reminder15Min': false,
+        'beforeAzanReminder': [5, 10, 15],
+        'solatReminder': 10,
+        'ledColor': 0xFFFF0000,
+      },
+      'maghrib': {
+        'enabled': true,
+        'sound': 'azan_maghrib_tv3_2018',
+        'vibrate': true,
+        'led': true,
+        'fullscreen': true,
+        'reminder5Min': false,
+        'reminder10Min': false,
+        'reminder15Min': false,
+        'beforeAzanReminder': [5, 10, 15],
+        'solatReminder': 10,
+        'ledColor': 0xFFFF0000,
+      },
+      'isyak': {
+        'enabled': true,
+        'sound': 'azan_isyak_munif_hijjaz',
+        'vibrate': true,
+        'led': true,
+        'fullscreen': true,
+        'reminder5Min': false,
+        'reminder10Min': false,
+        'reminder15Min': false,
+        'beforeAzanReminder': [5, 10, 15],
+        'solatReminder': 10,
+        'ledColor': 0xFFFF0000,
+      },
+    };
+
+    await prefs.setString('prayerSettings', jsonEncode(prayerSettings));
   }
 
   // ========================================================================

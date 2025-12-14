@@ -82,7 +82,9 @@ class PrayerAlarmService {
   /// Check if battery optimization is disabled for this app
   static Future<bool> isBatteryOptimizationDisabled() async {
     try {
-      final result = await _channel.invokeMethod('isBatteryOptimizationDisabled');
+      final result = await _channel.invokeMethod(
+        'isBatteryOptimizationDisabled',
+      );
       debugPrint('🔋 Battery optimization disabled: $result');
       return result as bool;
     } catch (e) {
@@ -96,7 +98,9 @@ class PrayerAlarmService {
   static Future<bool> requestDisableBatteryOptimization() async {
     try {
       debugPrint('🔋 Requesting battery optimization exemption...');
-      final result = await _channel.invokeMethod('requestDisableBatteryOptimization');
+      final result = await _channel.invokeMethod(
+        'requestDisableBatteryOptimization',
+      );
       debugPrint('✅ Battery optimization request sent: $result');
       return result as bool;
     } catch (e) {
@@ -109,7 +113,9 @@ class PrayerAlarmService {
   static Future<bool> openBatteryOptimizationSettings() async {
     try {
       debugPrint('🔋 Opening battery optimization settings...');
-      final result = await _channel.invokeMethod('openBatteryOptimizationSettings');
+      final result = await _channel.invokeMethod(
+        'openBatteryOptimizationSettings',
+      );
       debugPrint('✅ Battery optimization settings opened: $result');
       return result as bool;
     } catch (e) {

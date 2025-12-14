@@ -5,22 +5,25 @@ import android.util.Base64
 import android.util.Log
 import androidx.glance.appwidget.updateAll
 import androidx.work.*
+import org.json.JSONArray
+import org.json.JSONObject
 import java.net.URL
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
-import org.json.JSONArray
-import org.json.JSONObject
 
-class DoaWidgetWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
-    override suspend fun doWork(): Result {
-        return try {
+class DoaWidgetWorker(
+    context: Context,
+    params: WorkerParameters,
+) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result =
+        try {
             Log.d("DoaWidgetWorker", "🔄 Updating Doa widget via WorkManager...")
-            
+
             val context = applicationContext
             val prefs = context.getSharedPreferences("doa_prefs", Context.MODE_PRIVATE)
             val lastApiCallTime = prefs.getLong("last_api_call", 0)
             val currentTime = System.currentTimeMillis()
-            
+
             // Only fetch from API if cache is older than 24 hours
             val dayInMillis = TimeUnit.DAYS.toMillis(1)
             if (currentTime - lastApiCallTime > dayInMillis) {
@@ -30,24 +33,23 @@ class DoaWidgetWorker(context: Context, params: WorkerParameters) : CoroutineWor
                 val minutesOld = ((currentTime - lastApiCallTime) / 1000 / 60)
                 Log.d("DoaWidgetWorker", "💾 Using cached duas ($minutesOld min old)")
             }
-            
+
             // Update widget from cache
             updateWidgetFromCache(context)
-            
+
             // Schedule next update
             scheduleNextUpdate(context)
-            
+
             Result.success()
         } catch (e: Exception) {
             Log.e("DoaWidgetWorker", "❌ Error: ${e.message}", e)
             Result.retry()
         }
-    }
 
     private fun fetchAndCacheDuas(context: Context) {
         try {
             val url = "https://api.github.com/repos/megatemran/aqim/contents/duas_all.json?ref=main"
-            
+
             val response = URL(url).readText()
             val json = JSONObject(response)
             val base64 = json.getString("content").replace("\n", "")
@@ -63,9 +65,8 @@ class DoaWidgetWorker(context: Context, params: WorkerParameters) : CoroutineWor
                 putLong("last_api_call", System.currentTimeMillis())
                 apply()
             }
-            
+
             Log.d("DoaWidgetWorker", "💾 Cached ${jsonArray.length()} duas to local storage")
-            
         } catch (e: Exception) {
             Log.e("DoaWidgetWorker", "❌ Failed to fetch from API: ${e.message}", e)
         }
@@ -74,7 +75,7 @@ class DoaWidgetWorker(context: Context, params: WorkerParameters) : CoroutineWor
     private suspend fun updateWidgetFromCache(context: Context) {
         try {
             val prefs = context.getSharedPreferences("doa_prefs", Context.MODE_PRIVATE)
-            
+
             // Get cached duas
             val cachedJson = prefs.getString("duas_cache", null)
             if (cachedJson == null) {
@@ -88,7 +89,7 @@ class DoaWidgetWorker(context: Context, params: WorkerParameters) : CoroutineWor
             }
 
             val jsonArray = JSONArray(cachedJson)
-            
+
             // Get random doa from cache
             val random = Random.nextInt(jsonArray.length())
             val doa = jsonArray.getJSONObject(random)
@@ -139,7 +140,6 @@ class DoaWidgetWorker(context: Context, params: WorkerParameters) : CoroutineWor
             // Update widget
             DoaWidget().updateAll(context)
             Log.d("DoaWidgetWorker", "✅ Widget updated: $titleMs")
-            
         } catch (e: Exception) {
             Log.e("DoaWidgetWorker", "❌ Error updating widget: ${e.message}", e)
         }
@@ -147,17 +147,18 @@ class DoaWidgetWorker(context: Context, params: WorkerParameters) : CoroutineWor
 
     companion object {
         private const val WORK_TAG = "doa_widget_update"
-        
+
         fun scheduleNextUpdate(context: Context) {
-            val updateRequest = OneTimeWorkRequestBuilder<DoaWidgetWorker>()
-                .setInitialDelay(15, TimeUnit.MINUTES)
-                .addTag(WORK_TAG)
-                .build()
-            
+            val updateRequest =
+                OneTimeWorkRequestBuilder<DoaWidgetWorker>()
+                    .setInitialDelay(15, TimeUnit.MINUTES)
+                    .addTag(WORK_TAG)
+                    .build()
+
             WorkManager.getInstance(context).enqueueUniqueWork(
                 WORK_TAG,
                 ExistingWorkPolicy.REPLACE,
-                updateRequest
+                updateRequest,
             )
         }
     }

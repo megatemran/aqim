@@ -27,94 +27,101 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 
 class DoaWidget : GlanceAppWidget() {
+    override val sizeMode: SizeMode = SizeMode.Single
 
-        override val sizeMode: SizeMode = SizeMode.Single
+    override suspend fun provideGlance(
+        context: Context,
+        id: GlanceId,
+    ) {
+        Log.d("DoaWidget", "🟢 provideGlance called")
+        provideContent { DoaWidgetContent(context = context) }
+    }
 
-        override suspend fun provideGlance(context: Context, id: GlanceId) {
-                Log.d("DoaWidget", "🟢 provideGlance called")
-                provideContent { DoaWidgetContent(context = context) }
+    @Composable
+    fun DoaWidgetContent(context: Context) {
+        val prefs = context.getSharedPreferences("doa_prefs", Context.MODE_PRIVATE)
+
+        val titleMs = prefs.getString("title_ms", "Doa Harian") ?: "Doa Harian"
+        val arabic =
+            prefs.getString("arabic", "اللّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ")
+                ?: "اللّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ"
+        val ms =
+            prefs.getString(
+                "ms",
+                "Ya Allah, jadikan aku daripada orang yang bertaubat.",
+            )
+                ?: "Ya Allah, jadikan aku daripada orang yang bertaubat."
+        val ref = prefs.getString("ref", "—") ?: "—"
+
+        Log.d("DoaWidget", "✅ Loaded: $titleMs")
+
+        Column(
+            modifier =
+                GlanceModifier
+                    .fillMaxSize()
+                    .background(ColorProvider(Color(0x4D000000)))
+                    .padding(12.dp)
+                    .clickable(
+                        action {
+                            val updateIntent =
+                                Intent(context, DoaWidgetUpdater::class.java).apply {
+                                    setAction("net.brings2you.aqim.UPDATE_DOA_WIDGET")
+                                }
+                            context.sendBroadcast(updateIntent)
+                        },
+                    ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = titleMs,
+                style =
+                    TextStyle(
+                        color = ColorProvider(Color.White),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    ),
+                modifier = GlanceModifier.fillMaxWidth(),
+            )
+
+            Text(
+                text = arabic,
+                style =
+                    TextStyle(
+                        color = ColorProvider(Color.White),
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center,
+                    ),
+                modifier = GlanceModifier.fillMaxWidth().padding(top = 12.dp),
+            )
+
+            Text(
+                text = ms,
+                style =
+                    TextStyle(
+                        color = ColorProvider(Color.LightGray),
+                        fontSize = 11.sp,
+                        textAlign = TextAlign.Center,
+                    ),
+                modifier =
+                    GlanceModifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp, bottom = 4.dp),
+            )
+
+            Text(
+                text = ref,
+                style =
+                    TextStyle(
+                        color = ColorProvider(Color.Gray),
+                        fontSize = 9.sp,
+                        textAlign = TextAlign.Center,
+                    ),
+                modifier = GlanceModifier.fillMaxWidth(),
+            )
         }
 
-        @Composable
-        fun DoaWidgetContent(context: Context) {
-                val prefs = context.getSharedPreferences("doa_prefs", Context.MODE_PRIVATE)
-
-                val titleMs = prefs.getString("title_ms", "Doa Harian") ?: "Doa Harian"
-                val arabic =
-                        prefs.getString("arabic", "اللّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ")
-                                ?: "اللّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ"
-                val ms =
-                        prefs.getString(
-                                "ms",
-                                "Ya Allah, jadikan aku daripada orang yang bertaubat."
-                        )
-                                ?: "Ya Allah, jadikan aku daripada orang yang bertaubat."
-                val ref = prefs.getString("ref", "—") ?: "—"
-
-                Log.d("DoaWidget", "✅ Loaded: $titleMs")
-
-                Column(
-                        modifier =
-                                GlanceModifier.fillMaxSize()
-                                        .background(ColorProvider(Color(0x4D000000)))
-                                        .padding(12.dp)
-                                        .clickable(action {
-                                            val updateIntent = Intent(context, DoaWidgetUpdater::class.java).apply {
-                                                setAction("net.brings2you.aqim.UPDATE_DOA_WIDGET")
-                                            }
-                                            context.sendBroadcast(updateIntent)
-                                        }),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                        Text(
-                                text = titleMs,
-                                style =
-                                        TextStyle(
-                                                color = ColorProvider(Color.White),
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                textAlign = TextAlign.Center
-                                        ),
-                                modifier = GlanceModifier.fillMaxWidth()
-                        )
-
-                        Text(
-                                text = arabic,
-                                style =
-                                        TextStyle(
-                                                color = ColorProvider(Color.White),
-                                                fontSize = 24.sp,
-                                                textAlign = TextAlign.Center
-                                        ),
-                                modifier = GlanceModifier.fillMaxWidth().padding(top = 12.dp)
-                        )
-
-                        Text(
-                                text = ms,
-                                style =
-                                        TextStyle(
-                                                color = ColorProvider(Color.LightGray),
-                                                fontSize = 11.sp,
-                                                textAlign = TextAlign.Center
-                                        ),
-                                modifier =
-                                        GlanceModifier.fillMaxWidth()
-                                                .padding(top = 6.dp, bottom = 4.dp)
-                        )
-
-                        Text(
-                                text = ref,
-                                style =
-                                        TextStyle(
-                                                color = ColorProvider(Color.Gray),
-                                                fontSize = 9.sp,
-                                                textAlign = TextAlign.Center
-                                        ),
-                                modifier = GlanceModifier.fillMaxWidth()
-                        )
-                }
-
-                Log.d("DoaWidget", "✅ UI rendered")
-        }
+        Log.d("DoaWidget", "✅ UI rendered")
+    }
 }

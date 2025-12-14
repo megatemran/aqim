@@ -14,8 +14,8 @@ object BatteryOptimizationHelper {
     /**
      * Check if battery optimization is disabled for this app
      */
-    fun isBatteryOptimizationDisabled(context: Context): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    fun isBatteryOptimizationDisabled(context: Context): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
             val isIgnoring = powerManager.isIgnoringBatteryOptimizations(context.packageName)
             Log.d(TAG, "Battery optimization disabled: $isIgnoring")
@@ -24,7 +24,6 @@ object BatteryOptimizationHelper {
             // Battery optimization doesn't exist before Android 6.0
             true
         }
-    }
 
     /**
      * Request to disable battery optimization for this app
@@ -37,10 +36,11 @@ object BatteryOptimizationHelper {
                     Log.d(TAG, "Requesting battery optimization exemption...")
 
                     // Method 1: Direct request (recommended for alarm apps)
-                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                        data = Uri.parse("package:${context.packageName}")
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
+                    val intent =
+                        Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = Uri.parse("package:${context.packageName}")
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
                     context.startActivity(intent)
 
                     Log.d(TAG, "Battery optimization request dialog shown")
@@ -49,9 +49,10 @@ object BatteryOptimizationHelper {
 
                     // Fallback: Open battery settings page
                     try {
-                        val fallbackIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        }
+                        val fallbackIntent =
+                            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
                         context.startActivity(fallbackIntent)
                         Log.d(TAG, "Opened battery optimization settings")
                     } catch (fallbackError: Exception) {
@@ -70,9 +71,10 @@ object BatteryOptimizationHelper {
     fun openBatteryOptimizationSettings(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
-                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
+                val intent =
+                    Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
                 context.startActivity(intent)
                 Log.d(TAG, "Opened battery optimization settings")
             } catch (e: Exception) {

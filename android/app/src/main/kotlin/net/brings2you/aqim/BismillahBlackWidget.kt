@@ -13,12 +13,13 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.*
 import androidx.glance.unit.ColorProvider
 
-
 class BismillahBlackWidget : GlanceAppWidget() {
-
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun provideGlance(
+        context: Context,
+        id: GlanceId,
+    ) {
         provideContent {
             BismillahContent()
         }
@@ -27,20 +28,22 @@ class BismillahBlackWidget : GlanceAppWidget() {
     @Composable
     private fun BismillahContent() {
         Box(
-            modifier = GlanceModifier
-                .fillMaxSize()
-                .background(ColorProvider(Color.Transparent))
-                .padding(12.dp)
-                .clickable(actionStartActivity<MainActivity>()),
-            contentAlignment = Alignment.Center
+            modifier =
+                GlanceModifier
+                    .fillMaxSize()
+                    .background(ColorProvider(Color.Transparent))
+                    .padding(12.dp)
+                    .clickable(actionStartActivity<MainActivity>()),
+            contentAlignment = Alignment.Center,
         ) {
             Image(
                 provider = ImageProvider(R.drawable.bismillah),
                 contentDescription = "Bismillahir Rahmanir Rahim",
-                modifier = GlanceModifier
-                    .fillMaxWidth()
-                    .height(60.dp),
-                colorFilter = ColorFilter.tint(ColorProvider(Color.Black))
+                modifier =
+                    GlanceModifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                colorFilter = ColorFilter.tint(ColorProvider(Color.Black)),
             )
         }
     }
